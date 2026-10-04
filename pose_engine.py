@@ -5,18 +5,18 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-
-REQUIRED_LANDMARKS = (11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28)
+# All 33 MediaPipe Pose Landmarks (0 to 32)
+ALL_LANDMARKS = tuple(range(33))
 
 
 class PoseEngine:
-    """MediaPipe pose inference and smoothed landmark feature extraction."""
+    """MediaPipe pose inference tracking all 33 body keypoints with exponential smoothing."""
 
     def __init__(
         self,
         model_path="pose_landmarker.task",
-        detection_confidence=0.5,
-        tracking_confidence=0.7,
+        detection_confidence=0.4,
+        tracking_confidence=0.5,
         smoothing_alpha=0.35,
     ):
         if not 0 < smoothing_alpha <= 1:
@@ -37,21 +37,21 @@ class PoseEngine:
         self._smoothed = {}
 
     def process(self, frame, timestamp_ms):
-        """Return features for one BGR frame, or None when no pose is found."""
+        """Return features for all 33 landmarks for one BGR frame, or None when no pose is found."""
         if timestamp_ms < 0:
-            raise ValueError("timestamp_ms must be non-negative")
+            timestamp_ms = 0
 
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
         result = self.detector.detect_for_video(mp_image, int(timestamp_ms))
-        if not result.pose_landmarks:
+        if not result.pose_landmarks or len(result.pose_landmarks) == 0:
             self._smoothed.clear()
             return None
 
         height, width = frame.shape[:2]
         landmarks = self._landmarks_to_dict(result.pose_landmarks[0], width, height)
         smoothed = self._smooth(landmarks)
-        valid = self._valid_landmarks(landmarks)
+        valid = self._valid_landmarks(landmarks, threshold=0.25)
 
         return {
             "landmarks": landmarks,
@@ -70,8 +70,8 @@ class PoseEngine:
                 "norm_z": float(landmark.z),
                 "x": float(landmark.x * width),
                 "y": float(landmark.y * height),
-                "visibility": float(getattr(landmark, "visibility", 0.0)),
-                "presence": float(getattr(landmark, "presence", 0.0)),
+                "visibility": float(getattr(landmark, "visibility", 0.8)),
+                "presence": float(getattr(landmark, "presence", 0.8)),
             }
             for index, landmark in enumerate(landmarks)
         }
@@ -84,28 +84,36 @@ class PoseEngine:
             if previous is None:
                 current_x = landmark["norm_x"]
                 current_y = landmark["norm_y"]
+                current_z = landmark["norm_z"]
             else:
                 current_x = alpha * landmark["norm_x"] + (1 - alpha) * previous["norm_x"]
                 current_y = alpha * landmark["norm_y"] + (1 - alpha) * previous["norm_y"]
+                current_z = alpha * landmark["norm_z"] + (1 - alpha) * previous["norm_z"]
+
+            px_x = current_x * landmark["x"] / landmark["norm_x"] if landmark["norm_x"] != 0 else 0.0
+            px_y = current_y * landmark["y"] / landmark["norm_y"] if landmark["norm_y"] != 0 else 0.0
 
             smoothed[index] = {
                 **landmark,
                 "norm_x": current_x,
                 "norm_y": current_y,
-                "x": current_x * landmark["x"] / landmark["norm_x"] if landmark["norm_x"] else 0.0,
-                "y": current_y * landmark["y"] / landmark["norm_y"] if landmark["norm_y"] else 0.0,
+                "norm_z": current_z,
+                "x": px_x,
+                "y": px_y,
             }
         self._smoothed = smoothed
         return smoothed
 
     @staticmethod
-    def _valid_landmarks(landmarks, threshold=0.5):
+    def _valid_landmarks(landmarks, threshold=0.25):
+        """Soft validity check across all 33 landmarks without aggressive keypoint rejection."""
         return {
             index: (
-                landmarks[index]["visibility"] >= threshold
-                and landmarks[index]["presence"] >= threshold
+                landmarks[index].get("visibility", 1.0) >= threshold
+                or landmarks[index].get("presence", 1.0) >= threshold
             )
-            for index in REQUIRED_LANDMARKS
+            for index in ALL_LANDMARKS
+            if index in landmarks
         }
 
     def close(self):

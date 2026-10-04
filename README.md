@@ -135,7 +135,7 @@ Invoke-WebRequest -Uri "https://storage.googleapis.com/mediapipe-models/pose_lan
 ### Step 3: Running the Application
 
 ```
-usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETECT_EVERY]
+usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETECT_EVERY] [--hands] [--pro [{curry,klay,ray_allen}]]
 ```
 
 #### Examples
@@ -155,14 +155,19 @@ usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETEC
    python main.py --video sample_shot.mp4 --ball
    ```
 
-4. **Run with Custom Ball/Rim Weights (`basket_rim.pt`):**
+4. **Run with Hand Tracking (Wrist Flick & Finger Spread Analysis):**
    ```bash
-   python main.py --video sample_shot.mp4 --ball --yolo weights/basket_rim.pt
+   python main.py --video sample_shot.mp4 --hands
    ```
 
-5. **Run with Frame Skipping for Low-Spec CPUs (runs YOLO every 2 frames):**
+5. **Run with Pro Player Benchmark Comparison (Curry, Klay, Ray Allen):**
    ```bash
-   python main.py --video sample_shot.mp4 --ball --detect-every 2
+   python main.py --video sample_shot.mp4 --pro curry
+   ```
+
+6. **Run Full Pipeline (Pose + Ball + Hands + Pro Comparator):**
+   ```bash
+   python main.py --video sample_shot.mp4 --ball --hands --pro curry
    ```
 
 ### Step 4: Interactive Runtime Controls

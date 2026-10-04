@@ -17,13 +17,65 @@
       "source_location": "L50"
     },
     {
-      "id": "pose_engine_poseengine",
-      "label": "PoseEngine",
+      "id": "analyzer_sessionrecorder",
+      "label": "SessionRecorder",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "sessionrecorder",
+      "source_file": "analyzer.py",
+      "source_location": "L168"
+    },
+    {
+      "id": "analyzer_shotphasedetector",
+      "label": "ShotPhaseDetector",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "shotphasedetector",
+      "source_file": "analyzer.py",
+      "source_location": "L92"
+    },
+    {
+      "id": "hand_engine_handengine",
+      "label": "HandEngine",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": "handengine",
+      "source_file": "hand_engine.py",
+      "source_location": "L29"
+    },
+    {
+      "id": "pro_comparator_procomparator",
+      "label": "ProComparator",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "code",
+      "norm_label": "procomparator",
+      "source_file": "pro_comparator.py",
+      "source_location": "L63"
+    },
+    {
+      "id": "pose_engine_poseengine",
+      "label": "PoseEngine",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": "poseengine",
       "source_file": "pose_engine.py",
@@ -54,19 +106,6 @@
       "norm_label": "jerkprocessor",
       "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/postprocess/jerk_analyzer.py",
       "source_location": "L8"
-    },
-    {
-      "id": "analyzer_sessionrecorder",
-      "label": "SessionRecorder",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": "sessionrecorder",
-      "source_file": "analyzer.py",
-      "source_location": "L108"
     },
     {
       "id": "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer",
@@ -343,19 +382,19 @@
       "file_type": "code",
       "norm_label": "compute_all_angles()",
       "source_file": "analyzer.py",
-      "source_location": "L21"
+      "source_location": "L49"
     },
     {
-      "id": "analyzer_compute_all_angles_angle",
-      "label": "angle()",
+      "id": "analyzer_compute_all_angles_calc_angle",
+      "label": "calc_angle()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "angle()",
+      "norm_label": "calc_angle()",
       "source_file": "analyzer.py",
-      "source_location": "L34"
+      "source_location": "L60"
     },
     {
       "id": "analyzer_compute_all_angles_pt",
@@ -367,31 +406,115 @@
       "file_type": "code",
       "norm_label": "pt()",
       "source_file": "analyzer.py",
-      "source_location": "L29"
+      "source_location": "L54"
     },
     {
-      "id": "analyzer_detect_shot_phase",
-      "label": "detect_shot_phase()",
+      "id": "analyzer_get_angle_3d",
+      "label": "get_angle_3d()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "detect_shot_phase()",
+      "norm_label": "get_angle_3d()",
       "source_file": "analyzer.py",
-      "source_location": "L74"
+      "source_location": "L11"
     },
     {
-      "id": "analyzer_get_angle",
-      "label": "get_angle()",
+      "id": "analyzer_sessionrecorder_add_frame",
+      "label": ".add_frame()",
       "_callable": true,
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "get_angle()",
+      "norm_label": ".add_frame()",
       "source_file": "analyzer.py",
-      "source_location": "L10"
+      "source_location": "L195"
+    },
+    {
+      "id": "analyzer_sessionrecorder_end_shot",
+      "label": ".end_shot()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".end_shot()",
+      "source_file": "analyzer.py",
+      "source_location": "L201"
+    },
+    {
+      "id": "analyzer_sessionrecorder_export_csv",
+      "label": ".export_csv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".export_csv()",
+      "source_file": "analyzer.py",
+      "source_location": "L245"
+    },
+    {
+      "id": "analyzer_sessionrecorder_get_session_stats",
+      "label": ".get_session_stats()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".get_session_stats()",
+      "source_file": "analyzer.py",
+      "source_location": "L263"
+    },
+    {
+      "id": "analyzer_sessionrecorder_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "analyzer.py",
+      "source_location": "L171"
+    },
+    {
+      "id": "analyzer_sessionrecorder_push_frame",
+      "label": ".push_frame()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".push_frame()",
+      "source_file": "analyzer.py",
+      "source_location": "L179"
+    },
+    {
+      "id": "analyzer_sessionrecorder_start_shot",
+      "label": ".start_shot()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".start_shot()",
+      "source_file": "analyzer.py",
+      "source_location": "L188"
+    },
+    {
+      "id": "analyzer_sessionrecorder_summarize_shot",
+      "label": "._summarize_shot()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "._summarize_shot()",
+      "source_file": "analyzer.py",
+      "source_location": "L219"
     },
     {
       "id": "analyzer_shooting_side",
@@ -403,7 +526,31 @@
       "file_type": "code",
       "norm_label": "shooting_side()",
       "source_file": "analyzer.py",
-      "source_location": "L62"
+      "source_location": "L32"
+    },
+    {
+      "id": "analyzer_shotphasedetector_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "analyzer.py",
+      "source_location": "L95"
+    },
+    {
+      "id": "analyzer_shotphasedetector_update",
+      "label": ".update()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".update()",
+      "source_file": "analyzer.py",
+      "source_location": "L105"
     },
     {
       "id": "main_draw_pose",
@@ -430,6 +577,30 @@
       "source_location": "L32"
     },
     {
+      "id": "main_maybe_hand_engine",
+      "label": "maybe_hand_engine()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "maybe_hand_engine()",
+      "source_file": "main.py",
+      "source_location": "L43"
+    },
+    {
+      "id": "main_maybe_pro_comparator",
+      "label": "maybe_pro_comparator()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "maybe_pro_comparator()",
+      "source_file": "main.py",
+      "source_location": "L54"
+    },
+    {
       "id": "main_run",
       "label": "run()",
       "_callable": true,
@@ -439,27 +610,171 @@
       "file_type": "code",
       "norm_label": "run()",
       "source_file": "main.py",
-      "source_location": "L43"
+      "source_location": "L65"
+    },
+    {
+      "id": "hand_engine_handengine_close",
+      "label": ".close()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": ".close()",
+      "source_file": "hand_engine.py",
+      "source_location": "L183"
+    },
+    {
+      "id": "hand_engine_handengine_compute_finger_spread",
+      "label": ".compute_finger_spread()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": ".compute_finger_spread()",
+      "source_file": "hand_engine.py",
+      "source_location": "L133"
+    },
+    {
+      "id": "hand_engine_handengine_compute_wrist_flexion",
+      "label": ".compute_wrist_flexion()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": ".compute_wrist_flexion()",
+      "source_file": "hand_engine.py",
+      "source_location": "L109"
+    },
+    {
+      "id": "hand_engine_handengine_draw",
+      "label": ".draw()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": ".draw()",
+      "source_file": "hand_engine.py",
+      "source_location": "L153"
+    },
+    {
+      "id": "hand_engine_handengine_ensure_model",
+      "label": "._ensure_model()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": "._ensure_model()",
+      "source_file": "hand_engine.py",
+      "source_location": "L54"
+    },
+    {
+      "id": "hand_engine_handengine_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "hand_engine.py",
+      "source_location": "L34"
+    },
+    {
+      "id": "hand_engine_handengine_process",
+      "label": ".process()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "code",
+      "norm_label": ".process()",
+      "source_file": "hand_engine.py",
+      "source_location": "L68"
+    },
+    {
+      "id": "pro_comparator_procomparator_compare",
+      "label": ".compare()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "code",
+      "norm_label": ".compare()",
+      "source_file": "pro_comparator.py",
+      "source_location": "L77"
+    },
+    {
+      "id": "pro_comparator_procomparator_draw",
+      "label": ".draw()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "code",
+      "norm_label": ".draw()",
+      "source_file": "pro_comparator.py",
+      "source_location": "L161"
+    },
+    {
+      "id": "pro_comparator_procomparator_generate_recommendation",
+      "label": "._generate_recommendation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "code",
+      "norm_label": "._generate_recommendation()",
+      "source_file": "pro_comparator.py",
+      "source_location": "L134"
+    },
+    {
+      "id": "pro_comparator_procomparator_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "pro_comparator.py",
+      "source_location": "L66"
+    },
+    {
+      "id": "pro_comparator_procomparator_set_target_pro",
+      "label": ".set_target_pro()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "code",
+      "norm_label": ".set_target_pro()",
+      "source_file": "pro_comparator.py",
+      "source_location": "L72"
     },
     {
       "id": "pose_engine_poseengine_close",
       "label": ".close()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": ".close()",
       "source_file": "pose_engine.py",
-      "source_location": "L111"
+      "source_location": "L119"
     },
     {
       "id": "pose_engine_poseengine_init",
       "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "pose_engine.py",
@@ -470,8 +785,8 @@
       "label": "._landmarks_to_dict()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": "._landmarks_to_dict()",
       "source_file": "pose_engine.py",
@@ -482,8 +797,8 @@
       "label": ".process()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": ".process()",
       "source_file": "pose_engine.py",
@@ -494,8 +809,8 @@
       "label": "._smooth()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": "._smooth()",
       "source_file": "pose_engine.py",
@@ -506,36 +821,12 @@
       "label": "._valid_landmarks()",
       "_callable": true,
       "_origin": "ast",
-      "community": 1,
-      "community_name": "main.py",
+      "community": 16,
+      "community_name": "PoseEngine",
       "file_type": "code",
       "norm_label": "._valid_landmarks()",
       "source_file": "pose_engine.py",
-      "source_location": "L102"
-    },
-    {
-      "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_midpoint",
-      "label": "midpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "SimpleJointAnalyzer",
-      "file_type": "code",
-      "norm_label": "midpoint()",
-      "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py",
-      "source_location": "L627"
-    },
-    {
-      "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_analyze_center_of_gravity",
-      "label": ".analyze_center_of_gravity()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "SimpleJointAnalyzer",
-      "file_type": "code",
-      "norm_label": ".analyze_center_of_gravity()",
-      "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py",
-      "source_location": "L202"
+      "source_location": "L108"
     },
     {
       "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_apply_plot_style",
@@ -886,90 +1177,6 @@
       "source_location": "L517"
     },
     {
-      "id": "analyzer_sessionrecorder_add_frame",
-      "label": ".add_frame()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": ".add_frame()",
-      "source_file": "analyzer.py",
-      "source_location": "L123"
-    },
-    {
-      "id": "analyzer_sessionrecorder_end_shot",
-      "label": ".end_shot()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": ".end_shot()",
-      "source_file": "analyzer.py",
-      "source_location": "L128"
-    },
-    {
-      "id": "analyzer_sessionrecorder_export_csv",
-      "label": ".export_csv()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": ".export_csv()",
-      "source_file": "analyzer.py",
-      "source_location": "L166"
-    },
-    {
-      "id": "analyzer_sessionrecorder_get_session_stats",
-      "label": ".get_session_stats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": ".get_session_stats()",
-      "source_file": "analyzer.py",
-      "source_location": "L183"
-    },
-    {
-      "id": "analyzer_sessionrecorder_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "analyzer.py",
-      "source_location": "L111"
-    },
-    {
-      "id": "analyzer_sessionrecorder_start_shot",
-      "label": ".start_shot()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": ".start_shot()",
-      "source_file": "analyzer.py",
-      "source_location": "L118"
-    },
-    {
-      "id": "analyzer_sessionrecorder_summarize_shot",
-      "label": "._summarize_shot()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "code",
-      "norm_label": "._summarize_shot()",
-      "source_file": "analyzer.py",
-      "source_location": "L143"
-    },
-    {
       "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_main",
       "label": "main()",
       "_callable": true,
@@ -980,6 +1187,30 @@
       "norm_label": "main()",
       "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py",
       "source_location": "L630"
+    },
+    {
+      "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_midpoint",
+      "label": "midpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "run_model.py",
+      "file_type": "code",
+      "norm_label": "midpoint()",
+      "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py",
+      "source_location": "L627"
+    },
+    {
+      "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_analyze_center_of_gravity",
+      "label": ".analyze_center_of_gravity()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "run_model.py",
+      "file_type": "code",
+      "norm_label": ".analyze_center_of_gravity()",
+      "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py",
+      "source_location": "L202"
     },
     {
       "id": "clones_bb_video_shotanalyzer_pracheth_joint_labeller_main",
@@ -1544,6 +1775,18 @@
       "source_location": "L1"
     },
     {
+      "id": "readme_component_status_matrix_progress_gap",
+      "label": "Component Status Matrix & Progress Gap",
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "ball_tracker.py",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "component status matrix & progress gap",
+      "source_file": "README.md",
+      "source_location": "L231"
+    },
+    {
       "id": "ball_geometry_rationale_1",
       "label": "Ball/rim geometry ported from clones/basketball-shot-analysis (run.py).\u2026",
       "_origin": "ast",
@@ -1698,70 +1941,147 @@
       "source_location": "L1"
     },
     {
-      "id": "analyzer_rationale_11",
-      "label": "Angle at joint b given three (x,y) coordinate pairs",
+      "id": "analyzer_rationale_106",
+      "label": "Update phase state machine using kinematic velocities and joint positions.",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "angle at joint b given three (x,y) coordinate pairs",
+      "norm_label": "update phase state machine using kinematic velocities and joint positions.",
       "source_file": "analyzer.py",
-      "source_location": "L11"
+      "source_location": "L106"
     },
     {
-      "id": "analyzer_rationale_22",
-      "label": "Returns dict of all relevant basketball angles. landmarks: output of\u2026",
+      "id": "analyzer_rationale_12",
+      "label": "3D or 2D angle at joint b given coordinate dicts or lists.",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "returns dict of all relevant basketball angles. landmarks: output of...",
+      "norm_label": "3d or 2d angle at joint b given coordinate dicts or lists.",
       "source_file": "analyzer.py",
-      "source_location": "L22"
+      "source_location": "L12"
     },
     {
-      "id": "analyzer_rationale_63",
-      "label": "Higher wrist (smaller y) is treated as the shooting hand.",
+      "id": "analyzer_rationale_169",
+      "label": "Records per-shot data using a 45-frame rolling pre-roll buffer.",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "higher wrist (smaller y) is treated as the shooting hand.",
+      "norm_label": "records per-shot data using a 45-frame rolling pre-roll buffer.",
       "source_file": "analyzer.py",
-      "source_location": "L63"
+      "source_location": "L169"
     },
     {
-      "id": "analyzer_rationale_75",
-      "label": "Detects if player is in shot motion. Returns: 'preparing', 'releasing',\u2026",
+      "id": "analyzer_rationale_180",
+      "label": "Continuously push frame angles to the rolling pre-roll buffer.",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "detects if player is in shot motion. returns: 'preparing', 'releasing',...",
+      "norm_label": "continuously push frame angles to the rolling pre-roll buffer.",
       "source_file": "analyzer.py",
-      "source_location": "L75"
+      "source_location": "L180"
     },
     {
-      "id": "pose_engine_rationale_13",
-      "label": "MediaPipe pose inference and smoothed landmark feature extraction.",
+      "id": "analyzer_rationale_189",
+      "label": "Start recording a shot, pre-populating with 45-frame history for complete knee\u2026",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "mediapipe pose inference and smoothed landmark feature extraction.",
-      "source_file": "pose_engine.py",
-      "source_location": "L13"
+      "norm_label": "start recording a shot, pre-populating with 45-frame history for complete knee...",
+      "source_file": "analyzer.py",
+      "source_location": "L189"
     },
     {
-      "id": "pose_engine_rationale_40",
-      "label": "Return features for one BGR frame, or None when no pose is found.",
+      "id": "analyzer_rationale_196",
+      "label": "Add current frame to current shot buffer.",
       "_origin": "ast",
       "community": 1,
       "community_name": "main.py",
       "file_type": "rationale",
-      "norm_label": "return features for one bgr frame, or none when no pose is found.",
-      "source_file": "pose_engine.py",
-      "source_location": "L40"
+      "norm_label": "add current frame to current shot buffer.",
+      "source_file": "analyzer.py",
+      "source_location": "L196"
+    },
+    {
+      "id": "analyzer_rationale_202",
+      "label": "End shot recording and compute shot summary statistics.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "end shot recording and compute shot summary statistics.",
+      "source_file": "analyzer.py",
+      "source_location": "L202"
+    },
+    {
+      "id": "analyzer_rationale_220",
+      "label": "Summarize shot: max elbow (release extension), min knee (dip depth),\u2026",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "summarize shot: max elbow (release extension), min knee (dip depth),...",
+      "source_file": "analyzer.py",
+      "source_location": "L220"
+    },
+    {
+      "id": "analyzer_rationale_246",
+      "label": "Export session data to timestamped CSV file.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "export session data to timestamped csv file.",
+      "source_file": "analyzer.py",
+      "source_location": "L246"
+    },
+    {
+      "id": "analyzer_rationale_264",
+      "label": "Return session statistics dictionary.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "return session statistics dictionary.",
+      "source_file": "analyzer.py",
+      "source_location": "L264"
+    },
+    {
+      "id": "analyzer_rationale_33",
+      "label": "Determine shooting side based on wrist position and visibility.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "determine shooting side based on wrist position and visibility.",
+      "source_file": "analyzer.py",
+      "source_location": "L33"
+    },
+    {
+      "id": "analyzer_rationale_50",
+      "label": "Compute biomechanical angles across kinetic chain using all 33 pose landmarks.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "compute biomechanical angles across kinetic chain using all 33 pose landmarks.",
+      "source_file": "analyzer.py",
+      "source_location": "L50"
+    },
+    {
+      "id": "analyzer_rationale_93",
+      "label": "Multi-metric biomechanical shot phase detector with hysteresis & debouncing.",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "multi-metric biomechanical shot phase detector with hysteresis & debouncing.",
+      "source_file": "analyzer.py",
+      "source_location": "L93"
     },
     {
       "id": "group_work_division",
@@ -2156,6 +2476,138 @@
       "source_location": "L6"
     },
     {
+      "id": "hand_engine_rationale_110",
+      "label": "Calculate angle between wrist->middle_mcp and middle_mcp->middle_tip (wrist\u2026",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "rationale",
+      "norm_label": "calculate angle between wrist->middle_mcp and middle_mcp->middle_tip (wrist...",
+      "source_file": "hand_engine.py",
+      "source_location": "L110"
+    },
+    {
+      "id": "hand_engine_rationale_134",
+      "label": "Calculate index-tip to pinky-tip distance normalized by palm width.",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "rationale",
+      "norm_label": "calculate index-tip to pinky-tip distance normalized by palm width.",
+      "source_file": "hand_engine.py",
+      "source_location": "L134"
+    },
+    {
+      "id": "hand_engine_rationale_154",
+      "label": "Draw hand skeleton connections and flick/spread metrics on frame.",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "rationale",
+      "norm_label": "draw hand skeleton connections and flick/spread metrics on frame.",
+      "source_file": "hand_engine.py",
+      "source_location": "L154"
+    },
+    {
+      "id": "hand_engine_rationale_30",
+      "label": "MediaPipe hand tracking engine for wrist flick & finger spread analysis.",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "rationale",
+      "norm_label": "mediapipe hand tracking engine for wrist flick & finger spread analysis.",
+      "source_file": "hand_engine.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "hand_engine_rationale_55",
+      "label": "Auto-download hand_landmarker.task if missing.",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "rationale",
+      "norm_label": "auto-download hand_landmarker.task if missing.",
+      "source_file": "hand_engine.py",
+      "source_location": "L55"
+    },
+    {
+      "id": "hand_engine_rationale_69",
+      "label": "Process BGR frame and return dict of hand keypoints and metrics.",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "HandEngine",
+      "file_type": "rationale",
+      "norm_label": "process bgr frame and return dict of hand keypoints and metrics.",
+      "source_file": "hand_engine.py",
+      "source_location": "L69"
+    },
+    {
+      "id": "pro_comparator_rationale_162",
+      "label": "Draw Pro Comparison HUD widget on top-right of frame.",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "rationale",
+      "norm_label": "draw pro comparison hud widget on top-right of frame.",
+      "source_file": "pro_comparator.py",
+      "source_location": "L162"
+    },
+    {
+      "id": "pro_comparator_rationale_64",
+      "label": "Compare user mechanics against pro player benchmark shooting mechanics.",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "rationale",
+      "norm_label": "compare user mechanics against pro player benchmark shooting mechanics.",
+      "source_file": "pro_comparator.py",
+      "source_location": "L64"
+    },
+    {
+      "id": "pro_comparator_rationale_78",
+      "label": "Compare user metrics against active pro benchmark profile. user_metrics: dict\u2026",
+      "_origin": "ast",
+      "community": 15,
+      "community_name": "ProComparator",
+      "file_type": "rationale",
+      "norm_label": "compare user metrics against active pro benchmark profile. user_metrics: dict...",
+      "source_file": "pro_comparator.py",
+      "source_location": "L78"
+    },
+    {
+      "id": "pose_engine_rationale_109",
+      "label": "Soft validity check across all 33 landmarks without aggressive keypoint\u2026",
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "PoseEngine",
+      "file_type": "rationale",
+      "norm_label": "soft validity check across all 33 landmarks without aggressive keypoint...",
+      "source_file": "pose_engine.py",
+      "source_location": "L109"
+    },
+    {
+      "id": "pose_engine_rationale_13",
+      "label": "MediaPipe pose inference tracking all 33 body keypoints with exponential\u2026",
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "PoseEngine",
+      "file_type": "rationale",
+      "norm_label": "mediapipe pose inference tracking all 33 body keypoints with exponential...",
+      "source_file": "pose_engine.py",
+      "source_location": "L13"
+    },
+    {
+      "id": "pose_engine_rationale_40",
+      "label": "Return features for all 33 landmarks for one BGR frame, or None when no pose is\u2026",
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "PoseEngine",
+      "file_type": "rationale",
+      "norm_label": "return features for all 33 landmarks for one bgr frame, or none when no pose is...",
+      "source_file": "pose_engine.py",
+      "source_location": "L40"
+    },
+    {
       "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_11",
       "label": "Comprehensive biomechanical analyzer for sports movements. - Calculates\u2026",
       "_origin": "ast",
@@ -2220,6 +2672,17 @@
       "norm_label": "plot center of gravity acceleration magnitude over real time.",
       "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py",
       "source_location": "L546"
+    },
+    {
+      "id": "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer",
+      "label": "jerk_analyzer.py",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "JerkProcessor",
+      "file_type": "code",
+      "norm_label": "jerk_analyzer.py",
+      "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/postprocess/jerk_analyzer.py",
+      "source_location": "L1"
     },
     {
       "id": "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_119",
@@ -2353,7 +2816,7 @@
       "node_kind": "heading",
       "norm_label": "10. development roadmap & updated task status",
       "source_file": "README.md",
-      "source_location": "L299"
+      "source_location": "L304"
     },
     {
       "id": "readme_11_common_errors_troubleshooting",
@@ -2365,7 +2828,7 @@
       "node_kind": "heading",
       "norm_label": "11. common errors & troubleshooting",
       "source_file": "README.md",
-      "source_location": "L324"
+      "source_location": "L329"
     },
     {
       "id": "readme_12_guidelines_for_ai_assistants_working_on_this_project",
@@ -2377,7 +2840,7 @@
       "node_kind": "heading",
       "norm_label": "12. guidelines for ai assistants working on this project",
       "source_file": "README.md",
-      "source_location": "L336"
+      "source_location": "L341"
     },
     {
       "id": "readme_13_codebase_knowledge_graph_maintenance_graphify",
@@ -2389,7 +2852,7 @@
       "node_kind": "heading",
       "norm_label": "13. codebase knowledge graph & maintenance (graphify)",
       "source_file": "README.md",
-      "source_location": "L347"
+      "source_location": "L352"
     },
     {
       "id": "readme_1_offline_voice_feedback_module_feedback_voice_py",
@@ -2401,7 +2864,7 @@
       "node_kind": "heading",
       "norm_label": "1. offline voice feedback module (`feedback_voice.py`)",
       "source_file": "README.md",
-      "source_location": "L260"
+      "source_location": "L265"
     },
     {
       "id": "readme_1_what_this_project_is",
@@ -2425,7 +2888,7 @@
       "node_kind": "heading",
       "norm_label": "2. pdf session report generator (`report_generator.py`)",
       "source_file": "README.md",
-      "source_location": "L267"
+      "source_location": "L272"
     },
     {
       "id": "readme_2_project_origin_architecture_lineage",
@@ -2461,7 +2924,7 @@
       "node_kind": "heading",
       "norm_label": "3. mediapipe hands integration (`hand_engine.py`)",
       "source_file": "README.md",
-      "source_location": "L274"
+      "source_location": "L279"
     },
     {
       "id": "readme_4_current_tech_stack_dependencies",
@@ -2485,7 +2948,7 @@
       "node_kind": "heading",
       "norm_label": "4. pro player benchmark comparison tool (`pro_comparator.py`)",
       "source_file": "README.md",
-      "source_location": "L280"
+      "source_location": "L285"
     },
     {
       "id": "readme_5_lstm_temporal_shot_quality_classifier_shot_classifier_py",
@@ -2497,7 +2960,7 @@
       "node_kind": "heading",
       "norm_label": "5. lstm temporal shot quality classifier (`shot_classifier.py`)",
       "source_file": "README.md",
-      "source_location": "L286"
+      "source_location": "L291"
     },
     {
       "id": "readme_5_repository_file_structure_module_breakdown",
@@ -2533,7 +2996,7 @@
       "node_kind": "heading",
       "norm_label": "6. web progress dashboard (`dashboard/app.py`)",
       "source_file": "README.md",
-      "source_location": "L290"
+      "source_location": "L295"
     },
     {
       "id": "readme_7_biomechanical_ball_metrics_tracked",
@@ -2545,7 +3008,7 @@
       "node_kind": "heading",
       "norm_label": "7. biomechanical & ball metrics tracked",
       "source_file": "README.md",
-      "source_location": "L176"
+      "source_location": "L181"
     },
     {
       "id": "readme_8_target_architecture_alignment_progress_gap_analysis",
@@ -2557,7 +3020,7 @@
       "node_kind": "heading",
       "norm_label": "8. target architecture alignment & progress gap analysis",
       "source_file": "README.md",
-      "source_location": "L192"
+      "source_location": "L197"
     },
     {
       "id": "readme_9_concrete_implementation_plan_to_complete_the_flow",
@@ -2569,7 +3032,7 @@
       "node_kind": "heading",
       "norm_label": "9. concrete implementation plan to complete the flow",
       "source_file": "README.md",
-      "source_location": "L256"
+      "source_location": "L261"
     },
     {
       "id": "readme_ai_agent_rules_for_graphify",
@@ -2581,19 +3044,7 @@
       "node_kind": "heading",
       "norm_label": "ai agent rules for graphify",
       "source_file": "README.md",
-      "source_location": "L384"
-    },
-    {
-      "id": "readme_component_status_matrix_progress_gap",
-      "label": "Component Status Matrix & Progress Gap",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "component status matrix & progress gap",
-      "source_file": "README.md",
-      "source_location": "L226"
+      "source_location": "L389"
     },
     {
       "id": "readme_critical_mediapipe_tasks_api_requirement",
@@ -2641,7 +3092,7 @@
       "node_kind": "heading",
       "norm_label": "knowledge graph artifacts",
       "source_file": "README.md",
-      "source_location": "L351"
+      "source_location": "L356"
     },
     {
       "id": "readme_progress_scorecard",
@@ -2653,7 +3104,7 @@
       "node_kind": "heading",
       "norm_label": "progress scorecard",
       "source_file": "README.md",
-      "source_location": "L249"
+      "source_location": "L254"
     },
     {
       "id": "readme_project_context_intelligent_basketball_performance_analysis_system",
@@ -2677,7 +3128,7 @@
       "node_kind": "heading",
       "norm_label": "reference architecture: `ai_models_deep_dive.md` (lines 396\u2013425)",
       "source_file": "README.md",
-      "source_location": "L194"
+      "source_location": "L199"
     },
     {
       "id": "readme_step_1_environment_setup",
@@ -2725,7 +3176,7 @@
       "node_kind": "heading",
       "norm_label": "step 4: interactive runtime controls",
       "source_file": "README.md",
-      "source_location": "L168"
+      "source_location": "L173"
     },
     {
       "id": "readme_usage_maintenance_commands",
@@ -2737,29 +3188,7 @@
       "node_kind": "heading",
       "norm_label": "usage & maintenance commands",
       "source_file": "README.md",
-      "source_location": "L356"
-    },
-    {
-      "id": "analyzer_rationale_109",
-      "label": "Records per-shot data across the session",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "rationale",
-      "norm_label": "records per-shot data across the session",
-      "source_file": "analyzer.py",
-      "source_location": "L109"
-    },
-    {
-      "id": "analyzer_rationale_144",
-      "label": "Event-aware angles: max elbow (release), min knee (dip), plus averages.",
-      "_origin": "ast",
-      "community": 4,
-      "community_name": "Project Context: Intelligent Basketball Performance Analysis System",
-      "file_type": "rationale",
-      "norm_label": "event-aware angles: max elbow (release), min knee (dip), plus averages.",
-      "source_file": "analyzer.py",
-      "source_location": "L144"
+      "source_location": "L361"
     },
     {
       "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer",
@@ -2795,17 +3224,6 @@
       "source_location": "L1"
     },
     {
-      "id": "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer",
-      "label": "jerk_analyzer.py",
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "run_model.py",
-      "file_type": "code",
-      "norm_label": "jerk_analyzer.py",
-      "source_file": "clones/bb-video-shotAnalyzer(Pracheth)/postprocess/jerk_analyzer.py",
-      "source_location": "L1"
-    },
-    {
       "id": "clones_bb_video_shotanalyzer_pracheth_postprocess_statistical_analyzer",
       "label": "statistical_analyzer.py",
       "_origin": "ast",
@@ -2828,6 +3246,17 @@
       "source_location": "L1"
     },
     {
+      "id": "hand_engine",
+      "label": "hand_engine.py",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "run_model.py",
+      "file_type": "code",
+      "norm_label": "hand_engine.py",
+      "source_file": "hand_engine.py",
+      "source_location": "L1"
+    },
+    {
       "id": "pose_engine",
       "label": "pose_engine.py",
       "_origin": "ast",
@@ -2836,6 +3265,17 @@
       "file_type": "code",
       "norm_label": "pose_engine.py",
       "source_file": "pose_engine.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "pro_comparator",
+      "label": "pro_comparator.py",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "run_model.py",
+      "file_type": "code",
+      "norm_label": "pro_comparator.py",
+      "source_file": "pro_comparator.py",
       "source_location": "L1"
     },
     {
@@ -3765,6 +4205,18 @@
       "type": "external"
     },
     {
+      "id": "matplotlib",
+      "label": "matplotlib",
+      "_origin": "semantic",
+      "community": 3,
+      "community_name": "JerkProcessor",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "matplotlib",
+      "source_file": "",
+      "type": "external"
+    },
+    {
       "id": "cv2",
       "label": "cv2",
       "_origin": "semantic",
@@ -3789,14 +4241,14 @@
       "type": "external"
     },
     {
-      "id": "matplotlib",
-      "label": "matplotlib",
+      "id": "math",
+      "label": "math",
       "_origin": "semantic",
       "community": 5,
       "community_name": "run_model.py",
       "external": true,
       "file_type": "concept",
-      "norm_label": "matplotlib",
+      "norm_label": "math",
       "source_file": "",
       "type": "external"
     },
@@ -4039,6 +4491,17 @@
       "norm_label": "scipy_optimize",
       "source_file": "",
       "type": "external"
+    },
+    {
+      "id": "collections",
+      "label": "collections",
+      "community": 1,
+      "community_name": "main.py",
+      "external": true,
+      "file_type": "concept",
+      "norm_label": "collections",
+      "source_file": "",
+      "type": "external"
     }
   ],
   "links": [
@@ -4051,11 +4514,11 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "analyzer.py",
-      "source_location": "L49",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
-      "source": "analyzer_compute_all_angles_angle",
+      "source": "analyzer_compute_all_angles_calc_angle",
       "target": "analyzer_compute_all_angles_pt",
       "relation": "calls",
       "_origin": "ast",
@@ -4063,31 +4526,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "analyzer.py",
-      "source_location": "L35",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
-      "source": "analyzer_compute_all_angles_angle",
-      "target": "analyzer_get_angle",
+      "source": "analyzer_compute_all_angles_calc_angle",
+      "target": "analyzer_get_angle_3d",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "analyzer.py",
-      "source_location": "L38",
-      "weight": 1.0
-    },
-    {
-      "source": "analyzer_detect_shot_phase",
-      "target": "analyzer_shooting_side",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "analyzer.py",
-      "source_location": "L83",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -4099,7 +4550,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "analyzer.py",
-      "source_location": "L131",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -5279,6 +5730,42 @@
       "weight": 1.0
     },
     {
+      "source": "hand_engine_handengine_init",
+      "target": "hand_engine_handengine_ensure_model",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "hand_engine.py",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine_process",
+      "target": "hand_engine_handengine_compute_wrist_flexion",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "hand_engine.py",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine_process",
+      "target": "hand_engine_handengine_compute_finger_spread",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "hand_engine.py",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
       "source": "main_maybe_ball_tracker",
       "target": "ball_tracker_balltracker",
       "relation": "calls",
@@ -5291,6 +5778,30 @@
       "weight": 1.0
     },
     {
+      "source": "main_maybe_hand_engine",
+      "target": "hand_engine_handengine",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "main.py",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "main_maybe_pro_comparator",
+      "target": "pro_comparator_procomparator",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "main.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
       "source": "main_run",
       "target": "main_draw_pose",
       "relation": "calls",
@@ -5299,7 +5810,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "main.py",
-      "source_location": "L120",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -5311,19 +5822,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "main.py",
-      "source_location": "L121",
-      "weight": 1.0
-    },
-    {
-      "source": "main_run",
-      "target": "analyzer_detect_shot_phase",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "main.py",
-      "source_location": "L122",
+      "source_location": "L157",
       "weight": 1.0
     },
     {
@@ -5335,7 +5834,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "main.py",
-      "source_location": "L51",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -5347,7 +5846,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "main.py",
-      "source_location": "L52",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "main_run",
+      "target": "analyzer_shotphasedetector",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "main.py",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -5359,7 +5870,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "main.py",
-      "source_location": "L53",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "main_run",
+      "target": "main_maybe_hand_engine",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "main.py",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "main_run",
+      "target": "main_maybe_pro_comparator",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "main.py",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -5399,27 +5934,27 @@
       "weight": 1.0
     },
     {
+      "source": "pro_comparator_procomparator_compare",
+      "target": "pro_comparator_procomparator_generate_recommendation",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "pro_comparator.py",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
       "source": "analyzer_compute_all_angles",
-      "target": "analyzer_compute_all_angles_angle",
+      "target": "analyzer_compute_all_angles_calc_angle",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "analyzer.py",
-      "source_location": "L34",
-      "weight": 1.0
-    },
-    {
-      "source": "analyzer",
-      "target": "numpy",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "analyzer.py",
-      "source_location": "L3",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -5431,7 +5966,31 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "analyzer.py",
-      "source_location": "L4",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer",
+      "target": "math",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "analyzer.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer",
+      "target": "os",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "analyzer.py",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -5443,7 +6002,19 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "analyzer.py",
-      "source_location": "L5",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer",
+      "target": "numpy",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "analyzer.py",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -6167,6 +6738,42 @@
       "weight": 1.0
     },
     {
+      "source": "hand_engine",
+      "target": "math",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "hand_engine.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine",
+      "target": "cv2",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "hand_engine.py",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine",
+      "target": "mediapipe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "hand_engine.py",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
       "source": "main",
       "target": "argparse",
       "relation": "imports",
@@ -6216,6 +6823,30 @@
     },
     {
       "source": "main",
+      "target": "hand_engine_handengine",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "main.py",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "pro_comparator_procomparator",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "main.py",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
       "target": "analyzer_compute_all_angles",
       "relation": "imports",
       "_origin": "ast",
@@ -6228,7 +6859,7 @@
     },
     {
       "source": "main",
-      "target": "analyzer_detect_shot_phase",
+      "target": "analyzer_sessionrecorder",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6240,7 +6871,7 @@
     },
     {
       "source": "main",
-      "target": "analyzer_sessionrecorder",
+      "target": "analyzer_shotphasedetector",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6284,6 +6915,42 @@
       "context": "import",
       "source_file": "pose_engine.py",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator",
+      "target": "cv2",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "pro_comparator.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator",
+      "target": "numpy",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "pro_comparator.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer",
+      "target": "collections",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "analyzer.py",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -6476,6 +7143,42 @@
       "context": "import",
       "source_file": "clones/streamlit-BB-analyzer/src/user_interface.py",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine",
+      "target": "pathlib",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "hand_engine.py",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine",
+      "target": "mediapipe_tasks",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "hand_engine.py",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine",
+      "target": "mediapipe_tasks_python",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "hand_engine.py",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -6870,13 +7573,13 @@
     },
     {
       "source": "analyzer",
-      "target": "analyzer_get_angle",
+      "target": "analyzer_get_angle_3d",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -6887,18 +7590,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L108",
-      "weight": 1.0
-    },
-    {
-      "source": "analyzer",
-      "target": "analyzer_compute_all_angles",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "analyzer.py",
-      "source_location": "L21",
+      "source_location": "L168",
       "weight": 1.0
     },
     {
@@ -6909,18 +7601,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L62",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
       "source": "analyzer",
-      "target": "analyzer_detect_shot_phase",
+      "target": "analyzer_compute_all_angles",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L74",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer",
+      "target": "analyzer_shotphasedetector",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -6931,7 +7634,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L29",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -8277,6 +8980,17 @@
       "weight": 1.0
     },
     {
+      "source": "hand_engine",
+      "target": "hand_engine_handengine",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
       "source": "main",
       "target": "main_draw_pose",
       "relation": "contains",
@@ -8300,13 +9014,35 @@
     },
     {
       "source": "main",
-      "target": "main_run",
+      "target": "main_maybe_hand_engine",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "main.py",
       "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "main_maybe_pro_comparator",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "main.py",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "main",
+      "target": "main_run",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "main.py",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -8318,6 +9054,17 @@
       "confidence_score": 1.0,
       "source_file": "pose_engine.py",
       "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator",
+      "target": "pro_comparator_procomparator",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -8339,7 +9086,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L351",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -8350,7 +9097,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L356",
+      "source_location": "L361",
       "weight": 1.0
     },
     {
@@ -8361,7 +9108,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L384",
+      "source_location": "L389",
       "weight": 1.0
     },
     {
@@ -8405,7 +9152,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L168",
+      "source_location": "L173",
       "weight": 1.0
     },
     {
@@ -8427,7 +9174,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L194",
+      "source_location": "L199",
       "weight": 1.0
     },
     {
@@ -8438,7 +9185,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L226",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -8449,7 +9196,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L249",
+      "source_location": "L254",
       "weight": 1.0
     },
     {
@@ -8460,7 +9207,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L260",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
@@ -8471,7 +9218,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L267",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -8482,7 +9229,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L274",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -8493,7 +9240,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L280",
+      "source_location": "L285",
       "weight": 1.0
     },
     {
@@ -8504,7 +9251,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L286",
+      "source_location": "L291",
       "weight": 1.0
     },
     {
@@ -8515,7 +9262,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L290",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -8537,7 +9284,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L176",
+      "source_location": "L181",
       "weight": 1.0
     },
     {
@@ -8548,7 +9295,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L192",
+      "source_location": "L197",
       "weight": 1.0
     },
     {
@@ -8559,7 +9306,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L256",
+      "source_location": "L261",
       "weight": 1.0
     },
     {
@@ -8575,17 +9322,6 @@
     },
     {
       "source": "readme_project_context_intelligent_basketball_performance_analysis_system",
-      "target": "readme_10_development_roadmap_updated_task_status",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": "L299",
-      "weight": 1.0
-    },
-    {
-      "source": "readme_project_context_intelligent_basketball_performance_analysis_system",
       "target": "readme_feed_this_document_to_any_ai_model_to_get_context_aware_help_on_this_project",
       "relation": "contains",
       "_origin": "ast",
@@ -8597,13 +9333,24 @@
     },
     {
       "source": "readme_project_context_intelligent_basketball_performance_analysis_system",
+      "target": "readme_10_development_roadmap_updated_task_status",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "L304",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_project_context_intelligent_basketball_performance_analysis_system",
       "target": "readme_11_common_errors_troubleshooting",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L324",
+      "source_location": "L329",
       "weight": 1.0
     },
     {
@@ -8614,7 +9361,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L336",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -8625,7 +9372,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L347",
+      "source_location": "L352",
       "weight": 1.0
     },
     {
@@ -8691,7 +9438,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L111",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_sessionrecorder",
+      "target": "analyzer_sessionrecorder_push_frame",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L179",
       "weight": 1.0
     },
     {
@@ -8702,7 +9460,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L118",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -8713,7 +9471,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L123",
+      "source_location": "L195",
       "weight": 1.0
     },
     {
@@ -8724,7 +9482,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L128",
+      "source_location": "L201",
       "weight": 1.0
     },
     {
@@ -8735,7 +9493,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L143",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -8746,7 +9504,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L166",
+      "source_location": "L245",
       "weight": 1.0
     },
     {
@@ -8757,7 +9515,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L183",
+      "source_location": "L263",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_shotphasedetector",
+      "target": "analyzer_shotphasedetector_update",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_shotphasedetector",
+      "target": "analyzer_shotphasedetector_init",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -9201,6 +9981,83 @@
       "weight": 1.0
     },
     {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_compute_wrist_flexion",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_compute_finger_spread",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_draw",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_close",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_init",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_ensure_model",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_handengine",
+      "target": "hand_engine_handengine_process",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
       "source": "pose_engine_poseengine",
       "target": "pose_engine_poseengine_valid_landmarks",
       "relation": "method",
@@ -9208,7 +10065,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pose_engine.py",
-      "source_location": "L102",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -9219,7 +10076,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "pose_engine.py",
-      "source_location": "L111",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -9267,69 +10124,201 @@
       "weight": 1.0
     },
     {
-      "source": "analyzer_rationale_109",
+      "source": "pro_comparator_procomparator",
+      "target": "pro_comparator_procomparator_generate_recommendation",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_procomparator",
+      "target": "pro_comparator_procomparator_draw",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_procomparator",
+      "target": "pro_comparator_procomparator_init",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_procomparator",
+      "target": "pro_comparator_procomparator_set_target_pro",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_procomparator",
+      "target": "pro_comparator_procomparator_compare",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_106",
+      "target": "analyzer_shotphasedetector_update",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_12",
+      "target": "analyzer_get_angle_3d",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_169",
       "target": "analyzer_sessionrecorder",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L109",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
-      "source": "analyzer_rationale_11",
-      "target": "analyzer_get_angle",
+      "source": "analyzer_rationale_180",
+      "target": "analyzer_sessionrecorder_push_frame",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L11",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
-      "source": "analyzer_rationale_144",
+      "source": "analyzer_rationale_189",
+      "target": "analyzer_sessionrecorder_start_shot",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_196",
+      "target": "analyzer_sessionrecorder_add_frame",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_202",
+      "target": "analyzer_sessionrecorder_end_shot",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_220",
       "target": "analyzer_sessionrecorder_summarize_shot",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L144",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
-      "source": "analyzer_rationale_22",
-      "target": "analyzer_compute_all_angles",
+      "source": "analyzer_rationale_246",
+      "target": "analyzer_sessionrecorder_export_csv",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L22",
+      "source_location": "L246",
       "weight": 1.0
     },
     {
-      "source": "analyzer_rationale_63",
+      "source": "analyzer_rationale_264",
+      "target": "analyzer_sessionrecorder_get_session_stats",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_33",
       "target": "analyzer_shooting_side",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L63",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
-      "source": "analyzer_rationale_75",
-      "target": "analyzer_detect_shot_phase",
+      "source": "analyzer_rationale_50",
+      "target": "analyzer_compute_all_angles",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "analyzer.py",
-      "source_location": "L75",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "analyzer_rationale_93",
+      "target": "analyzer_shotphasedetector",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "analyzer.py",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -9718,6 +10707,83 @@
       "weight": 1.0
     },
     {
+      "source": "hand_engine_rationale_110",
+      "target": "hand_engine_handengine_compute_wrist_flexion",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_rationale_134",
+      "target": "hand_engine_handengine_compute_finger_spread",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_rationale_154",
+      "target": "hand_engine_handengine_draw",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L154",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_rationale_30",
+      "target": "hand_engine_handengine",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_rationale_55",
+      "target": "hand_engine_handengine_ensure_model",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "hand_engine_rationale_69",
+      "target": "hand_engine_handengine_process",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hand_engine.py",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "pose_engine_rationale_109",
+      "target": "pose_engine_poseengine_valid_landmarks",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pose_engine.py",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
       "source": "pose_engine_rationale_13",
       "target": "pose_engine_poseengine",
       "relation": "rationale_for",
@@ -9737,6 +10803,39 @@
       "confidence_score": 1.0,
       "source_file": "pose_engine.py",
       "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_rationale_162",
+      "target": "pro_comparator_procomparator_draw",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_rationale_64",
+      "target": "pro_comparator_procomparator",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "pro_comparator_rationale_78",
+      "target": "pro_comparator_procomparator_compare",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pro_comparator.py",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -9784,7 +10883,7 @@
       "confidence_score": 0.95,
       "context": "SessionRecorder",
       "source_file": "README.md",
-      "source_location": "L308",
+      "source_location": "L313",
       "weight": 1.0
     },
     {
@@ -9808,7 +10907,7 @@
       "confidence_score": 0.95,
       "context": "SessionRecorder",
       "source_file": "README.md",
-      "source_location": "L238",
+      "source_location": "L243",
       "weight": 1.0
     },
     {
@@ -9820,7 +10919,7 @@
       "confidence_score": 0.95,
       "context": "SessionRecorder.export_csv",
       "source_file": "README.md",
-      "source_location": "L243",
+      "source_location": "L248",
       "weight": 1.0
     },
     {
@@ -9832,19 +10931,7 @@
       "confidence_score": 0.95,
       "context": "compute_all_angles",
       "source_file": "README.md",
-      "source_location": "L235",
-      "weight": 1.0
-    },
-    {
-      "source": "group_work_division_1_analyzer_py_kinematics_state_machine",
-      "target": "analyzer_detect_shot_phase",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "context": "detect_shot_phase",
-      "source_file": "group_work_division.md",
-      "source_location": "L60",
+      "source_location": "L240",
       "weight": 1.0
     },
     {
@@ -9856,7 +10943,7 @@
       "confidence_score": 0.95,
       "context": "fit_parabola",
       "source_file": "README.md",
-      "source_location": "L311",
+      "source_location": "L316",
       "weight": 1.0
     },
     {
@@ -9868,7 +10955,7 @@
       "confidence_score": 0.95,
       "context": "fit_parabola",
       "source_file": "README.md",
-      "source_location": "L237",
+      "source_location": "L242",
       "weight": 1.0
     },
     {
@@ -9880,10 +10967,10 @@
       "confidence_score": 0.95,
       "context": "release_angle_deg",
       "source_file": "README.md",
-      "source_location": "L237",
+      "source_location": "L242",
       "weight": 1.0
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8b04f1e0415e36dab96f514ec022d2f5a4610b0c"
+  "built_at_commit": "c1fc69334b58ae0c34a18afff46580ed2e133a42"
 }

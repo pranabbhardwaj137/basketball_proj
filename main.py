@@ -3,7 +3,7 @@ import time
 
 import cv2
 
-from analyzer import SessionRecorder, compute_all_angles, detect_shot_phase
+from analyzer import SessionRecorder, ShotPhaseDetector, compute_all_angles
 from pose_engine import PoseEngine
 
 
@@ -17,7 +17,7 @@ CONNECTIONS = [
 def draw_pose(frame, landmarks, valid):
     height, width = frame.shape[:2]
     for first, second in CONNECTIONS:
-        if not (valid.get(first, False) and valid.get(second, False)):
+        if not (valid.get(first, True) and valid.get(second, True)):
             continue
         point_a = (int(landmarks[first]["norm_x"] * width), int(landmarks[first]["norm_y"] * height))
         point_b = (int(landmarks[second]["norm_x"] * width), int(landmarks[second]["norm_y"] * height))
@@ -25,7 +25,7 @@ def draw_pose(frame, landmarks, valid):
 
     for index, landmark in landmarks.items():
         center = (int(landmark["norm_x"] * width), int(landmark["norm_y"] * height))
-        color = (0, 0, 255) if valid.get(index, False) else (0, 165, 255)
+        color = (0, 0, 255) if valid.get(index, True) else (0, 165, 255)
         cv2.circle(frame, center, 4, color, -1)
 
 
@@ -40,7 +40,29 @@ def maybe_ball_tracker(enabled, weights, detect_every):
         return None
 
 
-def run(source, use_ball=False, yolo_weights=None, detect_every=1):
+def maybe_hand_engine(enabled):
+    if not enabled:
+        return None
+    try:
+        from hand_engine import HandEngine
+        return HandEngine()
+    except Exception as exc:
+        print(f"Hand tracking disabled: {exc}")
+        return None
+
+
+def maybe_pro_comparator(pro_target):
+    if not pro_target:
+        return None
+    try:
+        from pro_comparator import ProComparator
+        return ProComparator(target_pro=pro_target)
+    except Exception as exc:
+        print(f"Pro comparator disabled: {exc}")
+        return None
+
+
+def run(source, use_ball=False, yolo_weights=None, detect_every=1, use_hands=False, pro_target=None):
     capture = cv2.VideoCapture(source)
     if not capture.isOpened():
         raise RuntimeError(f"Could not open video source: {source}")
@@ -50,17 +72,24 @@ def run(source, use_ball=False, yolo_weights=None, detect_every=1):
     frame_number = 0
     engine = PoseEngine()
     recorder = SessionRecorder()
+    phase_detector = ShotPhaseDetector()
     ball_tracker = maybe_ball_tracker(use_ball, yolo_weights, detect_every)
+    hand_engine = maybe_hand_engine(use_hands)
+    pro_comparator = maybe_pro_comparator(pro_target)
 
-    prev_wrist_y = 1.0
     prev_phase = "idle"
     prev_time = time.time()
     paused = False
     last_ball_info = None
+    last_pro_result = None
 
     print("Q quit | SPACE pause | S save session CSV")
     if ball_tracker:
         print(f"Ball tracker on ({ball_tracker.mode} weights)")
+    if hand_engine:
+        print("Hand tracking on (21 keypoints & wrist flick)")
+    if pro_comparator:
+        print(f"Pro Comparator on (Target: {pro_comparator.profile['name']})")
 
     try:
         while capture.isOpened():
@@ -94,6 +123,13 @@ def run(source, use_ball=False, yolo_weights=None, detect_every=1):
                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 2,
             )
 
+            # Process hand tracking if enabled
+            hand_info = None
+            if hand_engine:
+                hand_info = hand_engine.process(frame, timestamp_ms)
+                if hand_info:
+                    hand_engine.draw(frame, hand_info)
+
             ball_info = None
             if ball_tracker:
                 detections = ball_tracker.detect(frame)
@@ -119,12 +155,13 @@ def run(source, use_ball=False, yolo_weights=None, detect_every=1):
                 valid = output["valid"]
                 draw_pose(frame, landmarks, valid)
                 angles = compute_all_angles(landmarks, valid)
-                phase, prev_wrist_y = detect_shot_phase(landmarks, prev_wrist_y)
+
+                phase, v_y, v_ang = phase_detector.update(landmarks, angles, timestamp_ms)
+                recorder.push_frame(angles, phase)
 
                 if prev_phase != "releasing" and phase == "releasing":
                     recorder.start_shot()
-                if recorder.recording:
-                    recorder.add_frame(angles)
+
                 if prev_phase == "releasing" and phase != "releasing":
                     extra = {}
                     if last_ball_info and last_ball_info.get("last_shot"):
@@ -132,18 +169,25 @@ def run(source, use_ball=False, yolo_weights=None, detect_every=1):
                         extra["ball_result"] = shot.get("result")
                         extra["ball_release_angle"] = shot.get("release_angle")
                         extra["ball_release_frames"] = shot.get("release_frames")
+
+                    if hand_info:
+                        extra["wrist_flexion_angle"] = hand_info.get("wrist_flexion_angle")
+                        extra["finger_spread_ratio"] = hand_info.get("finger_spread_ratio")
+
                     summary = recorder.end_shot(extra)
                     if summary:
                         print(
                             f"Shot {summary['shot_number']} | "
-                            f"Elbow: {summary.get('elbow_at_release')} | "
-                            f"Knee dip: {summary.get('knee_at_dip')} | "
+                            f"Elbow: {summary.get('elbow_at_release')}° | "
+                            f"Knee dip: {summary.get('knee_at_dip')}° | "
                             f"Ball: {summary.get('ball_result', '-')}"
                         )
+
                 prev_phase = phase
 
                 elbow = angles.get("elbow_shooting")
                 knee = angles.get("knee_shooting")
+                hip = angles.get("hip_shooting")
                 elbow_text = f"Elbow: {elbow:.1f}" if elbow is not None else "Elbow: unavailable"
                 knee_text = f"Knee:  {knee:.1f}" if knee is not None else "Knee:  unavailable"
                 cv2.putText(frame, elbow_text, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2)
@@ -152,6 +196,21 @@ def run(source, use_ball=False, yolo_weights=None, detect_every=1):
                     frame, f"Phase: {phase}  Shots: {recorder.shot_count}",
                     (30, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2,
                 )
+
+                # Update Pro Comparator matching if enabled
+                if pro_comparator:
+                    user_metrics = {
+                        "elbow_release": elbow if phase == "releasing" else None,
+                        "knee_dip": knee if phase in ("preparing", "releasing") else None,
+                        "hip_posture": hip,
+                        "launch_angle": last_ball_info.get("release_angle") if last_ball_info else None,
+                        "wrist_flick": hand_info.get("wrist_flexion_angle") if hand_info else None,
+                    }
+                    comp_res = pro_comparator.compare(user_metrics)
+                    if comp_res:
+                        last_pro_result = comp_res
+                    if last_pro_result:
+                        pro_comparator.draw(frame, last_pro_result)
 
                 if elbow is None or knee is None:
                     feedback = "Tracking unclear - improve framing or lighting"
@@ -166,6 +225,8 @@ def run(source, use_ball=False, yolo_weights=None, detect_every=1):
         capture.release()
         cv2.destroyAllWindows()
         engine.close()
+        if hand_engine:
+            hand_engine.close()
         if recorder.shots:
             recorder.export_csv()
             print(recorder.get_session_stats())
@@ -177,10 +238,15 @@ if __name__ == "__main__":
     parser.add_argument("--ball", action="store_true", help="Enable YOLO ball/rim tracking")
     parser.add_argument("--yolo", help="Optional custom weights (basket_rim.pt)")
     parser.add_argument("--detect-every", type=int, default=1, help="Run YOLO every N frames")
+    parser.add_argument("--hands", action="store_true", help="Enable MediaPipe hand tracking & wrist flick analysis")
+    parser.add_argument("--pro", choices=["curry", "klay", "ray_allen"], nargs="?", const="curry", help="Enable Pro Player Benchmark comparison")
     args = parser.parse_args()
     run(
         args.video if args.video else 0,
         use_ball=args.ball,
         yolo_weights=args.yolo,
         detect_every=args.detect_every,
+        use_hands=args.hands,
+        pro_target=args.pro,
     )
+

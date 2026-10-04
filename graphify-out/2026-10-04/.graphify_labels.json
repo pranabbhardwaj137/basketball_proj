@@ -3,14 +3,17 @@
   "1": "main.py",
   "2": "SimpleJointAnalyzer",
   "3": "JerkProcessor",
-  "4": "SessionRecorder",
-  "5": "run_model.py",
+  "4": "Project Context: Intelligent Basketball Performance Analysis System",
+  "5": "joint_analyzer.py",
   "6": "run.py",
   "7": "run_simon.py",
   "8": "Basketball Shot Analyzer",
   "9": "AI Models in Intelligent Basketball Performance Analysis System",
-  "10": "group_work_division.md",
+  "10": "Work Division & Project Execution Plan",
   "11": "Basketball Shot Analysis",
   "12": "rules/graphify.md",
-  "13": "workflows/graphify.md"
+  "13": "workflows/graphify.md",
+  "14": "HandEngine",
+  "15": "run_model.py",
+  "16": "PoseEngine"
 }
