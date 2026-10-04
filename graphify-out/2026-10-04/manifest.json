@@ -1,0 +1,788 @@
+{
+  "analyzer.py": {
+    "mtime": 1790569425.0960028,
+    "seen": 1791113802.3621974,
+    "ast_hash": "3efa7383e0954789316f5484c6b2d6ce",
+    "semantic_hash": "3efa7383e0954789316f5484c6b2d6ce"
+  },
+  "ball_geometry.py": {
+    "mtime": 1790569328.5934155,
+    "seen": 1791113802.3621974,
+    "ast_hash": "7cb7b6f17fd1d674dcf963ed6ad52eef",
+    "semantic_hash": "7cb7b6f17fd1d674dcf963ed6ad52eef"
+  },
+  "ball_tracker.py": {
+    "mtime": 1790569425.2103236,
+    "seen": 1791113802.3621974,
+    "ast_hash": "234c3713d4a265281fd49e6c73ca68df",
+    "semantic_hash": "234c3713d4a265281fd49e6c73ca68df"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py": {
+    "mtime": 1787847110.259043,
+    "seen": 1791113802.3621974,
+    "ast_hash": "ec2b241f3d0c3123c2dcf5950016bd92",
+    "semantic_hash": "ec2b241f3d0c3123c2dcf5950016bd92"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/joint_labeller.py": {
+    "mtime": 1787884589.9364474,
+    "seen": 1791113802.3621974,
+    "ast_hash": "e41cedbc4a1ba9b605fe43fa852d6d8f",
+    "semantic_hash": "e41cedbc4a1ba9b605fe43fa852d6d8f"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/postprocess/image_cropper.py": {
+    "mtime": 1787847110.8378696,
+    "seen": 1791113802.3621974,
+    "ast_hash": "aabc139d1dac02f2e4119e94eb055d3b",
+    "semantic_hash": "aabc139d1dac02f2e4119e94eb055d3b"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/postprocess/jerk_analyzer.py": {
+    "mtime": 1787847110.8443432,
+    "seen": 1791113802.3621974,
+    "ast_hash": "b02fdad9fc827d9057c451783ebd99bc",
+    "semantic_hash": "b02fdad9fc827d9057c451783ebd99bc"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/postprocess/statistical_analyzer.py": {
+    "mtime": 1787847110.8518689,
+    "seen": 1791113802.3621974,
+    "ast_hash": "15ed3504c583060e908e4b218c58d05c",
+    "semantic_hash": "15ed3504c583060e908e4b218c58d05c"
+  },
+  "clones/streamlit-BB-analyzer/src/run.py": {
+    "mtime": 1790572541.8039355,
+    "seen": 1791113802.3621974,
+    "ast_hash": "f1913609316b432376f5a40cb5e804f6",
+    "semantic_hash": "f1913609316b432376f5a40cb5e804f6"
+  },
+  "clones/streamlit-BB-analyzer/src/run_model.py": {
+    "mtime": 1790479388.2326753,
+    "seen": 1791113802.3621974,
+    "ast_hash": "48ac84e1c0bd726841f5b0ffdca6730b",
+    "semantic_hash": "48ac84e1c0bd726841f5b0ffdca6730b"
+  },
+  "clones/streamlit-BB-analyzer/src/run_simon.py": {
+    "mtime": 1790479388.2351224,
+    "seen": 1791113802.3621974,
+    "ast_hash": "b0ecef24c5b93bd322b720cb729e7526",
+    "semantic_hash": "b0ecef24c5b93bd322b720cb729e7526"
+  },
+  "clones/streamlit-BB-analyzer/src/user_interface.py": {
+    "mtime": 1790572541.8103187,
+    "seen": 1791113802.3621974,
+    "ast_hash": "6e56009a76c07e59e6b5febd0942ea8c",
+    "semantic_hash": "6e56009a76c07e59e6b5febd0942ea8c"
+  },
+  "main.py": {
+    "mtime": 1790569409.5238655,
+    "seen": 1791113802.3621974,
+    "ast_hash": "3494997b471a13d3a6d614999f295f25",
+    "semantic_hash": "3494997b471a13d3a6d614999f295f25"
+  },
+  "pose_engine.py": {
+    "mtime": 1787738099.054898,
+    "seen": 1791113802.3621974,
+    "ast_hash": "4b30c281f76ade315e6a4ddb79ce9554",
+    "semantic_hash": "4b30c281f76ade315e6a4ddb79ce9554"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified.mp4": {
+    "mtime": 1787903794.6458275,
+    "seen": 1791113802.3621974,
+    "ast_hash": "c6356d85297e3c89bef601b51cf6f9d8",
+    "semantic_hash": "c6356d85297e3c89bef601b51cf6f9d8"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/bad-shot-2-simplified_marked.mp4": {
+    "mtime": 1787884819.3529558,
+    "seen": 1791113802.3621974,
+    "ast_hash": "7c0f7ad0b754d572c995397f75466ef6",
+    "semantic_hash": "7c0f7ad0b754d572c995397f75466ef6"
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/bad-shot-2-simplified_marked.mp4": {
+    "mtime": 1787903977.7199578,
+    "seen": 1791113802.3621974,
+    "ast_hash": "dd9c6975f5c9221c8f9e62fbf07ad0df",
+    "semantic_hash": "dd9c6975f5c9221c8f9e62fbf07ad0df"
+  },
+  "klay_vid.mp4": {
+    "mtime": 1787903794.6458275,
+    "seen": 1791113802.3621974,
+    "ast_hash": "c6356d85297e3c89bef601b51cf6f9d8",
+    "semantic_hash": "c6356d85297e3c89bef601b51cf6f9d8"
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1791113702.8232183,
+    "seen": 1791114027.337212,
+    "ast_hash": "a0e4d192b9e2e17256124dbfc8e24e6a",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1791113702.8272188,
+    "seen": 1791114027.337212,
+    "ast_hash": "a831cf3669f1e6ab85d8a80ebe655f99",
+    "semantic_hash": ""
+  },
+  "AI_Models_Deep_Dive.md": {
+    "mtime": 1783932652.0280323,
+    "seen": 1791114027.337212,
+    "ast_hash": "64be1ef58bd4f4cba94f590b0c3ea024",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1791114015.9771028,
+    "seen": 1791114027.337212,
+    "ast_hash": "50f83aabf03265abe4facce9ce34a226",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/README.md": {
+    "mtime": 1787884589.448082,
+    "seen": 1791114027.337212,
+    "ast_hash": "66c4ca2949689e304cd007dfbe096d4a",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/README.md": {
+    "mtime": 1790572541.811317,
+    "seen": 1791114027.337212,
+    "ast_hash": "08d28fec710ce3d69468ee4fa1e137b9",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/requirements.txt": {
+    "mtime": 1790572541.829311,
+    "seen": 1791114027.337212,
+    "ast_hash": "8d23558f41ba1f474d24bf3ff62da89b",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/opt.yaml": {
+    "mtime": 1790479389.16193,
+    "seen": 1791114027.337212,
+    "ast_hash": "f5dc2165b86f9cc2fe00d1ef42631df5",
+    "semantic_hash": ""
+  },
+  "group_work_division.md": {
+    "mtime": 1787587520.8658774,
+    "seen": 1791114027.337212,
+    "ast_hash": "855342c2c436e25606dfe7b3b2c4f7c6",
+    "semantic_hash": ""
+  },
+  "requirements.txt": {
+    "mtime": 1790569410.5659425,
+    "seen": 1791114027.337212,
+    "ast_hash": "316649b8970c69f298d7538c11217519",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/report.pdf": {
+    "mtime": 1790479388.2291813,
+    "seen": 1791114027.337212,
+    "ast_hash": "48ffca16a679b26487087ec28a193da8",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00000.png": {
+    "mtime": 1787884809.0581477,
+    "seen": 1791114027.337212,
+    "ast_hash": "014d83a1cf8d3b5962cd556435adbe49",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00005.png": {
+    "mtime": 1787884809.3478727,
+    "seen": 1791114027.337212,
+    "ast_hash": "868b749af5cd8c91cdbaa091595d4fe4",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00010.png": {
+    "mtime": 1787884809.6729524,
+    "seen": 1791114027.337212,
+    "ast_hash": "02eaedc272d065a16d1e2af8277063aa",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00015.png": {
+    "mtime": 1787884809.9593482,
+    "seen": 1791114027.337212,
+    "ast_hash": "1c486c45fc9cfb9c71c0e88cc297fe53",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00020.png": {
+    "mtime": 1787884810.253378,
+    "seen": 1791114027.337212,
+    "ast_hash": "dd1a3b210c51289ef959329080328bcd",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00025.png": {
+    "mtime": 1787884810.5493433,
+    "seen": 1791114027.337212,
+    "ast_hash": "c24e4c79a0265d05c735349014127c57",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00030.png": {
+    "mtime": 1787884810.862946,
+    "seen": 1791114027.337212,
+    "ast_hash": "0f01329a5d89aa52c3ad0a2c8f12aad4",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00035.png": {
+    "mtime": 1787884811.1662092,
+    "seen": 1791114027.337212,
+    "ast_hash": "74b55c8061c77a0a21906f27ba45216c",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00040.png": {
+    "mtime": 1787884811.4218042,
+    "seen": 1791114027.337212,
+    "ast_hash": "04f6427f668cb3ad66bcbb5eeb13094f",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00045.png": {
+    "mtime": 1787884811.671551,
+    "seen": 1791114027.337212,
+    "ast_hash": "cffc22e81a28a6c553d2927c075d401a",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00050.png": {
+    "mtime": 1787884811.9132936,
+    "seen": 1791114027.337212,
+    "ast_hash": "2e63f80f81eda12a75d9f6ca80fb19b9",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00055.png": {
+    "mtime": 1787884812.1808991,
+    "seen": 1791114027.337212,
+    "ast_hash": "957c81ac21a69024565413c23f161031",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00060.png": {
+    "mtime": 1787884812.5790188,
+    "seen": 1791114027.337212,
+    "ast_hash": "8208f499daa8c1d745dec591351b8a31",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00065.png": {
+    "mtime": 1787884812.8519385,
+    "seen": 1791114027.337212,
+    "ast_hash": "50df2e14acdc2d3257e1ca1e668fb452",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00070.png": {
+    "mtime": 1787884813.1109316,
+    "seen": 1791114027.337212,
+    "ast_hash": "0954b23810fa357ebf609671318cc900",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00075.png": {
+    "mtime": 1787884813.3675232,
+    "seen": 1791114027.337212,
+    "ast_hash": "ec4ddc3094c1e88eb1ace8c71945542f",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00080.png": {
+    "mtime": 1787884813.78189,
+    "seen": 1791114027.337212,
+    "ast_hash": "a2df7854d61c89a49e76c94f65da9f33",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00085.png": {
+    "mtime": 1787884814.290063,
+    "seen": 1791114027.337212,
+    "ast_hash": "188d87b1c66696c712cc0ffa73a60f09",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00090.png": {
+    "mtime": 1787884814.5692866,
+    "seen": 1791114027.337212,
+    "ast_hash": "e8ef44ab782cac35ea750528c4eaef94",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00095.png": {
+    "mtime": 1787884814.82753,
+    "seen": 1791114027.337212,
+    "ast_hash": "64d12e6da2511c4a2b6a45ea707fd179",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00100.png": {
+    "mtime": 1787884815.1433923,
+    "seen": 1791114027.337212,
+    "ast_hash": "68145352a0a6f36ebbb14a7450cb9a4e",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00105.png": {
+    "mtime": 1787884815.3892334,
+    "seen": 1791114027.337212,
+    "ast_hash": "fe8cb86a74b71f9c6b5fefcee0ff0bda",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00110.png": {
+    "mtime": 1787884815.7131436,
+    "seen": 1791114027.337212,
+    "ast_hash": "2f37cffb5f5976ef78e94f2aece12c73",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00115.png": {
+    "mtime": 1787884815.9938812,
+    "seen": 1791114027.337212,
+    "ast_hash": "d11d888d71701b344994bb85e6a0554a",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00120.png": {
+    "mtime": 1787884816.2801087,
+    "seen": 1791114027.337212,
+    "ast_hash": "72a72c308ecb8828dec9673979073046",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00125.png": {
+    "mtime": 1787884816.592018,
+    "seen": 1791114027.337212,
+    "ast_hash": "fed0a5119e517009272644f9b510a6dc",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00130.png": {
+    "mtime": 1787884816.8694959,
+    "seen": 1791114027.337212,
+    "ast_hash": "1f3156abacda63b97a8cecdccea266e4",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00135.png": {
+    "mtime": 1787884817.1446013,
+    "seen": 1791114027.337212,
+    "ast_hash": "26e204d85c2d2e13e383348fd86b6f25",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00140.png": {
+    "mtime": 1787884817.447723,
+    "seen": 1791114027.337212,
+    "ast_hash": "a5808197de705835cb93beb1084923ff",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00145.png": {
+    "mtime": 1787884817.7372916,
+    "seen": 1791114027.337212,
+    "ast_hash": "96dd656d990fa8f7ec847cfc452f370d",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00150.png": {
+    "mtime": 1787884818.0359201,
+    "seen": 1791114027.337212,
+    "ast_hash": "977bac50defe6ece947244f0c299649d",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00155.png": {
+    "mtime": 1787884818.3010523,
+    "seen": 1791114027.337212,
+    "ast_hash": "6459a53d7994572c7751623432957236",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00160.png": {
+    "mtime": 1787884818.5357025,
+    "seen": 1791114027.337212,
+    "ast_hash": "b734ab3d52d0038f19a7a910abbec6e1",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00165.png": {
+    "mtime": 1787884818.757851,
+    "seen": 1791114027.337212,
+    "ast_hash": "8ea3be5507af57376d061dd53dd5603c",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00170.png": {
+    "mtime": 1787884818.9600692,
+    "seen": 1791114027.337212,
+    "ast_hash": "18c600e3dfe6fef23d79dc578b1c0ddf",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_081008/screenshots/frame_00175.png": {
+    "mtime": 1787884819.331817,
+    "seen": 1791114027.337212,
+    "ast_hash": "85790849a7b2b87a5b1d3d219d10e313",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00000.png": {
+    "mtime": 1787903971.8165057,
+    "seen": 1791114027.337212,
+    "ast_hash": "618f72ce0776aaca54dc4911a6a46028",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00005.png": {
+    "mtime": 1787903971.945046,
+    "seen": 1791114027.337212,
+    "ast_hash": "0bf3377357fe6f47a63d64db4fe0e627",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00010.png": {
+    "mtime": 1787903972.063594,
+    "seen": 1791114027.337212,
+    "ast_hash": "85c7d84177bf1662ffb14dcbf6b2c10f",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00015.png": {
+    "mtime": 1787903972.1707852,
+    "seen": 1791114027.337212,
+    "ast_hash": "ff0bff3f91d09181fb18069d6c768a8c",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00020.png": {
+    "mtime": 1787903972.2899683,
+    "seen": 1791114027.337212,
+    "ast_hash": "b14c55bdf15056ece9bd994cac646bf5",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00025.png": {
+    "mtime": 1787903972.399541,
+    "seen": 1791114027.337212,
+    "ast_hash": "2d3e33453669bcc5d621c5301da74300",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00030.png": {
+    "mtime": 1787903972.5159836,
+    "seen": 1791114027.337212,
+    "ast_hash": "5b0b0c9779e712da8eb3fc3a1de60229",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00035.png": {
+    "mtime": 1787903972.6551304,
+    "seen": 1791114027.337212,
+    "ast_hash": "17eec6a840aac57d6e388d86e89b8f98",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00040.png": {
+    "mtime": 1787903972.7982745,
+    "seen": 1791114027.337212,
+    "ast_hash": "5551148173bfd0f6541fc2748afb7bb1",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00045.png": {
+    "mtime": 1787903972.918307,
+    "seen": 1791114027.337212,
+    "ast_hash": "7c04330f622d347b50eac2097bd3abc9",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00050.png": {
+    "mtime": 1787903973.0332172,
+    "seen": 1791114027.337212,
+    "ast_hash": "d3fb53faf67178f8b334f18b86c1236f",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00055.png": {
+    "mtime": 1787903973.1471646,
+    "seen": 1791114027.337212,
+    "ast_hash": "004f1386072e64595676112509bdefb9",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00060.png": {
+    "mtime": 1787903973.3168547,
+    "seen": 1791114027.337212,
+    "ast_hash": "239d670d7b42b9fde082dd9259eca5f6",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00065.png": {
+    "mtime": 1787903973.4362428,
+    "seen": 1791114027.337212,
+    "ast_hash": "f1392b7fe49bc5cf6f44feb7a78e0058",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00070.png": {
+    "mtime": 1787903973.546226,
+    "seen": 1791114027.337212,
+    "ast_hash": "ae61f0ea05e6feeda9ce8058ad80a6fb",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00075.png": {
+    "mtime": 1787903973.6622746,
+    "seen": 1791114027.337212,
+    "ast_hash": "458713bc6a20251133fc1e6e5534ec25",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00080.png": {
+    "mtime": 1787903973.770616,
+    "seen": 1791114027.337212,
+    "ast_hash": "21a514bfa8f7fcbee0c3a81076cf7ad9",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00085.png": {
+    "mtime": 1787903973.8810012,
+    "seen": 1791114027.337212,
+    "ast_hash": "65375c2bdeca7f800c3d3f0fa712c975",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00090.png": {
+    "mtime": 1787903974.0397718,
+    "seen": 1791114027.337212,
+    "ast_hash": "df0a46866959f52637d4e1f798e06f20",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00095.png": {
+    "mtime": 1787903974.16887,
+    "seen": 1791114027.337212,
+    "ast_hash": "5997e158acfd37d25095e16f91a599d2",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00100.png": {
+    "mtime": 1787903974.2805688,
+    "seen": 1791114027.337212,
+    "ast_hash": "b724f3d74cdba3c7fea566366579c61d",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00105.png": {
+    "mtime": 1787903974.4227753,
+    "seen": 1791114027.337212,
+    "ast_hash": "a6061b199f3d2df876856c4cf8c733cb",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00110.png": {
+    "mtime": 1787903974.6331625,
+    "seen": 1791114027.337212,
+    "ast_hash": "a42890e81fb0bac6b8cb9190ae667f1b",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00115.png": {
+    "mtime": 1787903974.752527,
+    "seen": 1791114027.337212,
+    "ast_hash": "07bdff8af0d59fe3e68a795c46ec1b55",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00120.png": {
+    "mtime": 1787903974.9202318,
+    "seen": 1791114027.337212,
+    "ast_hash": "04c1731834c61d7159382916b8cbc2cb",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00125.png": {
+    "mtime": 1787903975.0762317,
+    "seen": 1791114027.337212,
+    "ast_hash": "dcfcac74acd5691554680ac73b42b6c6",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00130.png": {
+    "mtime": 1787903975.2420459,
+    "seen": 1791114027.337212,
+    "ast_hash": "279e1983b998a9182588ef642a066955",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00135.png": {
+    "mtime": 1787903975.3555567,
+    "seen": 1791114027.337212,
+    "ast_hash": "a6840838cedf7947968ea42b9fe5400d",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00140.png": {
+    "mtime": 1787903975.484945,
+    "seen": 1791114027.337212,
+    "ast_hash": "ed272cb22554742be71eccaffc1de02d",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00145.png": {
+    "mtime": 1787903975.6209536,
+    "seen": 1791114027.337212,
+    "ast_hash": "cbce3cdfc84cd6b62f981344858135c8",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00150.png": {
+    "mtime": 1787903975.740194,
+    "seen": 1791114027.337212,
+    "ast_hash": "fc2f12b2732d79f4cfe03044b92586f1",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00155.png": {
+    "mtime": 1787903975.8918147,
+    "seen": 1791114027.337212,
+    "ast_hash": "b2212ec00a291058e9eae4dac4631022",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00160.png": {
+    "mtime": 1787903976.0367827,
+    "seen": 1791114027.337212,
+    "ast_hash": "b7a9b81ac08507d0dc4586ff573c38b3",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00165.png": {
+    "mtime": 1787903976.1729004,
+    "seen": 1791114027.337212,
+    "ast_hash": "3ad0b5ae46719d1406c68fe1d95f5d59",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00170.png": {
+    "mtime": 1787903976.3020322,
+    "seen": 1791114027.337212,
+    "ast_hash": "166a2c16de10858248af49ff68baa5fe",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00175.png": {
+    "mtime": 1787903976.4524205,
+    "seen": 1791114027.337212,
+    "ast_hash": "2161353015ec43183c1b26bf9732dd8a",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00180.png": {
+    "mtime": 1787903976.5948243,
+    "seen": 1791114027.337212,
+    "ast_hash": "9e0c89de2def565b5147a3929e476a3b",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00185.png": {
+    "mtime": 1787903976.7161422,
+    "seen": 1791114027.337212,
+    "ast_hash": "327faf5146ac500e5e435047ff5b7498",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00190.png": {
+    "mtime": 1787903976.8171132,
+    "seen": 1791114027.337212,
+    "ast_hash": "3707f70d8938872bce35a951daf7c4c0",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00195.png": {
+    "mtime": 1787903976.927264,
+    "seen": 1791114027.337212,
+    "ast_hash": "49432ab95d4cab899c5b05d45ceec737",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00200.png": {
+    "mtime": 1787903977.028857,
+    "seen": 1791114027.337212,
+    "ast_hash": "0b0b49dcb9a451b48b25c5c6dba0f810",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00205.png": {
+    "mtime": 1787903977.1531606,
+    "seen": 1791114027.337212,
+    "ast_hash": "4e6b950fa20cabb44d72a1b07a486c91",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_analysis_20260828_132931/screenshots/frame_00210.png": {
+    "mtime": 1787903977.4351473,
+    "seen": 1791114027.337212,
+    "ast_hash": "1ca41bb2a252da8a7fc9e31a9bea3b53",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_cog_acceleration_20260827_131440.png": {
+    "mtime": 1787847110.7458706,
+    "seen": 1791114027.337212,
+    "ast_hash": "009c2beca4da9fb75b86f0530348886f",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_cog_trajectory_20260827_131440.png": {
+    "mtime": 1787847110.757868,
+    "seen": 1791114027.337212,
+    "ast_hash": "c2fb47d0c60589417823f3466c787cef",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_jerk_20260827_131440.png": {
+    "mtime": 1787847110.78002,
+    "seen": 1791114027.337212,
+    "ast_hash": "6f9b12c689f4921d55446d5303a5813a",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_kinetic_chain_20260827_131440.png": {
+    "mtime": 1787847110.7921414,
+    "seen": 1791114027.337212,
+    "ast_hash": "bd5b47330dbb018dea1c86c513718b1e",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_peak_accel_20260827_131440.png": {
+    "mtime": 1787847110.8046753,
+    "seen": 1791114027.337212,
+    "ast_hash": "c98d813ff02b4ea0e161b7cd72ea8a3f",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_peak_angles_20260827_131440.png": {
+    "mtime": 1787847110.8157709,
+    "seen": 1791114027.337212,
+    "ast_hash": "0bf3f4cc1a7564c0992599ee31268261",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260827_131440/bad-shot-2-simplified_phase_portraits_20260827_131440.png": {
+    "mtime": 1787847110.8288405,
+    "seen": 1791114027.337212,
+    "ast_hash": "f433e5ed0e9fafd2659f74ca085ae201",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_cog_acceleration_20260828_133001.png": {
+    "mtime": 1787904104.0258033,
+    "seen": 1791114027.337212,
+    "ast_hash": "6b92d16afc48e27295f8dd9acfd762a0",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_cog_trajectory_20260828_133001.png": {
+    "mtime": 1787904038.3219779,
+    "seen": 1791114027.337212,
+    "ast_hash": "7e51f63a172982927f1d0eac122d6d95",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_jerk_20260828_133001.png": {
+    "mtime": 1787904034.0332997,
+    "seen": 1791114027.337212,
+    "ast_hash": "aa92367ba35400161cc1e15ba9cc2c5e",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_kinetic_chain_20260828_133001.png": {
+    "mtime": 1787904020.7127345,
+    "seen": 1791114027.337212,
+    "ast_hash": "d6c44e05ae65c5264637f2c1f7743d75",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_peak_accel_20260828_133001.png": {
+    "mtime": 1787904014.3238878,
+    "seen": 1791114027.337212,
+    "ast_hash": "413331e64982880fb5ad3a0ca6adfc1d",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_peak_angles_20260828_133001.png": {
+    "mtime": 1787904008.182441,
+    "seen": 1791114027.337212,
+    "ast_hash": "f2a7cace682d4c3c36c06bbc79a896f2",
+    "semantic_hash": ""
+  },
+  "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified_plot_graph_20260828_133001/bad-shot-2-simplified_phase_portraits_20260828_133001.png": {
+    "mtime": 1787904025.5763803,
+    "seen": 1791114027.337212,
+    "ast_hash": "f6c725c6a0247e44d2e9546e4631bb2c",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/src/temp.jpg": {
+    "mtime": 1790481523.3420181,
+    "seen": 1791114027.337212,
+    "ast_hash": "251d837498068a28875ed3ddc481e783",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/F1_curve (1).png": {
+    "mtime": 1790479389.1474376,
+    "seen": 1791114027.337212,
+    "ast_hash": "8da1112679c279868acd76f907389981",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/F1_curve.png": {
+    "mtime": 1790479389.149443,
+    "seen": 1791114027.337212,
+    "ast_hash": "8da1112679c279868acd76f907389981",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/PR_curve.png": {
+    "mtime": 1790479389.151536,
+    "seen": 1791114027.337212,
+    "ast_hash": "efaad555e13d8b1dc28ee8d4b69be24e",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/P_curve.png": {
+    "mtime": 1790479389.1545613,
+    "seen": 1791114027.337212,
+    "ast_hash": "d85f9fa52eb1a91ce453458da7af130d",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/confusion_matrix.png": {
+    "mtime": 1790479389.156922,
+    "seen": 1791114027.337212,
+    "ast_hash": "759d400db33af626fefed4f112d11c7b",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/labels.jpg": {
+    "mtime": 1790479389.1590478,
+    "seen": 1791114027.337212,
+    "ast_hash": "641f8819c590c833ea63eaf954065a20",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/labels_correlogram.jpg": {
+    "mtime": 1790479389.1609564,
+    "seen": 1791114027.337212,
+    "ast_hash": "86230fa0df14b03cbaf72be970b4e954",
+    "semantic_hash": ""
+  },
+  "clones/streamlit-BB-analyzer/weights/metrics/results.png": {
+    "mtime": 1790479389.1669216,
+    "seen": 1791114027.337212,
+    "ast_hash": "515a99ad9a30d4a9484b7c0ac78722f8",
+    "semantic_hash": ""
+  }
+}

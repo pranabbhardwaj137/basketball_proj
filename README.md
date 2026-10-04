@@ -79,6 +79,7 @@ detector = vision.PoseLandmarker.create_from_options(options)
 ```
 basketball_proj/
 ├── .venv/                      # Isolated Python 3.12 virtual environment
+├── graphify-out/               # Graphify Knowledge Graph (graph.json, GRAPH_REPORT.md, graph.html)
 ├── pose_landmarker.task        # MediaPipe BlazePose Heavy model (29MB)
 ├── requirements.txt            # Dependency definitions (mediapipe, opencv-python, numpy)
 ├── main.py                     # Main CLI entry point & real-time pipeline orchestrator
@@ -343,5 +344,49 @@ To achieve 100% completion of the proposed flow, the following 6 modules must be
 
 ---
 
+## 13. Codebase Knowledge Graph & Maintenance (Graphify)
+
+This project uses **Graphify** (`graphifyy` package) to maintain an AST-indexed Knowledge Graph of code dependencies, function call flow, and architectural hubs in `graphify-out/`.
+
+### Knowledge Graph Artifacts
+- **`graphify-out/graph.json`**: Graph data model (207 nodes, 378 edges, 10 communities).
+- **`graphify-out/GRAPH_REPORT.md`**: Architectural breakdown detailing God Nodes, Community Hubs, and modularity suggestions.
+- **`graphify-out/graph.html`**: Interactive D3/Vis network graph visualization.
+
+### Usage & Maintenance Commands
+
+1. **Incremental Update (After code edits - Fast & free):**
+   ```powershell
+   .\.venv\Scripts\graphify.exe update .
+   ```
+   *Run this command whenever python source files are modified to keep `graphify-out/graph.json` in sync.*
+
+2. **Full AST Extraction (Code-only, no API key needed):**
+   ```powershell
+   .\.venv\Scripts\graphify.exe extract . --code-only
+   ```
+
+3. **Re-clustering & Report Regeneration:**
+   ```powershell
+   .\.venv\Scripts\graphify.exe cluster-only .
+   ```
+
+4. **Export Interactive Visualizations:**
+   ```powershell
+   .\.venv\Scripts\graphify.exe export html
+   ```
+
+5. **Antigravity AI Agent Rule Setup:**
+   ```powershell
+   .\.venv\Scripts\graphify.exe antigravity install
+   ```
+
+### AI Agent Rules for Graphify
+- Before making structural changes, consult `graphify-out/GRAPH_REPORT.md` or query `graphify-out/graph.json` for component relationships.
+- Always run `.\.venv\Scripts\graphify.exe update .` after code edits.
+
+---
+
 _Project: Intelligent Basketball Performance Analysis System | BMSIT&M BCS506 | 2025–26_  
 _Developer: Pranab Bhardwaj | GitHub: pranabbhardwaj137_
+

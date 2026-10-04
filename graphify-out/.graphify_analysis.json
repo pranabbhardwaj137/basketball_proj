@@ -1,0 +1,389 @@
+{
+  "communities": {
+    "0": [
+      "ball_geometry",
+      "ball_geometry_arc_peak",
+      "ball_geometry_ball_under_rim",
+      "ball_geometry_box_center",
+      "ball_geometry_box_to_point_distance",
+      "ball_geometry_fit_parabola",
+      "ball_geometry_last_valid_box",
+      "ball_geometry_point_distance",
+      "ball_geometry_rationale_1",
+      "ball_geometry_rationale_11",
+      "ball_geometry_rationale_24",
+      "ball_geometry_rationale_29",
+      "ball_geometry_rationale_39",
+      "ball_geometry_rationale_48",
+      "ball_geometry_rationale_68",
+      "ball_geometry_rationale_92",
+      "ball_geometry_release_angle_deg",
+      "ball_geometry_sample_parabola",
+      "ball_tracker",
+      "ball_tracker_ball_above_elbow",
+      "ball_tracker_ball_near_any_wrist",
+      "ball_tracker_balltracker",
+      "ball_tracker_balltracker_close_shot",
+      "ball_tracker_balltracker_detect",
+      "ball_tracker_balltracker_draw",
+      "ball_tracker_balltracker_init",
+      "ball_tracker_balltracker_judge_make_miss",
+      "ball_tracker_balltracker_reset",
+      "ball_tracker_balltracker_update",
+      "ball_tracker_load_yolo",
+      "ball_tracker_rationale_1",
+      "ball_tracker_rationale_114",
+      "ball_tracker_rationale_280",
+      "ball_tracker_rationale_36",
+      "ball_tracker_shooting_elbow_y",
+      "ball_tracker_wrist_pixels"
+    ],
+    "1": [
+      "analyzer",
+      "analyzer_compute_all_angles",
+      "analyzer_compute_all_angles_angle",
+      "analyzer_compute_all_angles_pt",
+      "analyzer_detect_shot_phase",
+      "analyzer_get_angle",
+      "analyzer_rationale_109",
+      "analyzer_rationale_11",
+      "analyzer_rationale_144",
+      "analyzer_rationale_22",
+      "analyzer_rationale_63",
+      "analyzer_rationale_75",
+      "analyzer_sessionrecorder",
+      "analyzer_sessionrecorder_add_frame",
+      "analyzer_sessionrecorder_end_shot",
+      "analyzer_sessionrecorder_export_csv",
+      "analyzer_sessionrecorder_get_session_stats",
+      "analyzer_sessionrecorder_init",
+      "analyzer_sessionrecorder_start_shot",
+      "analyzer_sessionrecorder_summarize_shot",
+      "analyzer_shooting_side",
+      "argparse",
+      "csv",
+      "main",
+      "main_draw_pose",
+      "main_maybe_ball_tracker",
+      "main_run",
+      "numpy",
+      "time"
+    ],
+    "2": [
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_11",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_385",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_459",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_463",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_467",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_rationale_546",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_apply_plot_style",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_calculate_angle",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_calculate_kinematics_and_average",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_extract_landmarks",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_init",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_center_of_gravity_acceleration_magnitude",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_center_of_gravity_trajectory",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_joint_accelerations",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_joint_angles",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_joint_jerks",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_kinetic_chain_timing",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_peak_acceleration_timing",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_peak_angle_timing",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_peak_timing",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_phase_portraits",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_plot_template",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_process_video",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_save_data_to_csv",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_setup_figure"
+    ],
+    "3": [
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_calculate_jerk_rms",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_calculate_kinetic_chain_score",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_exponential_decay_mapping",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_init",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_load_csv_files",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_plot_cog_jerk_xy",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_plot_folder_cog_jerk_xy",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_process_csv_file",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor_process_folder",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_main",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_119",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_15",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_208",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_273",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_30",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_396",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_47",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_481",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_59",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_rationale_9",
+      "matplotlib"
+    ],
+    "4": [
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_image_cropper",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_image_cropper_crop_images_in_folder",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_image_cropper_rationale_5",
+      "clones_bb_video_shotanalyzer_pracheth_postprocess_statistical_analyzer",
+      "clones_streamlit_bb_analyzer_src_user_interface",
+      "clones_streamlit_bb_analyzer_src_user_interface_convert_to_mp4",
+      "clones_streamlit_bb_analyzer_src_user_interface_display_chart",
+      "clones_streamlit_bb_analyzer_src_user_interface_display_table",
+      "clones_streamlit_bb_analyzer_src_user_interface_display_table_comparison",
+      "clones_streamlit_bb_analyzer_src_user_interface_display_video",
+      "clones_streamlit_bb_analyzer_src_user_interface_main",
+      "clones_streamlit_bb_analyzer_src_user_interface_process_video",
+      "glob",
+      "matplotlib_pyplot",
+      "moviepy_editor",
+      "os",
+      "pandas",
+      "pil",
+      "scipy",
+      "seaborn",
+      "streamlit",
+      "subprocess"
+    ],
+    "5": [
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_main",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_midpoint",
+      "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer_analyze_center_of_gravity",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_main",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_rationale_8",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_rationale_98",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer_draw_joint_markers",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer_extract_landmarks",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer_init",
+      "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer_process_video_and_capture",
+      "cv2",
+      "datetime",
+      "mediapipe",
+      "mediapipe_tasks",
+      "mediapipe_tasks_python",
+      "pathlib",
+      "pose_engine",
+      "scipy_signal"
+    ],
+    "6": [
+      "clones_streamlit_bb_analyzer_src_run",
+      "clones_streamlit_bb_analyzer_src_run_ball_near_body",
+      "clones_streamlit_bb_analyzer_src_run_ball_under_basket",
+      "clones_streamlit_bb_analyzer_src_run_calculate_angle",
+      "clones_streamlit_bb_analyzer_src_run_delete_folder_contents",
+      "clones_streamlit_bb_analyzer_src_run_detect_api",
+      "clones_streamlit_bb_analyzer_src_run_distance",
+      "clones_streamlit_bb_analyzer_src_run_find_suitable_ball",
+      "clones_streamlit_bb_analyzer_src_run_get_angles_postions",
+      "clones_streamlit_bb_analyzer_src_run_get_tangent_angle",
+      "clones_streamlit_bb_analyzer_src_run_getvideostreams",
+      "clones_streamlit_bb_analyzer_src_run_release_end",
+      "clones_streamlit_bb_analyzer_src_run_release_start",
+      "clones_streamlit_bb_analyzer_src_run_trajectory_fit",
+      "clones_streamlit_bb_analyzer_src_run_trajectory_fit_curve_func"
+    ],
+    "7": [
+      "clones_streamlit_bb_analyzer_src_run_simon",
+      "clones_streamlit_bb_analyzer_src_run_simon_ball_near_body",
+      "clones_streamlit_bb_analyzer_src_run_simon_ball_under_basket",
+      "clones_streamlit_bb_analyzer_src_run_simon_calculate_angle",
+      "clones_streamlit_bb_analyzer_src_run_simon_delete_folder_contents",
+      "clones_streamlit_bb_analyzer_src_run_simon_detect_api",
+      "clones_streamlit_bb_analyzer_src_run_simon_distance",
+      "clones_streamlit_bb_analyzer_src_run_simon_find_suitable_ball",
+      "clones_streamlit_bb_analyzer_src_run_simon_get_angles_postions",
+      "clones_streamlit_bb_analyzer_src_run_simon_get_tangent_angle",
+      "clones_streamlit_bb_analyzer_src_run_simon_getvideostreams",
+      "clones_streamlit_bb_analyzer_src_run_simon_release_end",
+      "clones_streamlit_bb_analyzer_src_run_simon_release_start",
+      "matplotlib_patches",
+      "scipy_optimize"
+    ],
+    "8": [
+      "clones_streamlit_bb_analyzer_src_run_model",
+      "clones_streamlit_bb_analyzer_src_run_model_calculate_angle",
+      "clones_streamlit_bb_analyzer_src_run_model_convert_mp4_to_jpg",
+      "clones_streamlit_bb_analyzer_src_run_model_delete_folder_contents",
+      "clones_streamlit_bb_analyzer_src_run_model_generate_video",
+      "clones_streamlit_bb_analyzer_src_run_model_get_files",
+      "clones_streamlit_bb_analyzer_src_run_model_process_frame_media_pipe",
+      "clones_streamlit_bb_analyzer_src_run_model_rationale_32",
+      "clones_streamlit_bb_analyzer_src_run_rationale_37",
+      "matplotlib_image",
+      "yolov5_detect"
+    ],
+    "9": [
+      "pose_engine_poseengine",
+      "pose_engine_poseengine_close",
+      "pose_engine_poseengine_init",
+      "pose_engine_poseengine_landmarks_to_dict",
+      "pose_engine_poseengine_process",
+      "pose_engine_poseengine_smooth",
+      "pose_engine_poseengine_valid_landmarks",
+      "pose_engine_rationale_13",
+      "pose_engine_rationale_40"
+    ]
+  },
+  "cohesion": {
+    "0": 0.11428571428571428,
+    "1": 0.10344827586206896,
+    "2": 0.13230769230769232,
+    "3": 0.11857707509881422,
+    "4": 0.11688311688311688,
+    "5": 0.12380952380952381,
+    "6": 0.2761904761904762,
+    "7": 0.26666666666666666,
+    "8": 0.21818181818181817,
+    "9": 0.3055555555555556
+  },
+  "gods": [
+    {
+      "id": "clones_bb_video_shotanalyzer_pracheth_joint_analyzer_simplejointanalyzer",
+      "label": "SimpleJointAnalyzer",
+      "degree": 23
+    },
+    {
+      "id": "clones_streamlit_bb_analyzer_src_run_getvideostreams",
+      "label": "getVideoStreams()",
+      "degree": 14
+    },
+    {
+      "id": "clones_bb_video_shotanalyzer_pracheth_postprocess_jerk_analyzer_jerkprocessor",
+      "label": "JerkProcessor",
+      "degree": 12
+    },
+    {
+      "id": "analyzer_sessionrecorder",
+      "label": "SessionRecorder",
+      "degree": 11
+    },
+    {
+      "id": "clones_streamlit_bb_analyzer_src_run_simon_getvideostreams",
+      "label": "getVideoStreams()",
+      "degree": 11
+    },
+    {
+      "id": "ball_tracker_balltracker",
+      "label": "BallTracker",
+      "degree": 10
+    },
+    {
+      "id": "pose_engine_poseengine",
+      "label": "PoseEngine",
+      "degree": 10
+    },
+    {
+      "id": "ball_geometry_box_center",
+      "label": "box_center()",
+      "degree": 9
+    },
+    {
+      "id": "main_run",
+      "label": "run()",
+      "degree": 9
+    },
+    {
+      "id": "clones_bb_video_shotanalyzer_pracheth_joint_labeller_simplejointanalyzer",
+      "label": "SimpleJointAnalyzer",
+      "degree": 7
+    }
+  ],
+  "surprises": [
+    {
+      "source": "detect_API()",
+      "target": "run()",
+      "source_files": [
+        "clones/streamlit-BB-analyzer/src/run.py",
+        "main.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "detect_API()",
+      "target": "run()",
+      "source_files": [
+        "clones/streamlit-BB-analyzer/src/run_simon.py",
+        "main.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "maybe_ball_tracker()",
+      "target": "BallTracker",
+      "source_files": [
+        "main.py",
+        "ball_tracker.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "run()",
+      "target": "PoseEngine",
+      "source_files": [
+        "main.py",
+        "pose_engine.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "process_video()",
+      "target": "getVideoStreams()",
+      "source_files": [
+        "clones/streamlit-BB-analyzer/src/user_interface.py",
+        "clones/streamlit-BB-analyzer/src/run.py"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `SimpleJointAnalyzer` connect `SimpleJointAnalyzer` to `joint_analyzer.py`?",
+      "why": "High betweenness centrality (0.230) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `ball_tracker.py` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.11428571428571428 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `main.py` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.10344827586206896 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `SimpleJointAnalyzer` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13230769230769232 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `JerkProcessor` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.11857707509881422 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `user_interface.py` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.11688311688311688 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `joint_analyzer.py` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.12380952380952381 - nodes in this community are weakly interconnected."
+    }
+  ]
+}
