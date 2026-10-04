@@ -1,98 +1,186 @@
+import argparse
+import time
+
 import cv2
-import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-import numpy as np
 
-# Setup
-base_options = python.BaseOptions(model_asset_path='pose_landmarker.task') #model
-options = vision.PoseLandmarkerOptions(
-    base_options=base_options,
-    num_poses=1,              # detect max 1 person (increase for multi-person)
-    min_pose_detection_confidence=0.1,  # 50% sure = count as detected
-    min_tracking_confidence=0.9         # 50% sure = keep tracking between frames
-)
+from analyzer import SessionRecorder, compute_all_angles, detect_shot_phase
+from pose_engine import PoseEngine
 
 
-detector = vision.PoseLandmarker.create_from_options(options)
-
-# Landmark connections to draw skeleton
 CONNECTIONS = [
-    (11,12),(11,13),(13,15),(12,14),(14,16),  # arms
-    (11,23),(12,24),(23,24),                   # torso
-    (23,25),(25,27),(24,26),(26,28)            # legs
+    (11, 12), (11, 13), (13, 15), (12, 14), (14, 16),
+    (11, 23), (12, 24), (23, 24),
+    (23, 25), (25, 27), (24, 26), (26, 28),
 ]
 
-def get_angle(a, b, c):
-    a, b, c = np.array(a), np.array(b), np.array(c)
-    ba = a - b
-    bc = c - b
-    cosine = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    return np.degrees(np.arccos(np.clip(cosine, -1.0, 1.0)))
 
-cap = cv2.VideoCapture(0)  # or "your_video.mp4"
+def draw_pose(frame, landmarks, valid):
+    height, width = frame.shape[:2]
+    for first, second in CONNECTIONS:
+        if not (valid.get(first, False) and valid.get(second, False)):
+            continue
+        point_a = (int(landmarks[first]["norm_x"] * width), int(landmarks[first]["norm_y"] * height))
+        point_b = (int(landmarks[second]["norm_x"] * width), int(landmarks[second]["norm_y"] * height))
+        cv2.line(frame, point_a, point_b, (0, 255, 0), 2)
 
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        break
+    for index, landmark in landmarks.items():
+        center = (int(landmark["norm_x"] * width), int(landmark["norm_y"] * height))
+        color = (0, 0, 255) if valid.get(index, False) else (0, 165, 255)
+        cv2.circle(frame, center, 4, color, -1)
 
-    h, w = frame.shape[:2]
-    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
 
-    result = detector.detect(mp_image)
+def maybe_ball_tracker(enabled, weights, detect_every):
+    if not enabled:
+        return None
+    try:
+        from ball_tracker import BallTracker
+        return BallTracker(weights_path=weights, detect_every=detect_every)
+    except Exception as exc:
+        print(f"Ball tracking disabled: {exc}")
+        return None
 
-    if result.pose_landmarks:
-        lm = result.pose_landmarks[0]  # first person
 
-        # Draw skeleton
-        for a, b in CONNECTIONS:
-            x1, y1 = int(lm[a].x * w), int(lm[a].y * h)
-            x2, y2 = int(lm[b].x * w), int(lm[b].y * h)
-            cv2.line(frame, (x1,y1), (x2,y2), (0,255,0), 2)
+def run(source, use_ball=False, yolo_weights=None, detect_every=1):
+    capture = cv2.VideoCapture(source)
+    if not capture.isOpened():
+        raise RuntimeError(f"Could not open video source: {source}")
 
-        # Draw dots
-        for landmark in lm:
-            cx, cy = int(landmark.x * w), int(landmark.y * h)
-            cv2.circle(frame, (cx, cy), 4, (0,0,255), -1)
+    fps = capture.get(cv2.CAP_PROP_FPS)
+    frame_interval_ms = 1000.0 / fps if fps and fps > 1 else 33.33
+    frame_number = 0
+    engine = PoseEngine()
+    recorder = SessionRecorder()
+    ball_tracker = maybe_ball_tracker(use_ball, yolo_weights, detect_every)
 
-        # Elbow angle (shooting arm - right side)
-        shoulder = [lm[12].x, lm[12].y]
-        elbow    = [lm[14].x, lm[14].y]
-        wrist    = [lm[16].x, lm[16].y]
-        elbow_angle = get_angle(shoulder, elbow, wrist)
+    prev_wrist_y = 1.0
+    prev_phase = "idle"
+    prev_time = time.time()
+    paused = False
+    last_ball_info = None
 
-        # Knee angle (right)
-        hip   = [lm[24].x, lm[24].y]
-        knee  = [lm[26].x, lm[26].y]
-        ankle = [lm[28].x, lm[28].y]
-        knee_angle = get_angle(hip, knee, ankle)
+    print("Q quit | SPACE pause | S save session CSV")
+    if ball_tracker:
+        print(f"Ball tracker on ({ball_tracker.mode} weights)")
 
-        # already computing knee_angle, just add:
-        if knee_angle < 120:
-            knee_feedback = "Good knee bend for jump!"
-        else:
-            knee_feedback = "Bend knees more before shooting"
+    try:
+        while capture.isOpened():
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                break
+            if key == ord(" "):
+                paused = not paused
+            if key == ord("s"):
+                recorder.export_csv()
+                stats = recorder.get_session_stats()
+                if stats:
+                    print(stats)
 
-        cv2.putText(frame, knee_feedback, (30, 180), 
-            cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2)
+            if paused:
+                continue
 
-        # Display angles
-        cv2.putText(frame, f"Elbow: {elbow_angle:.1f}", (30, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
-        cv2.putText(frame, f"Knee:  {knee_angle:.1f}", (30, 90),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
+            success, frame = capture.read()
+            if not success:
+                break
 
-        # Basic feedback
-        feedback = "Good form!" if elbow_angle > 150 else "Extend your arm more"
-        cv2.putText(frame, feedback, (30, 140),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2)
+            timestamp_ms = round(frame_number * frame_interval_ms)
+            output = engine.process(frame, timestamp_ms)
+            frame_number += 1
 
-    cv2.imshow("Basketball Coach", frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+            now = time.time()
+            live_fps = 1.0 / max(now - prev_time, 1e-6)
+            prev_time = now
+            cv2.putText(
+                frame, f"FPS: {live_fps:.1f}", (frame.shape[1] - 130, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (200, 200, 200), 2,
+            )
 
-cap.release()
-cv2.destroyAllWindows()
-detector.close()
+            ball_info = None
+            if ball_tracker:
+                detections = ball_tracker.detect(frame)
+                if output is not None:
+                    ball_info = ball_tracker.update(
+                        detections, output["smoothed_landmarks"], output["valid"]
+                    )
+                else:
+                    ball_info = {
+                        "status": "no_pose",
+                        "ball": detections.get("ball"),
+                        "rim": detections.get("rim"),
+                        "release_angle": None,
+                        "flight_centers": [],
+                    }
+                last_ball_info = ball_info
+                ball_tracker.draw(frame, ball_info)
+
+            if output is None:
+                cv2.putText(frame, "No pose detected", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            else:
+                landmarks = output["smoothed_landmarks"]
+                valid = output["valid"]
+                draw_pose(frame, landmarks, valid)
+                angles = compute_all_angles(landmarks, valid)
+                phase, prev_wrist_y = detect_shot_phase(landmarks, prev_wrist_y)
+
+                if prev_phase != "releasing" and phase == "releasing":
+                    recorder.start_shot()
+                if recorder.recording:
+                    recorder.add_frame(angles)
+                if prev_phase == "releasing" and phase != "releasing":
+                    extra = {}
+                    if last_ball_info and last_ball_info.get("last_shot"):
+                        shot = last_ball_info["last_shot"]
+                        extra["ball_result"] = shot.get("result")
+                        extra["ball_release_angle"] = shot.get("release_angle")
+                        extra["ball_release_frames"] = shot.get("release_frames")
+                    summary = recorder.end_shot(extra)
+                    if summary:
+                        print(
+                            f"Shot {summary['shot_number']} | "
+                            f"Elbow: {summary.get('elbow_at_release')} | "
+                            f"Knee dip: {summary.get('knee_at_dip')} | "
+                            f"Ball: {summary.get('ball_result', '-')}"
+                        )
+                prev_phase = phase
+
+                elbow = angles.get("elbow_shooting")
+                knee = angles.get("knee_shooting")
+                elbow_text = f"Elbow: {elbow:.1f}" if elbow is not None else "Elbow: unavailable"
+                knee_text = f"Knee:  {knee:.1f}" if knee is not None else "Knee:  unavailable"
+                cv2.putText(frame, elbow_text, (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2)
+                cv2.putText(frame, knee_text, (30, 85), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 0), 2)
+                cv2.putText(
+                    frame, f"Phase: {phase}  Shots: {recorder.shot_count}",
+                    (30, 120), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2,
+                )
+
+                if elbow is None or knee is None:
+                    feedback = "Tracking unclear - improve framing or lighting"
+                elif elbow > 150:
+                    feedback = "Good form"
+                else:
+                    feedback = "Extend your shooting arm more"
+                cv2.putText(frame, feedback, (30, 145), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2)
+
+            cv2.imshow("Basketball Coach", frame)
+    finally:
+        capture.release()
+        cv2.destroyAllWindows()
+        engine.close()
+        if recorder.shots:
+            recorder.export_csv()
+            print(recorder.get_session_stats())
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run basketball pose analysis")
+    parser.add_argument("--video", help="Path to a video file; defaults to webcam 0")
+    parser.add_argument("--ball", action="store_true", help="Enable YOLO ball/rim tracking")
+    parser.add_argument("--yolo", help="Optional custom weights (basket_rim.pt)")
+    parser.add_argument("--detect-every", type=int, default=1, help="Run YOLO every N frames")
+    args = parser.parse_args()
+    run(
+        args.video if args.video else 0,
+        use_ball=args.ball,
+        yolo_weights=args.yolo,
+        detect_every=args.detect_every,
+    )

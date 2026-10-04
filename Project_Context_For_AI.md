@@ -4,326 +4,344 @@
 
 ---
 
-## What This Project Is
+## 1. What This Project Is
 
-A real-time computer vision basketball coaching tool built in Python. It analyzes a player's shooting form from video (webcam or file), detects body pose using AI, computes biomechanical angles, and gives instant feedback on shooting technique.
+An intelligent, real-time computer vision and biomechanical coaching tool built in Python. It analyzes a player's basketball shooting form and shot physics from video (live webcam or pre-recorded video files).
 
-**Short version:** Point a camera at someone shooting a basketball. The system draws a skeleton on them, measures their elbow and knee angles, and tells them if their form is good or needs fixing.
+The system performs real-time body pose estimation, computes biomechanical joint angles (elbow, knee, hip), tracks shot execution phases, measures shot consistency, and optionally tracks the basketball trajectory and rim using YOLO object detection to compute release angles, arc peak height, and make/miss outcomes.
 
 ---
 
-## Developer Profile
+## 2. Project Origin & Architecture Lineage
 
-- **Name:** Pranab Bhardwaj (goes by Prab)
+This project (`basketball_proj`) is a unified synthesis of two parent codebases:
+
+1. **`Basketball-Shot-Analyzer`**
+   - **Contributed:** Biomechanical joint analysis concepts, joint kinematics, shot phase detection logic, multi-shot session recording (`SessionRecorder`), consistency scoring based on standard deviation, and CSV session data export.
+
+2. **`clones/basketball-shot-analysis`**
+   - **Contributed:** YOLO-based ball and rim tracking concepts, spatial release detection (ball position relative to hand/elbow), parabolic trajectory fitting (`y = ax^2 + bx + c`), release angle calculation, arc peak detection, and rim proximity heuristics for make/miss classification.
+
+`basketball_proj` refactors, modernizes, and integrates these techniques into a single, clean Python application built on **Python 3.12+** using **MediaPipe's modern Tasks API** and **Ultralytics YOLOv8**.
+
+---
+
+## 3. Developer & Academic Profile
+
+- **Developer:** Pranab Bhardwaj (GitHub: `pranabbhardwaj137`)
 - **Background:** Final year Information Science & Engineering, BMSIT&M Bengaluru
-- **Skill level:** Intermediate Python, strong React/JS frontend, comfortable with OpenCV and NumPy basics, learning MediaPipe and computer vision from scratch on this project
-- **Style preference:** Prefers concise explanations with working code examples. Learns better from concrete examples than theory alone.
-- **Existing tech stack:** Python, JavaScript, React, Node.js, OpenCV, NumPy, Pandas, Matplotlib, n8n, Gemini API
-
----
-
-## Academic Context
-
-- **Course:** BCS506 Major Project, Bachelor of Engineering in Information Science & Engineering
+- **Course:** BCS506 Major Project, Bachelor of Engineering in ISE
 - **University:** Visvesvaraya Technological University (VTU), Belagavi
-- **Institution:** BMS Institute of Technology & Management (BMSIT&M), Bengaluru
-- **Year:** 2025-26
+- **Institution:** BMS Institute of Technology & Management (BMSIT&M), Bengaluru (Academic Year 2025–26)
 - **Guide:** Asst. Prof. Amulya P, Department of ISE
-- **Team Members:** Pranab Bhardwaj (1BY23IS154), Pavan R Bhat (1BY23IS145), Pracheth Kashyap (1BY23IS152), Puneetgouda Patil (1BY23IS165)
+- **Team Members:**
+  - Pranab Bhardwaj (1BY23IS154) – Core Vision Layer (`pose_engine.py`)
+  - Pavan R Bhat (1BY23IS145) – Kinematics & Shot Phase Detection (`analyzer.py`)
+  - Pracheth Kashyap (1BY23IS152) – Session Recorder & Data Export (`analyzer.py`)
+  - Puneetgouda Patil (1BY23IS165) – Feedback & Output Interface (`feedback.py`)
 
 ---
 
-## Current Tech Stack
+## 4. Current Tech Stack & Dependencies
 
-| Component | Technology |
-|---|---|
-| Language | Python 3.12.6 |
-| Pose Detection | MediaPipe 0.10.x (new Tasks API — NOT mp.solutions) |
-| Pose Model | `pose_landmarker_heavy.task` (BlazePose GHUM, 29MB) |
-| Video Processing | OpenCV (cv2) |
-| Math/Angles | NumPy |
-| Environment | Windows 11, VS Code, .venv |
-| IDE | VS Code with Python extension |
+| Component | Technology / Library | Details |
+| --- | --- | --- |
+| **Language** | Python 3.12.6 | Virtual environment located at `.venv` |
+| **Pose Engine** | MediaPipe Tasks API (`>=0.10.13`) | `pose_landmarker.task` model (BlazePose Heavy) |
+| **Object Detection** | Ultralytics YOLOv8 (Optional) | COCO `yolov8n.pt` or custom `weights/basket_rim.pt` |
+| **Video Processing** | OpenCV (`opencv-python`) | Frame capture, skeleton drawing, HUD text overlay |
+| **Mathematics & Stats** | NumPy | Vector dot products, arccos angles, curve fitting, std dev |
+| **Environment** | Windows 11 / PowerShell / VS Code | Virtual environment (`.venv`) |
 
-### CRITICAL: MediaPipe Version Note
+### CRITICAL: MediaPipe Tasks API Requirement
 
-This project uses **Python 3.12.6** which is NOT compatible with `mediapipe==0.10.9` (the old `mp.solutions.pose` API). We are using the **new Tasks API**:
-
-```python
-# OLD API (does NOT work on Python 3.12):
-mp_pose = mp.solutions.pose  # ← BREAKS
-
-# NEW API (what we use):
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-detector = vision.PoseLandmarker.create_from_options(options)
-result = detector.detect(mp_image)
-landmarks = result.pose_landmarks[0]  # list of 33 NormalizedLandmark objects
-# Each landmark has: .x, .y, .z (normalized 0-1), .visibility (0-1)
-```
-
----
-
-## Current Working Code (main.py)
+This project uses **Python 3.12**, which is incompatible with legacy `mp.solutions.pose` (`mediapipe==0.10.9`). It **MUST** use the MediaPipe Tasks API:
 
 ```python
-import cv2
-import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-import numpy as np
 
 base_options = python.BaseOptions(model_asset_path='pose_landmarker.task')
 options = vision.PoseLandmarkerOptions(
     base_options=base_options,
+    running_mode=vision.RunningMode.VIDEO,
     num_poses=1,
     min_pose_detection_confidence=0.5,
-    min_tracking_confidence=0.5
+    min_tracking_confidence=0.7
 )
 detector = vision.PoseLandmarker.create_from_options(options)
-
-CONNECTIONS = [
-    (11,12),(11,13),(13,15),(12,14),(14,16),
-    (11,23),(12,24),(23,24),
-    (23,25),(25,27),(24,26),(26,28)
-]
-
-def get_angle(a, b, c):
-    a, b, c = np.array(a), np.array(b), np.array(c)
-    ba = a - b
-    bc = c - b
-    cosine = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    return np.degrees(np.arccos(np.clip(cosine, -1.0, 1.0)))
-
-cap = cv2.VideoCapture(0)
-
-while cap.isOpened():
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    h, w = frame.shape[:2]
-    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
-    result = detector.detect(mp_image)
-
-    if result.pose_landmarks:
-        lm = result.pose_landmarks[0]
-
-        for a, b in CONNECTIONS:
-            x1, y1 = int(lm[a].x * w), int(lm[a].y * h)
-            x2, y2 = int(lm[b].x * w), int(lm[b].y * h)
-            cv2.line(frame, (x1,y1), (x2,y2), (0,255,0), 2)
-
-        for landmark in lm:
-            cx, cy = int(landmark.x * w), int(landmark.y * h)
-            cv2.circle(frame, (cx, cy), 4, (0,0,255), -1)
-
-        shoulder = [lm[12].x, lm[12].y]
-        elbow    = [lm[14].x, lm[14].y]
-        wrist    = [lm[16].x, lm[16].y]
-        elbow_angle = get_angle(shoulder, elbow, wrist)
-
-        hip   = [lm[24].x, lm[24].y]
-        knee  = [lm[26].x, lm[26].y]
-        ankle = [lm[28].x, lm[28].y]
-        knee_angle = get_angle(hip, knee, ankle)
-
-        cv2.putText(frame, f"Elbow: {elbow_angle:.1f}", (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
-        cv2.putText(frame, f"Knee:  {knee_angle:.1f}", (30, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
-
-        feedback = "Good form!" if elbow_angle > 150 else "Extend your arm more"
-        cv2.putText(frame, feedback, (30, 140), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,255), 2)
-
-    cv2.imshow("Basketball Coach", frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
-detector.close()
 ```
 
 ---
 
-## MediaPipe Landmark Index Reference
-
-```
-# Face
-0  = Nose
-1  = Left Eye Inner
-2  = Left Eye
-3  = Left Eye Outer
-4  = Right Eye Inner
-5  = Right Eye
-6  = Right Eye Outer
-7  = Left Ear
-8  = Right Ear
-9  = Mouth Left
-10 = Mouth Right
-
-# Upper Body
-11 = Left Shoulder
-12 = Right Shoulder
-13 = Left Elbow
-14 = Right Elbow
-15 = Left Wrist
-16 = Right Wrist
-17 = Left Pinky
-18 = Right Pinky
-19 = Left Index
-20 = Right Index
-21 = Left Thumb
-22 = Right Thumb
-
-# Lower Body
-23 = Left Hip
-24 = Right Hip
-25 = Left Knee
-26 = Right Knee
-27 = Left Ankle
-28 = Right Ankle
-29 = Left Heel
-30 = Right Heel
-31 = Left Foot Index
-32 = Right Foot Index
-```
-
----
-
-## Basketball-Specific Angles We Track
-
-| Angle | Landmark Indices | Good Range | Meaning |
-|---|---|---|---|
-| Elbow (shooting arm - right) | 12 → 14 → 16 | 160–175° at release | Arm fully extended |
-| Knee bend | 24 → 26 → 28 | 100–130° before jump | Power generation |
-| Hip angle | 12 → 24 → 26 | 150–170° | Forward lean |
-| Shoulder elevation | 0 → 12 → 14 | Symmetrical | Balance |
-
----
-
-## Project Folder Structure
+## 5. Repository File Structure & Module Breakdown
 
 ```
 basketball_proj/
-├── .venv/                      # Python virtual environment
-├── main.py                     # Main script (currently working)
-├── pose_landmarker.task        # AI model file (29MB, do not delete)
-├── requirements.txt            # mediapipe, opencv-python, numpy
-└── videos/                     # (planned) test video files
+├── .venv/                      # Isolated Python 3.12 virtual environment
+├── pose_landmarker.task        # MediaPipe BlazePose Heavy model (29MB)
+├── requirements.txt            # Dependency definitions (mediapipe, opencv-python, numpy)
+├── main.py                     # Main CLI entry point & real-time pipeline orchestrator
+├── pose_engine.py              # PoseEngine: MediaPipe inference, landmark extraction & smoothing
+├── analyzer.py                 # Biomechanical angle math, shot phase detection & SessionRecorder
+├── ball_tracker.py             # BallTracker: In-memory YOLO ball/rim detection & state machine
+├── ball_geometry.py            # Mathematical primitives for trajectory, release angle & parabola
+├── group_work_division.md      # Team workload division & academic demo guide
+├── AI_Models_Deep_Dive.md      # Technical deep-dive reference for academic viva
+└── Project_Context_For_AI.md   # System context, execution guide & technical reference
 ```
 
 ---
 
-## What Is Working
+## 6. How to Set Up & Run the Project
 
-- Live webcam feed with skeleton overlay (green lines, red dots)
-- Real-time elbow angle measurement displayed on screen
-- Real-time knee angle measurement displayed on screen
-- Basic text feedback based on elbow angle threshold
+### Step 1: Environment Setup
 
----
-
-## What Needs To Be Built Next (Roadmap)
-
-### Phase 2 — Core Analysis (Immediate)
-- [ ] Detect shot moment automatically (wrist rises above shoulder = shot initiated)
-- [ ] Record angle sequence per shot (not just per frame)
-- [ ] Per-shot summary: avg elbow angle, knee bend, consistency score
-- [ ] Add hip angle tracking
-- [ ] Add shoulder symmetry check
-- [ ] Save session data to JSON or CSV
-
-### Phase 3 — Ball Tracking
-- [ ] Add YOLOv8 for basketball detection (pip install ultralytics)
-- [ ] Track ball trajectory across frames
-- [ ] Compute release angle (angle of ball path at the moment of release)
-- [ ] Compute arc height (peak y coordinate of ball path)
-- [ ] Determine release point height (wrist height at release)
-
-### Phase 4 — Intelligent Feedback
-- [ ] Build shot classifier (good form vs bad form) using rule-based scoring
-- [ ] Compare player angles against professional benchmarks
-- [ ] Generate text report per session (PDF export)
-- [ ] Add voice feedback using pyttsx3 or gTTS
-
-### Phase 5 — Dashboard (Optional/Future)
-- [ ] React web frontend for uploading and viewing analysis
-- [ ] Session history and progress tracking
-- [ ] Side-by-side comparison of multiple shots
-- [ ] Overlay comparison with pro player reference pose
-
----
-
-## Key Decisions & Constraints
-
-- **No GPU available** — all models must run on CPU. BlazePose Heavy runs at ~20 FPS on Intel i5/i7 laptop. This is acceptable.
-- **Python 3.12.6** — cannot use mediapipe < 0.10.13. Always use new Tasks API.
-- **Windows environment** — paths use backslash, PowerShell commands used for downloads.
-- **Single player focus for now** — `num_poses=1` in options. Multi-player analysis is a future enhancement.
-- **Offline system** — no internet dependency during analysis. Model file is local.
-
----
-
-## Common Errors and Fixes
-
-| Error | Cause | Fix |
-|---|---|---|
-| `AttributeError: module 'mediapipe' has no attribute 'solutions'` | Old API on Python 3.12 | Use new Tasks API (shown above) |
-| `Could not find version mediapipe==0.10.9` | Python 3.12 incompatibility | Use latest mediapipe (0.10.13+) |
-| `FileNotFoundError: pose_landmarker.task` | Model file missing | Re-download with PowerShell command |
-| Low FPS / lag | Heavy model on slow CPU | Switch to `pose_landmarker_full.task` |
-| Jittery skeleton | Fast movement + low tracking confidence | Set `min_tracking_confidence=0.7` |
-| No landmarks detected | Poor lighting or player too far | Improve lighting, move closer |
-
----
-
-## Packages Required
-
-```
-pip install mediapipe opencv-python numpy
-```
-
-For future phases:
-```
-pip install ultralytics    # YOLOv8 for ball detection
-pip install matplotlib     # Graphs and trajectory plots
-pip install pyttsx3        # Voice feedback (offline TTS)
-pip install fpdf2          # PDF report generation
-```
-
----
-
-## How to Download the Model File
+Navigate to the project root and activate the virtual environment:
 
 ```powershell
-# PowerShell (Windows):
-Invoke-WebRequest -Uri "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/latest/pose_landmarker_heavy.task" -OutFile "pose_landmarker.task"
+# Windows PowerShell
+cd c:\Users\bhard\Downloads\major_pro\major_pro\basketball_proj
+.\.venv\Scripts\Activate.ps1
 ```
 
 ```bash
-# Linux/Mac:
-wget -O pose_landmarker.task https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/latest/pose_landmarker_heavy.task
+# Linux / macOS
+cd basketball_proj
+source .venv/bin/activate
 ```
 
+If dependencies are missing, install them:
+
+```bash
+pip install -r requirements.txt
+```
+
+*(Optional for ball tracking):*
+```bash
+pip install ultralytics
+```
+
+### Step 2: Ensure Model Asset is Present
+
+Ensure `pose_landmarker.task` exists in the project root. If missing, download it:
+
+```powershell
+# Windows PowerShell
+Invoke-WebRequest -Uri "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/latest/pose_landmarker_heavy.task" -OutFile "pose_landmarker.task"
+```
+
+### Step 3: Running the Application
+
+```
+usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETECT_EVERY]
+```
+
+#### Examples
+
+1. **Run Live Pose Analysis on Webcam (Default):**
+   ```bash
+   python main.py
+   ```
+
+2. **Run Pose Analysis on a Pre-Recorded Video File:**
+   ```bash
+   python main.py --video sample_shot.mp4
+   ```
+
+3. **Run Pose Analysis WITH Ball & Rim Tracking (Stock YOLO COCO model):**
+   ```bash
+   python main.py --video sample_shot.mp4 --ball
+   ```
+
+4. **Run with Custom Ball/Rim Weights (`basket_rim.pt`):**
+   ```bash
+   python main.py --video sample_shot.mp4 --ball --yolo weights/basket_rim.pt
+   ```
+
+5. **Run with Frame Skipping for Low-Spec CPUs (runs YOLO every 2 frames):**
+   ```bash
+   python main.py --video sample_shot.mp4 --ball --detect-every 2
+   ```
+
+### Step 4: Interactive Runtime Controls
+
+- Press **`Q`** – Quit the program.
+- Press **`SPACE`** – Pause / resume video playback.
+- Press **`S`** – Instantly export current session metrics to a timestamped CSV file (e.g. `session_20261004_101500.csv`) and print summary stats in the terminal.
+
 ---
 
-## If You Are An AI Model Reading This
+## 7. Biomechanical & Ball Metrics Tracked
 
-When helping with this project:
-
-1. **Always use the new MediaPipe Tasks API** — never suggest `mp.solutions.pose`
-2. **Python 3.12.6 is fixed** — don't suggest downgrading Python
-3. Access landmarks as `result.pose_landmarks[0][index].x` — it's a list, not a named dict
-4. Coordinates are **normalized (0.0 to 1.0)** — multiply by `w` and `h` to get pixels
-5. OpenCV uses **BGR** color format — MediaPipe needs **RGB** — always convert with `cv2.cvtColor`
-6. The model file is at `pose_landmarker.task` in the project root
-7. Prab prefers **concise code** with comments, not verbose explanations inline
-8. Basketball-specific angles: elbow (12→14→16), knee (24→26→28), hip (12→24→26)
-9. A "good" shooting elbow angle at release is **160–175 degrees**
-10. A "good" knee bend before a jump shot is **100–130 degrees**
+| Metric | Calculation Method / Indices | Target Range / Meaning |
+| --- | --- | --- |
+| **Elbow Angle (Shooting Arm)** | Landmarks 12 → 14 → 16 (Right) or 11 → 13 → 15 (Left) | **160°–175° at release** (Full arm extension) |
+| **Knee Bend Angle** | Landmarks 24 → 26 → 28 (Right) or 23 → 25 → 27 (Left) | **100°–130° at lowest dip** (Power generation) |
+| **Hip Posture Angle** | Landmarks 12 → 24 → 26 (Right) or 11 → 23 → 25 (Left) | **150°–170°** (Forward lean check) |
+| **Shooting Side** | Auto-detected (Hand/wrist with smaller `norm_y`) | Identifies left vs right handed shooter |
+| **Shot Phase** | Wrist height relative to shoulder & vertical delta | `preparing`, `releasing`, `follow_through`, `idle` |
+| **Form Consistency Score** | `max(0, 100 - (elbow_std + knee_std))` | Higher score (0-100) indicates repeatable mechanics |
+| **Release Launch Angle** | Vector angle of ball center between release frames | **45°–55°** optimal trajectory launch angle |
+| **Arc Peak Height** | Minimum pixel `y` of ball during flight trajectory | Peak height of parabolic flight path |
+| **Make / Miss Result** | Spatial alignment of ball center entering rim box | Evaluates shot success heuristic |
 
 ---
 
-*Project: Intelligent Basketball Performance Analysis System | BMSIT&M BCS506 | 2025-26*
-*Developer: Pranab Bhardwaj | GitHub: pranabbhardwaj137*
+## 8. Target Architecture Alignment & Progress Gap Analysis
+
+### Reference Architecture: `AI_Models_Deep_Dive.md` (Lines 396–425)
+
+The target full-system flow consists of 14 components across 5 layers:
+
+```
+Input Layer
+├── Webcam / Smartphone Video
+└── Pre-recorded Game Footage
+        ↓
+Detection Layer
+├── BlazePose (pose landmarks)        ← CURRENT
+├── YOLOv8 (basketball detection)     ← CURRENT
+└── MediaPipe Hands (wrist snap)      ← FUTURE / TO ADD
+        ↓
+Analysis Layer
+├── Angle Computation (numpy)         ← CURRENT
+├── Trajectory Tracking (OpenCV)      ← CURRENT
+├── Ball Arc Analysis                 ← CURRENT
+└── Temporal Consistency (LSTM)       ← FUTURE / TO ADD
+        ↓
+Feedback Layer
+├── Rule-Based Feedback               ← CURRENT
+├── AI-Generated Feedback (LSTM)      ← FUTURE / TO ADD
+└── Voice Feedback (TTS)              ← FUTURE / TO ADD
+        ↓
+Output Layer
+├── Annotated Video                   ← CURRENT
+├── Session Report (PDF)              ← FUTURE / TO ADD
+├── Progress Dashboard (web app)      ← FUTURE / TO ADD
+└── Comparison vs Pro Players         ← FUTURE / TO ADD
+```
+
+### Component Status Matrix & Progress Gap
+
+| Layer | Architecture Component | Implementation Status | Existing File / Code | What Needs to be Added |
+| --- | --- | --- | --- | --- |
+| **Input** | Webcam / Smartphone Video | **DONE (100%)** | `main.py` (`cv2.VideoCapture(0)`) | None |
+| **Input** | Pre-recorded Game Footage | **DONE (100%)** | `main.py` (`--video path`) | None |
+| **Detection** | BlazePose Keypoints | **DONE (100%)** | `pose_engine.py` (MediaPipe Tasks API) | None |
+| **Detection** | YOLOv8 Ball & Rim Detection | **DONE (100%)** | `ball_tracker.py` (Ultralytics YOLO) | None |
+| **Detection** | MediaPipe Hands (Wrist Snap) | **MISSING (0%)** | None | Add `HandLandmarker` Tasks API for 21 hand points & release wrist flick |
+| **Analysis** | Biomechanical Angle Math | **DONE (100%)** | `analyzer.py` (`compute_all_angles`) | Add wrist-elbow alignment deviation |
+| **Analysis** | Trajectory Tracking | **DONE (100%)** | `ball_tracker.py` & `ball_geometry.py` | None |
+| **Analysis** | Ball Arc & Launch Angle | **DONE (100%)** | `ball_geometry.py` (`fit_parabola`, `release_angle_deg`) | None |
+| **Analysis** | Temporal Consistency (LSTM) | **PARTIAL (30%)** | `SessionRecorder` (Statistical `100 - std_dev`) | Train/integrate sequence LSTM model for multi-frame shot form classification |
+| **Feedback** | Rule-Based Feedback Engine | **DONE (100%)** | `main.py` & `group_work_division.md` (`feedback.py`) | Wire `feedback.py` panel overlay into `main.py` pipeline |
+| **Feedback** | AI-Generated Sequence Feedback | **MISSING (0%)** | Static text strings | Feed LSTM sequence prediction into automated feedback string generator |
+| **Feedback** | Voice Feedback (TTS) | **MISSING (0%)** | None | Add `pyttsx3` background thread for real-time verbal cues ("Extend shooting arm!") |
+| **Output** | Live Annotated Video HUD | **DONE (100%)** | `main.py` (Skeleton, joint angles, trajectory line) | None |
+| **Output** | Session PDF Report | **MISSING (0%)** | CSV export only (`SessionRecorder.export_csv`) | Build PDF exporter (`fpdf2`) with embedded matplotlib chart PNGs |
+| **Output** | Progress Dashboard Web App | **MISSING (0%)** | Terminal CLI output | Build Web Dashboard (Streamlit / React) for session history & video player |
+| **Output** | Comparison vs Pro Players | **MISSING (0%)** | None | Build pro benchmark pose overlay & angle curve comparison tool |
+
+---
+
+### Progress Scorecard
+
+- **Components Completed:** 8 / 14 (**~57% Complete**)
+- **Components Remaining:** 6 / 14 (**~43% to Build**)
+
+---
+
+## 9. Concrete Implementation Plan to Complete the Flow
+
+To achieve 100% completion of the proposed flow, the following 6 modules must be created and integrated into `basketball_proj`:
+
+### 1. Offline Voice Feedback Module (`feedback_voice.py`)
+- **Library:** `pyttsx3` (runs offline without internet or API keys).
+- **Functionality:** Launches a non-blocking background thread that speaks live coaching cues when shot release or follow-through is detected:
+  - *"Extend your shooting arm more"* (if release elbow < 155°)
+  - *"Great release!"* (if elbow > 160° and release angle 45-55°)
+  - *"Bend knees more for power"* (if dip knee > 135°)
+
+### 2. PDF Session Report Generator (`report_generator.py`)
+- **Library:** `fpdf2` + `matplotlib`.
+- **Functionality:** Replaces raw CSV export with a professional PDF report containing:
+  - Session header (Player Name, Date, Total Shots).
+  - Summary table (Shot #, Elbow Angle at Release, Knee Dip, Launch Angle, Outcome).
+  - Embedded Matplotlib trend charts (Elbow Angle Trend, Knee Bend Trend, Form Consistency Score).
+
+### 3. MediaPipe Hands Integration (`hand_engine.py`)
+- **Library:** `mediapipe.tasks.python.vision.HandLandmarker`.
+- **Functionality:** Tracks 21 hand landmarks on the shooting hand during release:
+  - Measures wrist snap/flexion angle at release frame.
+  - Measures finger spread (index to pinky distance) at release.
+
+### 4. Pro Player Benchmark Comparison Tool (`pro_comparator.py`)
+- **Functionality:**
+  - Stores reference joint angle curves of elite shooters (e.g. Stephen Curry release curve).
+  - Plots player's shot angle curve vs pro benchmark curve.
+  - Calculates a **Pro Similarity Percentage Score (0–100%)**.
+
+### 5. LSTM Temporal Shot Quality Classifier (`shot_classifier.py`)
+- **Framework:** PyTorch / TensorFlow.
+- **Functionality:** Accepts an $(N, 4)$ sequence tensor of joint angles across 30 frames of shot execution to output shot quality probability ($0.0 - 1.0$).
+
+### 6. Web Progress Dashboard (`dashboard/app.py`)
+- **Framework:** Streamlit or Next.js / FastAPI.
+- **Functionality:**
+  - Drag-and-drop video file upload.
+  - Interactive playback with pose skeleton & ball trajectory overlays.
+  - Historical progress dashboard showing consistency scores over time.
+
+---
+
+## 10. Development Roadmap & Updated Task Status
+
+- [x] **Phase 1: Core Vision & Modularization**
+  - MediaPipe Tasks API integration with BlazePose Heavy model (`pose_engine.py`).
+  - Landmark extraction and exponential smoothing.
+  - Skeleton drawing with landmark visibility confidence flags.
+- [x] **Phase 2: Kinematics & Session Analytics**
+  - Real-time angle computation for elbow, knee, hip, shoulder (`analyzer.py`).
+  - Automated shot phase detection based on wrist movement.
+  - Multi-shot `SessionRecorder` with CSV export and session statistics.
+- [x] **Phase 3: Ball & Rim Tracking Integration**
+  - Ultralytics YOLO ball & rim detection module (`ball_tracker.py`).
+  - Flight path trajectory curve fitting (`fit_parabola`).
+  - Release launch angle and make/miss judgment heuristics (`ball_geometry.py`).
+- [ ] **Phase 4: Feedback & Output Enhancement (Next Priority)**
+  - Integrate `feedback.py` panel overlay & matplotlib trend charts into `main.py`.
+  - Add offline Voice Feedback using `pyttsx3`.
+  - Add PDF Session Report generation using `fpdf2`.
+- [ ] **Phase 5: Hands, Pro Benchmarking & Web Dashboard**
+  - Integrate MediaPipe Hands Tasks API for wrist snap & finger spread.
+  - Build Pro Player benchmark comparison overlay.
+  - Launch Streamlit / Web UI Progress Dashboard.
+
+---
+
+## 11. Common Errors & Troubleshooting
+
+| Error | Cause | Solution |
+| --- | --- | --- |
+| `AttributeError: module 'mediapipe' has no attribute 'solutions'` | Legacy API invoked on Python 3.12 | Use `mediapipe.tasks.python.vision.PoseLandmarker` as shown in `pose_engine.py` |
+| `FileNotFoundError: pose_landmarker.task` | Model file missing in project root | Re-download using the PowerShell / curl command in Step 2 |
+| `ModuleNotFoundError: No module named 'ultralytics'` | Running `--ball` without YOLO installed | Run `pip install ultralytics` inside `.venv` |
+| Low FPS / Video lag | Heavy model running on slow CPU | Pass `--detect-every 2` or switch model path to `pose_landmarker_full.task` |
+| No landmarks detected | Poor lighting or subject out of frame | Ensure subject is fully visible from side/front profile with clear lighting |
+
+---
+
+## 12. Guidelines for AI Assistants Working on This Project
+
+1. **Always use MediaPipe Tasks API** (`mediapipe.tasks.python.vision`) – NEVER write `mp.solutions.pose`.
+2. **Do NOT downgrade Python 3.12** – Keep code compatible with Python 3.12.6.
+3. Access landmarks via index in `result.pose_landmarks[0][idx]` – coordinate attributes are `.x`, `.y`, `.z` (normalized 0.0–1.0).
+4. Frame dimensions: multiply `.x` by frame width (`w`) and `.y` by frame height (`h`) for pixel coordinates.
+5. Color formats: OpenCV handles **BGR**, MediaPipe requires **RGB** (`cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)`).
+6. Keep modules decoupled: `pose_engine.py` handles vision/pose, `analyzer.py` handles biomechanical math/session stats, `ball_tracker.py` & `ball_geometry.py` handle YOLO ball physics, and `main.py` handles CLI orchestration.
+
+---
+
+_Project: Intelligent Basketball Performance Analysis System | BMSIT&M BCS506 | 2025–26_  
+_Developer: Pranab Bhardwaj | GitHub: pranabbhardwaj137_

@@ -1,0 +1,3 @@
+avg_elbow_left,std_elbow_left,avg_knee_right,std_knee_right,avg_knee_left,std_knee_left,avg_hip_right,std_hip_right,avg_hip_left,std_hip_left,avg_elbow_shooting,std_elbow_shooting,avg_knee_shooting,std_knee_shooting,avg_hip_shooting,std_hip_shooting,elbow_at_release,knee_at_dip,consistency_score,shot_number,timestamp
+157.1,17.4,162.1,9.8,162.1,5.9,168.5,6.5,171.1,4.1,157.1,17.4,162.1,5.9,171.1,4.1,167.3,152.3,76.7,1,10:23:08
+134.2,17.2,,,,,,,,,134.2,17.2,,,,,151.5,,62.8,2,10:23:34
