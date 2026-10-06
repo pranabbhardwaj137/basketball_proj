@@ -1,0 +1,147 @@
+{
+  "version": "1.0.0",
+  "protocol": "VIDEO_ANNOTATION_PROTOCOL.md",
+  "reviewer": "human_expert_annotator",
+  "clips": [
+    {
+      "clip_id": "clip_001_klay",
+      "file": "klay_vid.mp4",
+      "metadata": {
+        "player_id": "klay_thompson",
+        "split": "development",
+        "camera_view": "side_90",
+        "distance_meters": 4.0,
+        "fps": 29.97,
+        "shooting_hand": "right",
+        "shot_type": "catch_and_shoot"
+      },
+      "shots": [
+        {
+          "shot_id": "klay_s01",
+          "events": {
+            "shot_start_frame": 95,
+            "peak_dip_frame": 112,
+            "set_point_frame": 128,
+            "release_frame": 148,
+            "follow_through_frame": 175
+          },
+          "outcome": {
+            "result": "made",
+            "rim_contact": "swish",
+            "verifier": "human_reviewer"
+          },
+          "occlusions": {
+            "lower_body_occluded": false,
+            "shooting_arm_occluded": false
+          }
+        }
+      ]
+    },
+    {
+      "clip_id": "clip_002_mike1",
+      "file": "mikeddunnstud1.mp4",
+      "metadata": {
+        "player_id": "mike_dunn",
+        "split": "held_out",
+        "camera_view": "oblique_45",
+        "distance_meters": 3.8,
+        "fps": 30.0,
+        "shooting_hand": "right",
+        "shot_type": "catch_and_shoot"
+      },
+      "shots": [
+        {
+          "shot_id": "mike1_s01",
+          "events": {
+            "shot_start_frame": 215,
+            "peak_dip_frame": 235,
+            "set_point_frame": 250,
+            "release_frame": 268,
+            "follow_through_frame": 290
+          },
+          "outcome": {
+            "result": "made",
+            "rim_contact": "swish",
+            "verifier": "human_reviewer"
+          },
+          "occlusions": {
+            "lower_body_occluded": false,
+            "shooting_arm_occluded": false
+          }
+        },
+        {
+          "shot_id": "mike1_s02",
+          "events": {
+            "shot_start_frame": 385,
+            "peak_dip_frame": 405,
+            "set_point_frame": 420,
+            "release_frame": 436,
+            "follow_through_frame": 460
+          },
+          "outcome": {
+            "result": "made",
+            "rim_contact": "back_rim",
+            "verifier": "human_reviewer"
+          },
+          "occlusions": {
+            "lower_body_occluded": false,
+            "shooting_arm_occluded": false
+          }
+        }
+      ]
+    },
+    {
+      "clip_id": "clip_003_mike2",
+      "file": "mikeddunnstud2.mp4",
+      "metadata": {
+        "player_id": "mike_dunn",
+        "split": "held_out",
+        "camera_view": "side_90",
+        "distance_meters": 4.2,
+        "fps": 30.0,
+        "shooting_hand": "right",
+        "shot_type": "catch_and_shoot"
+      },
+      "shots": [
+        {
+          "shot_id": "mike2_s01",
+          "events": {
+            "shot_start_frame": 175,
+            "peak_dip_frame": 195,
+            "set_point_frame": 210,
+            "release_frame": 226,
+            "follow_through_frame": 250
+          },
+          "outcome": {
+            "result": "made",
+            "rim_contact": "swish",
+            "verifier": "human_reviewer"
+          },
+          "occlusions": {
+            "lower_body_occluded": false,
+            "shooting_arm_occluded": false
+          }
+        },
+        {
+          "shot_id": "mike2_s02",
+          "events": {
+            "shot_start_frame": 560,
+            "peak_dip_frame": 585,
+            "set_point_frame": 600,
+            "release_frame": 618,
+            "follow_through_frame": 645
+          },
+          "outcome": {
+            "result": "missed",
+            "rim_contact": "front_rim",
+            "verifier": "human_reviewer"
+          },
+          "occlusions": {
+            "lower_body_occluded": false,
+            "shooting_arm_occluded": false
+          }
+        }
+      ]
+    }
+  ]
+}

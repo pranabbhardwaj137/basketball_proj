@@ -1,21 +1,21 @@
 {
   "analyzer.py": {
-    "mtime": 1791116341.0039825,
-    "seen": 1791116363.8965445,
-    "ast_hash": "907546a13d8ef44a8b12087c13f331bd",
+    "mtime": 1791194266.9968839,
+    "seen": 1791194483.864662,
+    "ast_hash": "1d3f501371269ce1866164ff21719709",
     "semantic_hash": ""
   },
   "ball_geometry.py": {
-    "mtime": 1790569328.5934155,
-    "seen": 1791113802.3621974,
-    "ast_hash": "7cb7b6f17fd1d674dcf963ed6ad52eef",
-    "semantic_hash": "7cb7b6f17fd1d674dcf963ed6ad52eef"
+    "mtime": 1791175526.8296068,
+    "seen": 1791175588.0384893,
+    "ast_hash": "b5c0dac74d2fe91547ed0cb9822a474a",
+    "semantic_hash": ""
   },
   "ball_tracker.py": {
-    "mtime": 1790569425.2103236,
-    "seen": 1791113802.3621974,
-    "ast_hash": "234c3713d4a265281fd49e6c73ca68df",
-    "semantic_hash": "234c3713d4a265281fd49e6c73ca68df"
+    "mtime": 1791175544.199398,
+    "seen": 1791175588.0384893,
+    "ast_hash": "7dc518e225dc926a8e997ec9decb8618",
+    "semantic_hash": ""
   },
   "clones/bb-video-shotAnalyzer(Pracheth)/joint_analyzer.py": {
     "mtime": 1787847110.259043,
@@ -72,15 +72,15 @@
     "semantic_hash": "6e56009a76c07e59e6b5febd0942ea8c"
   },
   "main.py": {
-    "mtime": 1791116159.2549539,
-    "seen": 1791116363.8965445,
-    "ast_hash": "9303dc04ef5f03892ebf4b269b17416f",
+    "mtime": 1791195108.3480668,
+    "seen": 1791195642.161187,
+    "ast_hash": "b7a43b58e1b7f9d011f44eb82a076f4f",
     "semantic_hash": ""
   },
   "pose_engine.py": {
-    "mtime": 1791116097.5208125,
-    "seen": 1791116363.8965445,
-    "ast_hash": "ab8ac429a9d41a0690bf7182e6d9168f",
+    "mtime": 1791187573.6351824,
+    "seen": 1791187637.519178,
+    "ast_hash": "52ad2cd7595e2a7042c76fed86118fbc",
     "semantic_hash": ""
   },
   "clones/bb-video-shotAnalyzer(Pracheth)/bad-shot-2-simplified.mp4": {
@@ -786,15 +786,141 @@
     "semantic_hash": ""
   },
   "hand_engine.py": {
-    "mtime": 1791114996.8389993,
-    "seen": 1791115156.8128836,
-    "ast_hash": "ee6d775c2c062bc4c83a7fc05fc5e17c",
+    "mtime": 1791173075.5529933,
+    "seen": 1791173296.872615,
+    "ast_hash": "0b535b42e7552e9ece035fee3cc2749d",
     "semantic_hash": ""
   },
   "pro_comparator.py": {
-    "mtime": 1791115011.901958,
-    "seen": 1791115156.8128836,
-    "ast_hash": "18b4542d74ebf06e961900e970fe671e",
+    "mtime": 1791177882.9446905,
+    "seen": 1791178045.0583372,
+    "ast_hash": "341c148e8cc80de37b47021fb87a08fd",
+    "semantic_hash": ""
+  },
+  ".planning/PROJECT.md": {
+    "mtime": 1791189847.1888652,
+    "seen": 1791194483.864662,
+    "ast_hash": "465199ac09c5142f25695846300d09bf",
+    "semantic_hash": ""
+  },
+  ".planning/REQUIREMENTS.md": {
+    "mtime": 1791189876.0130653,
+    "seen": 1791194483.864662,
+    "ast_hash": "7c61224643d5636d9b359c6a5b066160",
+    "semantic_hash": ""
+  },
+  ".planning/ROADMAP.md": {
+    "mtime": 1791193854.4226656,
+    "seen": 1791194483.864662,
+    "ast_hash": "a51a604b94a1d112d976350180d18532",
+    "semantic_hash": ""
+  },
+  ".planning/STATE.md": {
+    "mtime": 1791194467.7332027,
+    "seen": 1791194483.864662,
+    "ast_hash": "ca41ff7ed91d90b31452d2dfb36f70e1",
+    "semantic_hash": ""
+  },
+  ".planning/PLAN.md": {
+    "mtime": 1791193902.772769,
+    "seen": 1791194483.864662,
+    "ast_hash": "cdb17976475da1fac715ec84f5f241e7",
+    "semantic_hash": ""
+  },
+  "evaluate_pipeline.py": {
+    "mtime": 1791187662.475941,
+    "seen": 1791187740.748544,
+    "ast_hash": "7b66a6936f806599337c43811cbf1519",
+    "semantic_hash": ""
+  },
+  "scratch_analyze_klay.py": {
+    "mtime": 1791188420.8508582,
+    "seen": 1791189047.2543375,
+    "ast_hash": "51dbe240e50dbf5c4f3eafaea5d0ede6",
+    "semantic_hash": ""
+  },
+  "scratch_inspect_timeline.py": {
+    "mtime": 1791188728.7908468,
+    "seen": 1791189047.2543375,
+    "ast_hash": "799fd58b11186b5eb110d36eac8ea744",
+    "semantic_hash": ""
+  },
+  "KLAY_EVAL_REPORT.json": {
+    "mtime": 1791195585.7928448,
+    "seen": 1791195642.161187,
+    "ast_hash": "9167c0a5022e4609338f3ca347c8cd4c",
+    "semantic_hash": ""
+  },
+  "evaluate_video.py": {
+    "mtime": 1791194283.7859254,
+    "seen": 1791194483.864662,
+    "ast_hash": "d4e2825688013c4c6e7f3d2e7752ea8e",
+    "semantic_hash": ""
+  },
+  ".planning/RESEARCH.md": {
+    "mtime": 1791193903.1098962,
+    "seen": 1791194483.864662,
+    "ast_hash": "3430c817b55af28cf0b74243b0e823a2",
+    "semantic_hash": ""
+  },
+  ".planning/phases/01-core-capture/01-PLAN.md": {
+    "mtime": 1791189967.4410465,
+    "seen": 1791194483.864662,
+    "ast_hash": "2babbcd1ac7b1a2dbab084ae633c6c5f",
+    "semantic_hash": ""
+  },
+  ".planning/phases/02-shot-analysis/02-PLAN.md": {
+    "mtime": 1791189977.084713,
+    "seen": 1791194483.864662,
+    "ast_hash": "1ced8f489692740958521e66a340a6a3",
+    "semantic_hash": ""
+  },
+  ".planning/phases/03-measurement-validation/.review-diagnostics/20261005T-review-claude-auth/STATUS.md": {
+    "mtime": 1791192284.7309022,
+    "seen": 1791194483.864662,
+    "ast_hash": "b1abe44b3a7bf15a50b50784f917b769",
+    "semantic_hash": ""
+  },
+  ".planning/phases/03-measurement-validation/.review-diagnostics/20261005T-review-claude-auth/gsd-review-claude.md": {
+    "mtime": 1791190188.6115735,
+    "seen": 1791194483.864662,
+    "ast_hash": "66cec0de23f644331467bbb5cab1917b",
+    "semantic_hash": ""
+  },
+  ".planning/phases/03-measurement-validation/03-PLAN.md": {
+    "mtime": 1791193878.5899549,
+    "seen": 1791194483.864662,
+    "ast_hash": "6737ffa44d46ff53113326fcb559336b",
+    "semantic_hash": ""
+  },
+  ".planning/phases/04-shot-lab/04-PLAN.md": {
+    "mtime": 1791190022.3621485,
+    "seen": 1791194483.864662,
+    "ast_hash": "9668be270970701fbd9d66206411427b",
+    "semantic_hash": ""
+  },
+  ".planning/phases/05-session-product/05-PLAN.md": {
+    "mtime": 1791190034.0621657,
+    "seen": 1791194483.864662,
+    "ast_hash": "ce0113edae5604d7e3ee86db63ae47c4",
+    "semantic_hash": ""
+  },
+  ".planning/phases/06-research-release/06-PLAN.md": {
+    "mtime": 1791190047.5961435,
+    "seen": 1791194483.864662,
+    "ast_hash": "933e3f418d81d403da1cb86987bda507",
+    "semantic_hash": ""
+  },
+  "METRIC_DICTIONARY.md": {
+    "mtime": 1791194453.5718093,
+    "seen": 1791194483.864662,
+    "ast_hash": "41021171e699205e834001bee2d41c10",
+    "semantic_hash": ""
+  },
+  "VIDEO_ANNOTATION_PROTOCOL.md": {
+    "mtime": 1791195118.3271182,
+    "seen": 1791195642.161187,
+    "ast_hash": "b64001eb6cf9527e1c1e6394c953fc3c",
     "semantic_hash": ""
   }
 }

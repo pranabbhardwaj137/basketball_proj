@@ -1,0 +1,125 @@
+{
+  "evaluation_type": "Exploratory Single-Video Benchmark",
+  "video_metadata": {
+    "file": "klay_vid.mp4",
+    "fps": 29.97,
+    "total_frames": 275,
+    "duration_seconds": 9.18
+  },
+  "pose_tracking": {
+    "frames_detected": 179,
+    "detection_rate_pct": 65.1,
+    "confidence_breakdown": {
+      "HIGH": 133,
+      "MODERATE": 46,
+      "INSUFFICIENT": 32
+    }
+  },
+  "shot_detection": {
+    "total_valid_shots_recorded": 1,
+    "shots": [
+      {
+        "avg_elbow_shooting": 121.1,
+        "std_elbow_shooting": 15.8,
+        "avg_knee_shooting": 151.3,
+        "std_knee_shooting": 13.9,
+        "avg_hip_shooting": 145.8,
+        "std_hip_shooting": 12.7,
+        "avg_shoulder_shooting": 106.5,
+        "std_shoulder_shooting": 40.9,
+        "avg_elbow_shooting_2d": 120.1,
+        "std_elbow_shooting_2d": 35.4,
+        "avg_knee_shooting_2d": 163.8,
+        "std_knee_shooting_2d": 5.1,
+        "avg_hip_shooting_2d": 164.8,
+        "std_hip_shooting_2d": 5.7,
+        "avg_shoulder_shooting_2d": 82.9,
+        "std_shoulder_shooting_2d": 61.3,
+        "avg_elbow_shooting_3d": 121.1,
+        "std_elbow_shooting_3d": 15.8,
+        "avg_knee_shooting_3d": 151.3,
+        "std_knee_shooting_3d": 13.9,
+        "avg_hip_shooting_3d": 145.8,
+        "std_hip_shooting_3d": 12.7,
+        "avg_shoulder_shooting_3d": 106.5,
+        "std_shoulder_shooting_3d": 40.9,
+        "avg_foreshortening_delta_elbow": 19.7,
+        "std_foreshortening_delta_elbow": 12.4,
+        "elbow_at_release": 148.0,
+        "knee_at_dip": 81.0,
+        "wrist_flick_at_release": null,
+        "frames_recorded": 46,
+        "repeatability_index": 70.3,
+        "shot_number": 1,
+        "timestamp": "15:49:17",
+        "kinetic_sequencing_score": 50.0,
+        "fluidity_score": 90.0,
+        "energy_efficiency": 66.0,
+        "is_proximal_to_distal": false,
+        "hitch_detected": false,
+        "kinetic_diagnostics": "Kinetic leak: Shoulder Lift initiated before lower-body drive. Fluid energy transfer.",
+        "tracking_confidence": "HIGH"
+      }
+    ]
+  },
+  "coordinate_estimate_disagreement": {
+    "metric": "Elbow Extension (2D Image Projection vs. MediaPipe 3D World Estimate)",
+    "interpretation_note": "Represents geometric and neural estimate disagreement (including perspective foreshortening); NOT calibrated laboratory ground-truth error.",
+    "mean_disagreement_deg": 22.9,
+    "median_disagreement_deg": 20.8,
+    "max_disagreement_deg": 85.0,
+    "sample_frames": [
+      {
+        "frame": 0,
+        "timestamp_ms": 0,
+        "phase": "idle",
+        "elbow_2d_deg": 144.8,
+        "elbow_3d_world_deg": 120.7,
+        "estimate_disagreement_deg": 24.1,
+        "coordinate_frame": "DUAL_2D_AND_3D_METRIC"
+      },
+      {
+        "frame": 25,
+        "timestamp_ms": 834,
+        "phase": "set_point",
+        "elbow_2d_deg": 76.6,
+        "elbow_3d_world_deg": 117.4,
+        "estimate_disagreement_deg": 40.8,
+        "coordinate_frame": "DUAL_2D_AND_3D_METRIC"
+      },
+      {
+        "frame": 50,
+        "timestamp_ms": 1668,
+        "phase": "idle",
+        "elbow_2d_deg": 164.2,
+        "elbow_3d_world_deg": 144.0,
+        "estimate_disagreement_deg": 20.2,
+        "coordinate_frame": "DUAL_2D_AND_3D_METRIC"
+      },
+      {
+        "frame": 75,
+        "timestamp_ms": 2502,
+        "phase": "idle",
+        "elbow_2d_deg": 166.8,
+        "elbow_3d_world_deg": 146.8,
+        "estimate_disagreement_deg": 20.0,
+        "coordinate_frame": "DUAL_2D_AND_3D_METRIC"
+      },
+      {
+        "frame": 175,
+        "timestamp_ms": 5839,
+        "phase": "releasing",
+        "elbow_2d_deg": 164.6,
+        "elbow_3d_world_deg": 127.9,
+        "estimate_disagreement_deg": 36.7,
+        "coordinate_frame": "DUAL_2D_AND_3D_METRIC"
+      }
+    ]
+  },
+  "limitations": [
+    "Single-camera monocular view without multi-view triangulation.",
+    "MediaPipe world landmarks are model priors, not physical motion-capture measurements.",
+    "Lower-body framing truncation occurs in clips where shooter jumps or is partially out of frame.",
+    "Real-world accuracy claims require multi-angle human-annotated reference benchmarks."
+  ]
+}

@@ -1,1 +1,33 @@
 .venv
+
+# Python bytecode and local tooling caches
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated evaluation and session outputs
+EVAL_REPORT.json
+session_*.csv
+
+# Locally downloaded model files
+hand_landmarker.task
+yolov8n.pt
+weights/*.pt
+
+# Graphify transient caches and interpreter bookkeeping
+graphify-out/cache/
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/.graphify_detect.json
+graphify-out/.graphify_extract.json
+graphify-out/.graphify_ast.json
+graphify-out/.graphify_semantic.json
+graphify-out/.graphify_analysis.json
+graphify-out/.graphify_chunk_*.json
+graphify-out/.needs_update
+graphify-out/last_query_stamp
+
+/reports_for_paper

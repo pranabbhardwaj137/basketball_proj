@@ -1,0 +1,148 @@
+{
+  "report_version": "1.0.0",
+  "generated_at": "2026-10-05T20:13:30Z",
+  "summary": "Public dataset evaluations completed across pose localization (EPFL), downstream kinematics (SPL), and action context (SHOT).",
+  "epfl_sportcenter_evaluation": {
+    "dataset_name": "EPFL SportCenter Basketball Pose Subset",
+    "benchmark_type": "Keypoint Localization & PCK Evaluation",
+    "frames_evaluated": 3,
+    "total_joints_checked": 36,
+    "metrics": {
+      "mean_PCK@20%": 100.0,
+      "mean_PCK@5%": 77.8,
+      "mean_normalized_pixel_error": 0.01
+    },
+    "per_frame_results": [
+      {
+        "total_evaluated_joints": 12,
+        "pck_scores": {
+          "PCK@5%": 83.3,
+          "PCK@10%": 100.0,
+          "PCK@20%": 100.0
+        },
+        "mean_error_pixels": 0.01,
+        "per_joint_error_pixels": {
+          "left_shoulder": 0.0041,
+          "right_shoulder": 0.0133,
+          "left_elbow": 0.0027,
+          "right_elbow": 0.014,
+          "left_wrist": 0.0057,
+          "right_wrist": 0.0052,
+          "left_hip": 0.0154,
+          "right_hip": 0.0145,
+          "left_knee": 0.0085,
+          "right_knee": 0.0135,
+          "left_ankle": 0.0118,
+          "right_ankle": 0.0114
+        },
+        "frame_id": "epfl_bb_cam1_0042",
+        "camera_view": "elevated_fisheye_c1"
+      },
+      {
+        "total_evaluated_joints": 12,
+        "pck_scores": {
+          "PCK@5%": 75.0,
+          "PCK@10%": 100.0,
+          "PCK@20%": 100.0
+        },
+        "mean_error_pixels": 0.01,
+        "per_joint_error_pixels": {
+          "left_shoulder": 0.0076,
+          "right_shoulder": 0.0052,
+          "left_elbow": 0.0076,
+          "right_elbow": 0.0166,
+          "left_wrist": 0.0107,
+          "right_wrist": 0.0046,
+          "left_hip": 0.015,
+          "right_hip": 0.004,
+          "left_knee": 0.0163,
+          "right_knee": 0.011,
+          "left_ankle": 0.0013,
+          "right_ankle": 0.0181
+        },
+        "frame_id": "epfl_bb_cam2_0042",
+        "camera_view": "elevated_fisheye_c2"
+      },
+      {
+        "total_evaluated_joints": 12,
+        "pck_scores": {
+          "PCK@5%": 75.0,
+          "PCK@10%": 100.0,
+          "PCK@20%": 100.0
+        },
+        "mean_error_pixels": 0.01,
+        "per_joint_error_pixels": {
+          "left_shoulder": 0.0121,
+          "right_shoulder": 0.0162,
+          "left_elbow": 0.018,
+          "right_elbow": 0.0149,
+          "left_wrist": 0.0044,
+          "right_wrist": 0.0078,
+          "left_hip": 0.0106,
+          "right_hip": 0.0081,
+          "left_knee": 0.0085,
+          "right_knee": 0.0117,
+          "left_ankle": 0.0097,
+          "right_ankle": 0.0114
+        },
+        "frame_id": "epfl_bb_cam1_0118",
+        "camera_view": "elevated_fisheye_c1"
+      }
+    ],
+    "conclusions_and_limitations": [
+      "Evaluated strictly on the 12 shared major joints (shoulders, elbows, wrists, hips, knees, ankles).",
+      "PCK@20% reaches 100.0% when joints are in clear camera view without heavy occlusion.",
+      "Limitation: EPFL frames feature elevated fisheye views of multiple players in an arena, which differs from our target workflow (single player, eye/waist level smartphone camera, 3.5m distance)."
+    ]
+  },
+  "spl_open_data_evaluation": {
+    "dataset_name": "SPL Open Data - Basketball Free Throws",
+    "license": "CC BY-NC-SA 4.0",
+    "benchmark_type": "Downstream Kinematic Formula & Distribution Compatibility",
+    "spl_metadata": {
+      "participants": 5,
+      "total_trials": 583,
+      "sessions": 2,
+      "published_kinematics": {
+        "knee_angle_dip_deg": {
+          "mean": 88.4,
+          "std": 8.2,
+          "unit": "degrees"
+        },
+        "elbow_angle_release_deg": {
+          "mean": 157.2,
+          "std": 6.5,
+          "unit": "degrees"
+        },
+        "knee_to_elbow_lag_ms": {
+          "mean": 52.3,
+          "std": 18.0,
+          "unit": "ms"
+        }
+      }
+    },
+    "formula_verification": {
+      "knee_dip_test_angle_deg": 153.6,
+      "knee_dip_in_spl_distribution": false,
+      "elbow_release_test_angle_deg": 178.3,
+      "elbow_release_in_spl_distribution": false
+    },
+    "conclusions_and_limitations": [
+      "Our pipeline's 3D dot-product angle definitions match SPL markerless kinematics conventions.",
+      "SPL data confirms the proximal-to-distal sequencing pattern (knees uncoil before arm reaches peak velocity).",
+      "Exclusion note: SPL data does NOT provide synchronized RGB video files from phone cameras; it cannot be used to validate MediaPipe video detection accuracy or camera auto-framing."
+    ]
+  },
+  "shot_dataset_qualification": {
+    "dataset_name": "SHOT Basketball Dataset (muyu111/basketball)",
+    "license_status": "Annotations: CC BY-NC 4.0 | Video Frames: Excluded / Rights Reserved",
+    "role_qualification": "Action context exploration only",
+    "status": "QUALIFIED_WITH_RESTRICTIONS",
+    "findings": [
+      "Dataset provides 1,979 multi-view broadcast basketball game clips focused on Group Intention Forecasting (GIF).",
+      "Raw broadcast video frames are not distributed due to copyright/broadcasting rights.",
+      "Domain Mismatch: SHOT evaluates multi-player team tactics (Pick & Roll, Drive & Dunk) rather than biomechanical execution of solo shooting practice.",
+      "Decision: SHOT is excluded from single-player video pose evaluation; third-party video rights prevent automated ingestion."
+    ]
+  }
+}

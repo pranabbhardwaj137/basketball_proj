@@ -1,0 +1,94 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-10-05T20:13:00Z",
+  "datasets": [
+    {
+      "name": "SPL Open Data - Basketball Free Throws",
+      "provider": "MLSE Sport Performance Lab",
+      "url": "https://github.com/Sport-Performance-Lab/SPL-Open-Data",
+      "license": "CC BY-NC-SA 4.0",
+      "format": "JSON trials (mocap point clouds and joint kinematics)",
+      "trials_count": 583,
+      "participants_count": 5,
+      "role": "Downstream kinematics & make/miss association validation",
+      "can_evaluate": ["kinematic_curves", "kinetic_sequencing_lags", "make_miss_associations"],
+      "exclusions": "Cannot evaluate video RGB pose detection; data provides pre-computed 3D markerless points rather than raw camera video."
+    },
+    {
+      "name": "EPFL SportCenter Dataset",
+      "provider": "EPFL CVLab",
+      "url": "https://www.epfl.ch/labs/cvlab/data/sportcenter-dataset/",
+      "license": "Academic Research Use (Free with citation)",
+      "format": "Multi-view fisheye video + 14/17 joint 2D/3D annotations",
+      "role": "Pose keypoint localization accuracy & cross-view consistency",
+      "can_evaluate": ["joint_pck_2d", "mpjpe_3d", "cross_view_projection"],
+      "exclusions": "Cannot evaluate shot event detection (dip/release) or coaching cues; sparse game frames without temporal shot lifecycle."
+    },
+    {
+      "name": "SHOT Basketball Dataset",
+      "provider": "Muyu et al. (ACM MM 2025)",
+      "url": "https://huggingface.co/datasets/muyu111/basketball",
+      "license": "Annotations: CC BY-NC 4.0; Broadcast Footage: Rights Reserved",
+      "format": "5-view game clips with tactical and intention annotations",
+      "clips_count": 1979,
+      "role": "Action context exploration",
+      "can_evaluate": ["tactic_classification_timing"],
+      "exclusions": "Broadcast video frames are excluded due to third-party rights restrictions; group tactics do not test solo shot lab workflow."
+    },
+    {
+      "name": "Project-Recorded Single-Player Shooting Pilot",
+      "provider": "Project Consented Video Clips",
+      "license": "Project Internal Use & Research Evaluation",
+      "format": "30 FPS RGB MP4 Video Clips",
+      "role": "Primary End-to-End Smartphone Workflow Evaluation",
+      "clips": [
+        {
+          "clip_id": "clip_001_klay",
+          "file": "klay_vid.mp4",
+          "player_id": "klay_thompson",
+          "camera_view": "side_90",
+          "fps": 29.97,
+          "frames": 275,
+          "duration_sec": 9.18,
+          "split": "development"
+        },
+        {
+          "clip_id": "clip_002_mike1",
+          "file": "mikeddunnstud1.mp4",
+          "player_id": "mike_dunn",
+          "camera_view": "oblique_45",
+          "fps": 30.0,
+          "frames": 753,
+          "duration_sec": 25.10,
+          "split": "held_out"
+        },
+        {
+          "clip_id": "clip_003_mike2",
+          "file": "mikeddunnstud2.mp4",
+          "player_id": "mike_dunn",
+          "camera_view": "side_90",
+          "fps": 30.0,
+          "frames": 1639,
+          "duration_sec": 54.63,
+          "split": "held_out"
+        }
+      ],
+      "can_evaluate": ["pose_coverage", "shot_detection_precision_recall", "release_timing_mae_ms", "estimate_disagreement_2d_vs_3d", "confidence_gating"]
+    }
+  ],
+  "joint_mapping_blazepose_to_coco": {
+    "0": 0,
+    "11": 5,
+    "12": 6,
+    "13": 7,
+    "14": 8,
+    "15": 9,
+    "16": 10,
+    "23": 11,
+    "24": 12,
+    "25": 13,
+    "26": 14,
+    "27": 15,
+    "28": 16
+  }
+}

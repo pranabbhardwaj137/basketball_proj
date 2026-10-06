@@ -1,4 +1,5 @@
 import math
+from collections import deque
 from pathlib import Path
 
 import cv2
@@ -6,28 +7,41 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-# Hand landmark indices
+# Hand landmark indices (MediaPipe 21 Hand Landmarks)
 WRIST = 0
+THUMB_CMC = 1
+THUMB_MCP = 2
+THUMB_IP = 3
+THUMB_TIP = 4
 INDEX_MCP = 5
+INDEX_PIP = 6
+INDEX_DIP = 7
 INDEX_TIP = 8
 MIDDLE_MCP = 9
+MIDDLE_PIP = 10
+MIDDLE_DIP = 11
 MIDDLE_TIP = 12
+RING_MCP = 13
+RING_PIP = 14
+RING_DIP = 15
 RING_TIP = 16
 PINKY_MCP = 17
+PINKY_PIP = 18
+PINKY_DIP = 19
 PINKY_TIP = 20
 
 HAND_CONNECTIONS = [
-    (0, 1), (1, 2), (2, 3), (3, 4),       # Thumb
-    (0, 5), (5, 6), (6, 7), (7, 8),       # Index
-    (5, 9), (9, 10), (10, 11), (11, 12),  # Middle
-    (9, 13), (13, 14), (14, 15), (15, 16),# Ring
+    (0, 1), (1, 2), (2, 3), (3, 4),        # Thumb
+    (0, 5), (5, 6), (6, 7), (7, 8),        # Index
+    (5, 9), (9, 10), (10, 11), (11, 12),   # Middle
+    (9, 13), (13, 14), (14, 15), (15, 16), # Ring
     (13, 17), (17, 18), (18, 19), (19, 20),# Pinky
-    (0, 17)                               # Palm base
+    (0, 17)                                # Palm base
 ]
 
 
 class HandEngine:
-    """MediaPipe hand tracking engine for wrist flick & finger spread analysis."""
+    """MediaPipe hand tracking engine for wrist flick dynamics, snap velocity & finger spread analysis."""
 
     MODEL_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task"
 
@@ -51,6 +65,12 @@ class HandEngine:
         )
         self.detector = vision.HandLandmarker.create_from_options(options)
 
+        # Flick tracking & velocity history
+        self.history = deque(maxlen=15)
+        self.prev_time = None
+        self.flick_event_cooldown = 0
+        self.last_flick_detected = False
+
     def _ensure_model(self):
         """Auto-download hand_landmarker.task if missing."""
         if not self.model_path.exists():
@@ -65,8 +85,11 @@ class HandEngine:
                     f"Please download manually from {self.MODEL_URL} and save as {self.model_path.name}"
                 ) from exc
 
-    def process(self, frame, timestamp_ms):
-        """Process BGR frame and return dict of hand keypoints and metrics."""
+    def process(self, frame, timestamp_ms, pose_wrist=None, pose_elbow=None):
+        """
+        Process BGR frame and return dict of hand keypoints, wrist snap velocity,
+        flexion angle, and flick event flags.
+        """
         if timestamp_ms < 0:
             timestamp_ms = 0
 
@@ -75,6 +98,8 @@ class HandEngine:
         result = self.detector.detect_for_video(mp_image, int(timestamp_ms))
 
         if not result.hand_landmarks:
+            if self.flick_event_cooldown > 0:
+                self.flick_event_cooldown -= 1
             return None
 
         height, width = frame.shape[:2]
@@ -93,30 +118,82 @@ class HandEngine:
                 "y": float(lm.y * height),
             }
 
-        wrist_flexion = self.compute_wrist_flexion(landmarks)
+        # True Biomechanical Wrist Flexion
+        # Forearm line (Elbow -> Wrist or Palm base -> Middle MCP) to Hand line (Middle MCP -> Middle TIP)
+        wrist_flexion = self.compute_wrist_flexion(landmarks, pose_wrist, pose_elbow)
         finger_spread = self.compute_finger_spread(landmarks)
+
+        # Compute wrist snap angular velocity & flick detection
+        now_sec = timestamp_ms / 1000.0 if timestamp_ms is not None else 0.0
+        snap_velocity = 0.0
+        is_flick = False
+
+        if len(self.history) > 0 and wrist_flexion is not None:
+            prev_entry = self.history[-1]
+            dt = max(0.008, now_sec - prev_entry["time"])
+            if prev_entry["wrist_flexion"] is not None:
+                # Snap velocity in deg/sec (positive when flexing forward rapidly)
+                snap_velocity = (prev_entry["wrist_flexion"] - wrist_flexion) / dt
+
+        # Store in rolling history
+        self.history.append({
+            "time": now_sec,
+            "wrist_flexion": wrist_flexion,
+            "snap_velocity": snap_velocity,
+        })
+
+        # Flick detection criteria:
+        # 1. High forward angular snap speed (e.g. > 150 deg/sec) or flexion angle dropped below 110 deg
+        # 2. Previous frames had wrist cocked back (> 130 deg)
+        if self.flick_event_cooldown > 0:
+            self.flick_event_cooldown -= 1
+        elif len(self.history) >= 4 and wrist_flexion is not None:
+            past_flexions = [h["wrist_flexion"] for h in list(self.history)[-5:-1] if h["wrist_flexion"] is not None]
+            if past_flexions:
+                max_past = max(past_flexions)
+                # True flick signature: was cocked (> 130 deg) and snapped down by at least 25 deg
+                if max_past >= 130.0 and wrist_flexion <= 115.0 and (max_past - wrist_flexion) >= 20.0:
+                    is_flick = True
+                    self.flick_event_cooldown = 12  # Cooldown frames (~0.4s)
+
+        self.last_flick_detected = is_flick
 
         return {
             "landmarks": landmarks,
             "handedness": handedness,
             "wrist_flexion_angle": wrist_flexion,
+            "wrist_snap_velocity": round(snap_velocity, 1),
             "finger_spread_ratio": finger_spread,
+            "is_flick": is_flick,
             "frame_width": width,
             "frame_height": height,
         }
 
     @staticmethod
-    def compute_wrist_flexion(landmarks):
-        """Calculate angle between wrist->middle_mcp and middle_mcp->middle_tip (wrist flick)."""
-        if not landmarks or WRIST not in landmarks or MIDDLE_MCP not in landmarks or MIDDLE_TIP not in landmarks:
+    def compute_wrist_flexion(landmarks, pose_wrist=None, pose_elbow=None):
+        """
+        Calculate true biomechanical wrist flexion angle.
+        If pose keypoints (elbow, wrist) are available, uses Forearm (Elbow->Wrist) vs Hand (Wrist->MiddleMCP).
+        Otherwise uses Palm Plane (Wrist->MCP) vs Finger Vector (MCP->Tip).
+        Angle ranges: ~170°-180° (neutral/cocked) down to ~80°-95° (fully snapped/flexed).
+        """
+        if not landmarks or WRIST not in landmarks or MIDDLE_MCP not in landmarks:
             return None
 
         w = landmarks[WRIST]
         m = landmarks[MIDDLE_MCP]
-        t = landmarks[MIDDLE_TIP]
+        t = landmarks.get(MIDDLE_TIP, m)
 
-        vec1 = (m["norm_x"] - w["norm_x"], m["norm_y"] - w["norm_y"])
-        vec2 = (t["norm_x"] - m["norm_x"], t["norm_y"] - m["norm_y"])
+        if pose_elbow is not None and pose_wrist is not None:
+            # Vector 1: Forearm (Elbow -> Wrist)
+            vec_forearm = (pose_wrist["norm_x"] - pose_elbow["norm_x"], pose_wrist["norm_y"] - pose_elbow["norm_y"])
+            # Vector 2: Hand (Wrist -> Middle Tip)
+            vec_hand = (t["norm_x"] - w["norm_x"], t["norm_y"] - w["norm_y"])
+            vec1, vec2 = vec_forearm, vec_hand
+        else:
+            # Approximate via Palm Vector (Wrist -> Middle MCP) and Finger Vector (Middle MCP -> Middle Tip)
+            vec1 = (m["norm_x"] - w["norm_x"], m["norm_y"] - w["norm_y"])
+            vec2 = (t["norm_x"] - m["norm_x"], t["norm_y"] - m["norm_y"])
 
         mag1 = math.hypot(vec1[0], vec1[1])
         mag2 = math.hypot(vec2[0], vec2[1])
@@ -175,8 +252,14 @@ class HandEngine:
         # Draw HUD text for hand metrics
         flick = hand_info.get("wrist_flexion_angle")
         spread = hand_info.get("finger_spread_ratio")
-        text = f"Hand ({hand_info['handedness']}): Flick {flick}° | Spread {spread}x"
-        cv2.putText(frame, text, (30, height - 40), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 0), 2)
+        is_snap = hand_info.get("is_flick", False)
+        snap_v = hand_info.get("wrist_snap_velocity", 0.0)
+
+        snap_tag = " [FLICK!]" if is_snap else ""
+        text_color = (0, 255, 0) if is_snap else (255, 255, 0)
+
+        text = f"Hand ({hand_info['handedness']}): Flex {flick}° | Spread {spread}x | Snap {snap_v}°/s{snap_tag}"
+        cv2.putText(frame, text, (30, height - 40), cv2.FONT_HERSHEY_SIMPLEX, 0.55, text_color, 2)
 
         return frame
 

@@ -53,9 +53,14 @@ class PoseEngine:
         smoothed = self._smooth(landmarks)
         valid = self._valid_landmarks(landmarks, threshold=0.25)
 
+        world_landmarks = {}
+        if result.pose_world_landmarks and len(result.pose_world_landmarks) > 0:
+            world_landmarks = self._world_landmarks_to_dict(result.pose_world_landmarks[0])
+
         return {
             "landmarks": landmarks,
             "smoothed_landmarks": smoothed,
+            "world_landmarks": world_landmarks,
             "valid": valid,
             "frame_width": width,
             "frame_height": height,
@@ -75,6 +80,20 @@ class PoseEngine:
             }
             for index, landmark in enumerate(landmarks)
         }
+
+    def _world_landmarks_to_dict(self, world_landmarks):
+        """Extract 3D metric world coordinates (in meters relative to hips center)."""
+        return {
+            index: {
+                "world_x": float(landmark.x),
+                "world_y": float(landmark.y),
+                "world_z": float(landmark.z),
+                "visibility": float(getattr(landmark, "visibility", 0.8)),
+                "presence": float(getattr(landmark, "presence", 0.8)),
+            }
+            for index, landmark in enumerate(world_landmarks)
+        }
+
 
     def _smooth(self, landmarks):
         smoothed = {}

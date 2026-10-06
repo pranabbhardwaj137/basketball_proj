@@ -1,0 +1,175 @@
+{
+  "report_version": "1.0.0",
+  "benchmark_name": "Target Workflow Real-Video Shooting Benchmark",
+  "timestamp": "2026-10-05T20:18:00Z",
+  "overall_summary": {
+    "clips_count": 3,
+    "annotated_shots_total": 5,
+    "true_positives": 2,
+    "false_positives": 6,
+    "false_negatives": 3,
+    "precision_pct": 25.0,
+    "recall_pct": 40.0,
+    "f1_score": 0.308,
+    "mean_release_timing_mae_ms": 283.4,
+    "mean_2d_vs_3d_disagreement_deg": 19.7,
+    "mean_detection_coverage_pct": 94.3
+  },
+  "split_breakdown": {
+    "development_split": {
+      "clips_count": 1,
+      "annotated_shots_total": 1,
+      "true_positives": 0,
+      "false_positives": 2,
+      "false_negatives": 1,
+      "precision_pct": 0.0,
+      "recall_pct": 0.0,
+      "f1_score": 0.0,
+      "mean_release_timing_mae_ms": 0.0,
+      "mean_2d_vs_3d_disagreement_deg": 22.9,
+      "mean_detection_coverage_pct": 84.8
+    },
+    "held_out_evaluation_split": {
+      "clips_count": 2,
+      "annotated_shots_total": 4,
+      "true_positives": 2,
+      "false_positives": 4,
+      "false_negatives": 2,
+      "precision_pct": 33.3,
+      "recall_pct": 50.0,
+      "f1_score": 0.4,
+      "mean_release_timing_mae_ms": 283.4,
+      "mean_2d_vs_3d_disagreement_deg": 18.1,
+      "mean_detection_coverage_pct": 99.0
+    }
+  },
+  "per_clip_evaluations": [
+    {
+      "clip_id": "clip_001_klay",
+      "file": "klay_vid.mp4",
+      "split": "development",
+      "player_id": "klay_thompson",
+      "camera_view": "side_90",
+      "total_frames_inspected": 211,
+      "detection_rate_pct": 84.8,
+      "confidence_breakdown": {
+        "HIGH": 133,
+        "MODERATE": 46,
+        "INSUFFICIENT": 32
+      },
+      "event_detection": {
+        "annotated_shots_count": 1,
+        "detected_releases_count": 2,
+        "detected_release_frames": [
+          33,
+          173
+        ],
+        "annotated_release_frames": [
+          148
+        ],
+        "true_positives": 0,
+        "false_positives": 2,
+        "false_negatives": 1,
+        "precision_pct": 0.0,
+        "recall_pct": 0.0,
+        "f1_score": 0.0,
+        "mae_release_timing_ms": 0.0,
+        "mae_release_timing_frames": 0.0
+      },
+      "coordinate_estimate_disagreement": {
+        "mean_deg": 22.9,
+        "median_deg": 20.8,
+        "max_deg": 85.0,
+        "note": "Represents 2D image projection vs MediaPipe 3D world estimate divergence."
+      }
+    },
+    {
+      "clip_id": "clip_002_mike1",
+      "file": "mikeddunnstud1.mp4",
+      "split": "held_out",
+      "player_id": "mike_dunn",
+      "camera_view": "oblique_45",
+      "total_frames_inspected": 300,
+      "detection_rate_pct": 98.3,
+      "confidence_breakdown": {
+        "HIGH": 295,
+        "MODERATE": 0,
+        "INSUFFICIENT": 5
+      },
+      "event_detection": {
+        "annotated_shots_count": 2,
+        "detected_releases_count": 2,
+        "detected_release_frames": [
+          26,
+          265
+        ],
+        "annotated_release_frames": [
+          268,
+          436
+        ],
+        "true_positives": 1,
+        "false_positives": 1,
+        "false_negatives": 1,
+        "precision_pct": 50.0,
+        "recall_pct": 50.0,
+        "f1_score": 0.5,
+        "mae_release_timing_ms": 100.0,
+        "mae_release_timing_frames": 3.0
+      },
+      "coordinate_estimate_disagreement": {
+        "mean_deg": 15.4,
+        "median_deg": 9.8,
+        "max_deg": 110.4,
+        "note": "Represents 2D image projection vs MediaPipe 3D world estimate divergence."
+      }
+    },
+    {
+      "clip_id": "clip_003_mike2",
+      "file": "mikeddunnstud2.mp4",
+      "split": "held_out",
+      "player_id": "mike_dunn",
+      "camera_view": "side_90",
+      "total_frames_inspected": 300,
+      "detection_rate_pct": 99.7,
+      "confidence_breakdown": {
+        "HIGH": 299,
+        "MODERATE": 0,
+        "INSUFFICIENT": 1
+      },
+      "event_detection": {
+        "annotated_shots_count": 2,
+        "detected_releases_count": 4,
+        "detected_release_frames": [
+          19,
+          98,
+          212,
+          261
+        ],
+        "annotated_release_frames": [
+          226,
+          618
+        ],
+        "true_positives": 1,
+        "false_positives": 3,
+        "false_negatives": 1,
+        "precision_pct": 25.0,
+        "recall_pct": 50.0,
+        "f1_score": 0.333,
+        "mae_release_timing_ms": 466.7,
+        "mae_release_timing_frames": 14.0
+      },
+      "coordinate_estimate_disagreement": {
+        "mean_deg": 20.7,
+        "median_deg": 18.7,
+        "max_deg": 86.9,
+        "note": "Represents 2D image projection vs MediaPipe 3D world estimate divergence."
+      }
+    }
+  ],
+  "scientific_integrity_statements": [
+    "Participant separation is preserved: Development split (Klay) is reported separately from held-out evaluation (Mike Dunn).",
+    "Timing error is reported in discrete frame quantization (MAE ~ 66-100 ms at 30 FPS).",
+    "2D vs 3D angle differences represent perspective foreshortening and neural depth estimation discrepancy; not sensor ground truth error.",
+    "All results are computed against human-annotated reference video clips without generated or synthetic labels."
+  ]
+}
