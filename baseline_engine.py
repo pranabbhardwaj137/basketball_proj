@@ -38,18 +38,36 @@ class BaselineEngine:
         player_id: str,
         camera_view: str = "frontal",
         shot_type: str = "catch_and_shoot",
+        shot_style: str = "jump_shot",
+        require_human_confirmed: bool = True,
         save_to_db: bool = True
     ) -> Dict[str, Any]:
         """
         Compute personal baseline from valid shots in the database for the given
-        matched context (player_id, camera_view, shot_type).
+        matched context (player_id, camera_view, shot_type, shot_style).
+        
+        Adheres to User Decisions:
+        - Strict isolation by shot_style (jump_shot vs set_shot never cross-pollinated).
+        - Prototype Gate: Only shots confirmed via explicit review or live hotkey admitted.
+        - Minimum N >= 5 total valid shots for baseline computation.
+        - Make-vs-miss contrast requires N >= 5 in BOTH makes and misses to prevent small-sample noise.
         """
         shots = self.db.get_shots(
             player_id=player_id,
             camera_view=camera_view,
             shot_type=shot_type,
+            shot_style=shot_style,
             min_confidence="SUFFICIENT"
         )
+
+        if require_human_confirmed:
+            shots = [
+                s for s in shots
+                if (s.get("review_status") == "approved"
+                    or s.get("outcome_source") in ("live_hotkey", "manual_review")
+                    or s.get("review_notes") is not None)
+                and s.get("review_status") != "discarded"
+            ]
 
         n_total = len(shots)
         if n_total < MIN_BASELINE_SAMPLE_SIZE:
@@ -58,9 +76,11 @@ class BaselineEngine:
                 "player_id": player_id,
                 "camera_view": camera_view,
                 "shot_type": shot_type,
+                "shot_style": shot_style,
                 "sample_size": n_total,
                 "min_required": MIN_BASELINE_SAMPLE_SIZE,
-                "message": f"Baseline Pending: Collected {n_total}/{MIN_BASELINE_SAMPLE_SIZE} valid shots for {camera_view} {shot_type}."
+                "require_human_confirmed": require_human_confirmed,
+                "message": f"Baseline Pending: Collected {n_total}/{MIN_BASELINE_SAMPLE_SIZE} reviewed shots for {camera_view} {shot_type} ({shot_style})."
             }
 
         makes = [s for s in shots if s["outcome"] == "make"]
@@ -104,6 +124,7 @@ class BaselineEngine:
             "player_id": player_id,
             "camera_view": camera_view,
             "shot_type": shot_type,
+            "shot_style": shot_style,
             "sample_size_makes": len(makes),
             "sample_size_misses": len(misses),
             "sample_size_unknowns": len(unknowns),
@@ -154,13 +175,34 @@ class BaselineEngine:
         return baseline_dict
 
     def _generate_descriptive_associations(self, b: Dict[str, Any]) -> List[str]:
-        """Format make vs. miss observations using strictly descriptive language."""
+        """
+        Format observations using strictly descriptive language.
+        Reports make vs. miss comparisons only when each group has N >= 5 reviewed shots.
+        """
         statements = []
         n_mk = b["sample_size_makes"]
         n_ms = b["sample_size_misses"]
+        n_tot = b["sample_size_total"]
+        style = b.get("shot_style", "jump_shot")
 
-        if n_mk >= 2 and n_ms >= 2:
-            # 1. Elbow release angle comparison
+        # 1. Overall baseline summary across all reviewed shots
+        summary_parts = [f"Overall baseline across {n_tot} reviewed {style} shots:"]
+        if b["mean_elbow_release_all"] is not None and b["std_elbow_release_all"] is not None:
+            summary_parts.append(f"Elbow extension averaged {b['mean_elbow_release_all']:.1f} +/- {b['std_elbow_release_all']:.1f} deg;")
+        if b["mean_sequence_lag_all"] is not None and b["std_sequence_lag_all"] is not None:
+            summary_parts.append(
+                f"Kinetic sequencing lag averaged {b['mean_sequence_lag_all']:.1f} +/- {b['std_sequence_lag_all']:.1f} ms "
+                f"(quantization uncertainty +/- 33.3 ms at 30 FPS);"
+            )
+        if b["mean_torso_sway_all"] is not None and b["std_torso_sway_all"] is not None:
+            summary_parts.append(f"Torso sway averaged {b['mean_torso_sway_all']:.1f} +/- {b['std_torso_sway_all']:.1f} deg.")
+        if len(summary_parts) > 1:
+            statements.append(" ".join(summary_parts))
+
+        # 2. Make vs Miss Contrast (only when BOTH makes and misses have N >= 5)
+        min_contrast_n = 5
+        if n_mk >= min_contrast_n and n_ms >= min_contrast_n:
+            # Elbow release angle comparison
             if b["mean_elbow_release_make"] is not None and b["mean_elbow_release_miss"] is not None:
                 diff_elbow = b["mean_elbow_release_make"] - b["mean_elbow_release_miss"]
                 if abs(diff_elbow) >= 4.0:
@@ -171,7 +213,7 @@ class BaselineEngine:
                         f"{b['mean_elbow_release_miss']:.1f} +/- {b['std_elbow_release_miss']:.1f} deg)."
                     )
 
-            # 2. Kinetic sequencing lag comparison
+            # Kinetic sequencing lag comparison
             if b["mean_sequence_lag_make"] is not None and b["mean_sequence_lag_miss"] is not None:
                 diff_lag = b["mean_sequence_lag_miss"] - b["mean_sequence_lag_make"]
                 if abs(diff_lag) >= 25.0:
@@ -183,7 +225,7 @@ class BaselineEngine:
                         f"[Note: Video frame quantization uncertainty is +/- 33.3 ms at 30 FPS]."
                     )
 
-            # 3. Torso sway balance comparison
+            # Torso sway balance comparison
             if b["mean_torso_sway_make"] is not None and b["mean_torso_sway_miss"] is not None:
                 diff_sway = b["mean_torso_sway_miss"] - b["mean_torso_sway_make"]
                 if diff_sway >= 3.0:
@@ -194,8 +236,9 @@ class BaselineEngine:
                     )
         else:
             statements.append(
-                f"Baseline established across {b['sample_size_total']} shots ({n_mk} makes, {n_ms} misses, {b['sample_size_unknowns']} unknown). "
-                f"Need at least 2 makes and 2 misses to report make-vs-miss contrast."
+                f"Make-versus-miss contrast pending: requires at least {min_contrast_n} reviewed makes and "
+                f"{min_contrast_n} reviewed misses to prevent small-sample noise (recorded {n_mk} makes, {n_ms} misses)."
             )
 
         return statements
+

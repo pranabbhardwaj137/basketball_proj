@@ -25,7 +25,7 @@ class TestShotLabDB(unittest.TestCase):
             cursor = conn.cursor()
             cursor.execute("SELECT value FROM schema_meta WHERE key = 'version'")
             version = cursor.fetchone()[0]
-            self.assertEqual(version, "1")
+            self.assertEqual(version, "2")
 
     def test_provenance_immutability(self):
         """Verify machine boundaries are preserved when human annotations are updated."""
@@ -107,8 +107,72 @@ class TestShotLabDB(unittest.TestCase):
         self.assertEqual(active_rem["remediation_id"], rem_id)
 
         # Complete drill
-        self.db.update_remediation_status(rem_id, status="completed", post_drill_metric_mean=55.0, feedback_notes="Rhythm felt significantly more unified")
+        self.db.update_remediation_status(
+            rem_id,
+            status="completed",
+            drill_completed=True,
+            post_drill_metric_mean=55.0,
+            post_drill_metric_std=14.0,
+            post_make_count=5,
+            post_total_count=6,
+            feedback_notes="Rhythm felt significantly more unified"
+        )
         self.assertIsNone(self.db.get_active_remediation("steph"))
+
+    def test_shot_style_and_quarantine(self):
+        """Verify shot_style recording and quarantine default vs approved status."""
+        sess_id = self.db.create_session(
+            player_id="steph",
+            camera_view="frontal",
+            shot_type="catch_and_shoot",
+            shot_style="set_shot"
+        )
+        
+        # Unlabeled shot should default to quarantined
+        shot_id1 = self.db.save_shot({
+            "session_id": sess_id,
+            "player_id": "steph",
+            "camera_view": "frontal",
+            "shot_type": "catch_and_shoot",
+            "shot_style": "set_shot",
+            "machine_start_frame": 10,
+            "machine_dip_frame": 20,
+            "machine_release_frame": 40,
+            "outcome": "unknown",
+            "outcome_source": "unlabeled",
+            "tracking_confidence": "SUFFICIENT"
+        })
+        shot1 = self.db.get_shot(shot_id1)
+        self.assertEqual(shot1["shot_style"], "set_shot")
+        self.assertEqual(shot1["review_status"], "quarantined")
+
+        # Live hotkey labeled make should default to approved
+        shot_id2 = self.db.save_shot({
+            "session_id": sess_id,
+            "player_id": "steph",
+            "camera_view": "frontal",
+            "shot_type": "catch_and_shoot",
+            "shot_style": "set_shot",
+            "machine_start_frame": 50,
+            "machine_dip_frame": 60,
+            "machine_release_frame": 80,
+            "outcome": "make",
+            "outcome_source": "live_hotkey",
+            "tracking_confidence": "SUFFICIENT"
+        })
+        shot2 = self.db.get_shot(shot_id2)
+        self.assertEqual(shot2["review_status"], "approved")
+
+        # Explicit update review_status to approved
+        self.db.update_shot_annotation(shot_id1, review_status="approved", review_notes="Reviewed keyframes")
+        shot1_upd = self.db.get_shot(shot_id1)
+        self.assertEqual(shot1_upd["review_status"], "approved")
+        self.assertEqual(shot1_upd["review_notes"], "Reviewed keyframes")
+
+        # Query filtering by review_status and shot_style
+        approved_shots = self.db.get_shots(player_id="steph", shot_style="set_shot", review_status="approved")
+        self.assertEqual(len(approved_shots), 2)
 
 if __name__ == "__main__":
     unittest.main()
+

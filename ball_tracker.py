@@ -69,6 +69,20 @@ class BallTracker:
         self._frame_i = 0
         self._last = {"ball": None, "rim": None, "ball_conf": 0.0, "rim_conf": 0.0}
 
+        self.mode = self.mode  # 'custom' or 'coco'
+        self.rim_supported = (self.mode == "custom")
+        self.rim_status = "NOT_DETECTED" if self.rim_supported else "UNAVAILABLE_NO_WEIGHTS"
+
+        # Active Shot Lifecycle Synchronization State
+        self.active_shot_id = None
+        self.active_shot_start_frame = None
+        self.active_shot_release_frame = None
+        self.active_shot_release_time_ms = None
+        self.active_shot_total_frames = 0
+        self.active_shot_ball_frames = 0
+        self.active_shot_flight_centers = []
+        self.active_shot_flight_timestamps = []
+
         self.release_started = False
         self.release_ended = False
         self.tracking_flight = False
@@ -78,6 +92,88 @@ class BallTracker:
         self.flight_timestamps = []
         self.release_frames = 0
         self.last_shot = None
+
+    def on_shot_started(self, shot_id: str, frame_idx: int, timestamp_ms: int):
+        """Called by master pose engine when a new shot attempt begins."""
+        self.active_shot_id = shot_id
+        self.active_shot_start_frame = frame_idx
+        self.active_shot_release_frame = None
+        self.active_shot_release_time_ms = None
+        self.active_shot_total_frames = 0
+        self.active_shot_ball_frames = 0
+        self.active_shot_flight_centers = []
+        self.active_shot_flight_timestamps = []
+        self.release_started = True
+        self.tracking_flight = False
+
+    def on_shot_release(self, shot_id: str, frame_idx: int, timestamp_ms: int, hand_coords=None):
+        """Called by master pose engine when kinematic release is triggered."""
+        if self.active_shot_id == shot_id:
+            self.active_shot_release_frame = frame_idx
+            self.active_shot_release_time_ms = timestamp_ms
+            self.tracking_flight = True
+
+    def on_shot_ended(self, shot_id: str, frame_idx: int, timestamp_ms: int):
+        """Called by master pose engine when follow-through completes. Returns isolated summary."""
+        if self.active_shot_id != shot_id:
+            return None
+
+        total_frames = max(1, self.active_shot_total_frames)
+        detected_frames = self.active_shot_ball_frames
+        coverage_ratio = detected_frames / total_frames
+
+        if detected_frames == 0:
+            coverage_status = "NOT_DETECTED"
+        elif coverage_ratio >= 0.70:
+            coverage_status = "HIGH_COVERAGE"
+        else:
+            coverage_status = "LOW_COVERAGE"
+
+        # Fit parabola to flight centers collected during post-release flight
+        pts = [c for c in self.active_shot_flight_centers if c is not None]
+        release_angle = None
+        entry_angle = None
+        fit_r2 = None
+        peak = None
+
+        if len(pts) >= 4:
+            peak = arc_peak(self.active_shot_flight_centers)
+            parabola = fit_parabola(self.active_shot_flight_centers)
+            if parabola is not None:
+                fit_r2 = parabola.get("r2")
+                entry_angle = calculate_entry_angle(parabola)
+            if len(pts) >= 2:
+                release_angle = release_angle_deg(
+                    {"box": [pts[1][0]-10, pts[1][1]-10, pts[1][0]+10, pts[1][1]+10]},
+                    {"box": [pts[0][0]-10, pts[0][1]-10, pts[0][0]+10, pts[0][1]+10]}
+                )
+
+        # Honest degradation: no automated make/miss without custom rim weights
+        if not self.rim_supported:
+            outcome = "unknown"
+            outcome_reason = "UNAVAILABLE_NO_WEIGHTS"
+        else:
+            outcome = "unknown"
+            outcome_reason = "INCONCLUSIVE"
+
+        summary = {
+            "shot_id": shot_id,
+            "ball_detection_status": coverage_status,
+            "rim_detection_status": self.rim_status,
+            "ball_coverage_ratio": round(coverage_ratio, 2),
+            "ball_release_angle": release_angle,
+            "entry_angle": entry_angle,
+            "trajectory_fit_r2": fit_r2,
+            "arc_peak": peak,
+            "outcome": outcome,
+            "outcome_reason": outcome_reason,
+            "flight_points_count": len(pts),
+        }
+
+        self.last_shot = summary
+        self.active_shot_id = None
+        self.tracking_flight = False
+        return summary
 
     def detect(self, frame):
         """Run YOLO inference every `detect_every` frames to optimize throughput."""
@@ -109,11 +205,19 @@ class BallTracker:
                 elif cls == COCO_SPORTS_BALL and conf >= ball_conf:
                     ball, ball_conf = xyxy, conf
 
+        if self.rim_supported and rim is not None:
+            self.rim_status = "CONFIRMED_RIM"
+        elif self.rim_supported:
+            self.rim_status = "NOT_DETECTED"
+        else:
+            self.rim_status = "UNAVAILABLE_NO_WEIGHTS"
+
         self._last = {
             "ball": ball,
             "rim": rim,
             "ball_conf": round(ball_conf, 2),
             "rim_conf": round(rim_conf, 2),
+            "rim_status": self.rim_status,
         }
         return dict(self._last)
 
@@ -128,6 +232,15 @@ class BallTracker:
         self.ball_history.append(ball)
         self.rim_history.append(rim)
 
+        if self.active_shot_id is not None:
+            self.active_shot_total_frames += 1
+            if ball is not None and ball_conf >= 0.30:
+                self.active_shot_ball_frames += 1
+                center = box_center(ball)
+                if center is not None and self.tracking_flight:
+                    self.active_shot_flight_centers.append(center)
+                    self.active_shot_flight_timestamps.append(timestamp_ms)
+
         status = "idle"
         release_angle = None
         outcome = None
@@ -135,159 +248,24 @@ class BallTracker:
         near = _ball_near_any_wrist(ball, wrists, self.near_hand_px)
         above_elbow = _ball_above_elbow(ball, elbow_y)
 
-        # 1. Start Release: Ball near shooting hand and elevated above elbow
-        if not self.release_started:
-            if above_elbow and near and ball_conf >= 0.30:
-                self.release_started = True
-                self.release_ended = False
-                self.tracking_flight = False
-                self.release_frames = 0
-                self.flight_centers = []
-                self.flight_timestamps = []
-                status = "release_started"
-            else:
-                status = "idle"
-
-        # 2. In Hand Rising: Ball rising toward release apex
-        elif self.release_started and not self.release_ended:
-            self.release_frames += 1
-            center = box_center(ball)
-            if center is not None:
-                self.flight_centers.append(center)
-                self.flight_timestamps.append(timestamp_ms)
-
-            left_hand = not _ball_near_any_wrist(ball, wrists, self.leave_hand_px)
-            if ball is not None and left_hand:
-                self.release_ended = True
-                self.tracking_flight = True
-                prev = last_valid_box(self.ball_history)
-                release_angle = release_angle_deg(ball, prev)
-                status = "released"
-            else:
-                status = "releasing"
-
-        # 3. Ball in Flight: Tracking parabolic arc toward rim
-        elif self.release_started and self.release_ended and self.tracking_flight:
-            self.release_frames += 1
-            center = box_center(ball)
-            if center is not None:
-                self.flight_centers.append(center)
-                self.flight_timestamps.append(timestamp_ms)
-
-            # Evaluate make/miss if rim is available
-            outcome = self._judge_make_miss(ball, rim)
-            if outcome is not None:
-                self.last_shot = self._close_shot(outcome, release_angle)
-                status = outcome.lower()
-                self.tracking_flight = False
-            elif self.release_frames > 75:  # Flight timeout (~2.5s)
-                # Close flight with honest status
-                default_outcome = "In Flight (Timeout)" if self.mode == "coco" else "Unknown Outcome"
-                self.last_shot = self._close_shot(default_outcome, release_angle)
-                status = "completed"
-                self.tracking_flight = False
-            else:
-                status = "in_flight"
-
-        # Reset trigger: Ball caught or returned to player hands
-        if (
-            self.release_started
-            and self.release_ended
-            and _ball_near_any_wrist(ball, wrists, 60)
-        ):
-            if self.tracking_flight:
-                self.last_shot = self._close_shot("Player Rebound / Caught", release_angle)
-            self.reset()
-            status = "reset"
+        # In-hand proximity for optional confidence boost
+        if near and above_elbow:
+            status = "in_hand"
+        elif self.tracking_flight:
+            status = "in_flight"
 
         return {
             "status": status,
             "mode": self.mode,
+            "rim_status": self.rim_status,
             "ball_conf": ball_conf,
             "release_angle": release_angle,
             "outcome": outcome,
             "release_frames": self.release_frames,
             "ball": ball,
             "rim": rim,
-            "flight_centers": list(self.flight_centers),
+            "flight_centers": list(self.active_shot_flight_centers) if self.active_shot_id else list(self.flight_centers),
             "last_shot": self.last_shot,
-        }
-
-    def _judge_make_miss(self, ball, rim):
-        """Evaluate shot outcome with explicit model limitations."""
-        if self.mode == "coco":
-            # Stock COCO model does not detect basketball rims
-            return None
-
-        if ball is None or rim is None:
-            return None
-
-        if ball_under_rim(ball, rim, x_threshold=85):
-            return "Make"
-
-        if len(self.ball_history) < 3 or len(self.rim_history) < 3:
-            return None
-
-        prev_ball = last_valid_box(self.ball_history)
-        prev_rim = last_valid_box(self.rim_history)
-        now_d = point_distance(box_center(ball), box_center(rim))
-        prev_d = point_distance(box_center(prev_ball), box_center(prev_rim))
-
-        if now_d is None or prev_d is None:
-            return None
-
-        # Ball moving away from rim level
-        if now_d > prev_d + 15:
-            return "Make" if ball_under_rim(ball, rim, x_threshold=70) else "Miss"
-
-        return None
-
-    def _close_shot(self, outcome, release_angle):
-        """Summarize trajectory curve, apex height, and goodness-of-fit."""
-        pts = [c for c in self.flight_centers if c is not None]
-        if len(pts) < 4:
-            return {
-                "result": outcome,
-                "release_angle": release_angle,
-                "release_frames": self.release_frames,
-                "arc_peak": None,
-                "entry_angle": None,
-                "trajectory_fit_r2": None,
-                "trajectory": [],
-                "confidence_note": "Insufficient tracked flight points (<4)",
-            }
-
-        peak = arc_peak(self.flight_centers)
-        fit_res = fit_parabola(self.flight_centers)
-        xs = [c[0] for c in pts]
-        curve = []
-        r2 = None
-        entry_angle = None
-
-        if fit_res is not None:
-            coeffs = fit_res[:3]
-            r2 = fit_res[3]
-            curve = sample_parabola(coeffs, min(xs), max(xs))
-
-            # If custom rim was tracked, calculate entry angle into hoop
-            valid_rim = last_valid_box(self.rim_history)
-            if valid_rim:
-                entry_angle = calculate_entry_angle(coeffs, box_center(valid_rim))
-
-        angle = release_angle
-        if angle is None and len(self.ball_history) >= 2:
-            angle = release_angle_deg(self.ball_history[-1], last_valid_box(self.ball_history))
-
-        return {
-            "result": outcome,
-            "release_angle": angle,
-            "entry_angle": entry_angle,
-            "release_frames": self.release_frames,
-            "arc_peak": peak,
-            "trajectory_fit_r2": r2,
-            "trajectory": curve,
-            "flight_centers": list(self.flight_centers),
-            "confidence_note": "Verified Parabolic Flight" if (r2 and r2 >= 0.75) else "Estimated Flight Path",
         }
 
     def reset(self):

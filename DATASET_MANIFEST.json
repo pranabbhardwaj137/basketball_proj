@@ -15,14 +15,18 @@
       "exclusions": "Cannot evaluate video RGB pose detection; data provides pre-computed 3D markerless points rather than raw camera video."
     },
     {
-      "name": "EPFL SportCenter Dataset",
+      "name": "EPFL SportCenter Camera-Pose Dataset",
       "provider": "EPFL CVLab",
       "url": "https://www.epfl.ch/labs/cvlab/data/sportcenter-dataset/",
+      "local_path": "clones/sportcenter_camerapose_dataset",
       "license": "Academic Research Use (Free with citation)",
-      "format": "Multi-view fisheye video + 14/17 joint 2D/3D annotations",
-      "role": "Pose keypoint localization accuracy & cross-view consistency",
-      "can_evaluate": ["joint_pck_2d", "mpjpe_3d", "cross_view_projection"],
-      "exclusions": "Cannot evaluate shot event detection (dip/release) or coaching cues; sparse game frames without temporal shot lifecycle."
+      "format": "28 smartphone video sequences (50,127 frames), camera intrinsics (K, distCoeffs), extrinsic camera poses (R, t), ground homographies (Hr), and 3D court grid geometry",
+      "sequences_count": 28,
+      "frames_count": 50127,
+      "role": "Archived to Phase 6 Backlog: Camera pose calibration and court geometry reprojection benchmark",
+      "phase_status": "ARCHIVED_PHASE_6",
+      "can_evaluate": ["camera_intrinsics_consistency", "ground_grid_fov_coverage", "planar_vs_distorted_reprojection_residual", "player_court_ground_positions"],
+      "exclusions": "Dropped from Phase 3 active scope. Cannot evaluate human body pose, joint PCK, MPJPE, or shooting mechanics: dataset contains camera calibration, court homographies, and player floor positions (Z=0), but zero human skeletal body-joint annotations."
     },
     {
       "name": "SHOT Basketball Dataset",

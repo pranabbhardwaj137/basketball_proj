@@ -74,6 +74,7 @@ def run(
     player_id="default_player",
     camera_view="frontal",
     shot_type="catch_and_shoot",
+    shot_style="jump_shot",
     db_path="shot_lab.db"
 ):
     capture = cv2.VideoCapture(source)
@@ -85,7 +86,7 @@ def run(
     frame_number = 0
     engine = PoseEngine()
     recorder = SessionRecorder()
-    phase_detector = ShotPhaseDetector()
+    phase_detector = ShotPhaseDetector(shot_style=shot_style)
     ball_tracker = maybe_ball_tracker(use_ball, yolo_weights, detect_every)
     hand_engine = maybe_hand_engine(use_hands)
     pro_comparator = maybe_pro_comparator(pro_target)
@@ -96,6 +97,7 @@ def run(
         player_id=player_id,
         camera_view=camera_view,
         shot_type=shot_type,
+        shot_style=shot_style,
         fps=fps or 30.0,
         model_version="1.0.0"
     )
@@ -165,25 +167,25 @@ def run(
 
             # Live Outcome Tagging Hotkeys
             if key in (ord("m"), ord("M")) and active_shot_id:
-                db.update_shot_annotation(active_shot_id, outcome="make", outcome_source="live_hotkey")
+                db.update_shot_annotation(active_shot_id, outcome="make", outcome_source="live_hotkey", review_status="approved")
                 toast_text = f"Recorded: MAKE (Shot #{last_shot_summary.get('shot_number', '')})"
                 toast_color = (0, 255, 0)
                 toast_start_time = time.time()
-                print(f"[SHOT LAB] Shot {active_shot_id} tagged as MAKE.")
+                print(f"[SHOT LAB] Shot {active_shot_id} tagged as MAKE (approved for baseline).")
 
             elif key in (ord("x"), ord("X")) and active_shot_id:
-                db.update_shot_annotation(active_shot_id, outcome="miss", outcome_source="live_hotkey")
+                db.update_shot_annotation(active_shot_id, outcome="miss", outcome_source="live_hotkey", review_status="approved")
                 toast_text = f"Recorded: MISS (Shot #{last_shot_summary.get('shot_number', '')})"
                 toast_color = (0, 0, 255)
                 toast_start_time = time.time()
-                print(f"[SHOT LAB] Shot {active_shot_id} tagged as MISS.")
+                print(f"[SHOT LAB] Shot {active_shot_id} tagged as MISS (approved for baseline).")
 
             elif key in (ord("u"), ord("U")) and active_shot_id:
-                db.update_shot_annotation(active_shot_id, outcome="unknown", outcome_source="live_hotkey")
+                db.update_shot_annotation(active_shot_id, outcome="unknown", outcome_source="live_hotkey", review_status="quarantined")
                 toast_text = f"Recorded: UNKNOWN (Shot #{last_shot_summary.get('shot_number', '')})"
                 toast_color = (200, 200, 200)
                 toast_start_time = time.time()
-                print(f"[SHOT LAB] Shot {active_shot_id} tagged as UNKNOWN.")
+                print(f"[SHOT LAB] Shot {active_shot_id} tagged as UNKNOWN (quarantined).")
 
 
             if paused:
@@ -275,14 +277,26 @@ def run(
                 if prev_phase in ("idle", "preparing") and phase in ("preparing", "set_point", "releasing"):
                     if not recorder.recording:
                         recorder.start_shot()
+                        shot_seq_id = f"shot_{session_id}_{recorder.shot_count}"
+                        if ball_tracker:
+                            ball_tracker.on_shot_started(shot_seq_id, frame_number, timestamp_ms)
+
+                if prev_phase in ("preparing", "set_point") and phase == "releasing":
+                    shot_seq_id = f"shot_{session_id}_{recorder.shot_count}"
+                    if ball_tracker:
+                        ball_tracker.on_shot_release(shot_seq_id, frame_number, timestamp_ms)
 
                 if prev_phase in ("releasing", "follow_through") and phase == "idle":
                     extra = {}
-                    if last_ball_info and last_ball_info.get("last_shot"):
-                        shot = last_ball_info["last_shot"]
-                        extra["ball_result"] = shot.get("result")
-                        extra["ball_release_angle"] = shot.get("release_angle")
-                        extra["ball_release_frames"] = shot.get("release_frames")
+                    ball_summary = None
+                    shot_seq_id = f"shot_{session_id}_{recorder.shot_count}"
+                    if ball_tracker:
+                        ball_summary = ball_tracker.on_shot_ended(shot_seq_id, frame_number, timestamp_ms)
+                        if ball_summary:
+                            extra["ball_detection_status"] = ball_summary.get("ball_detection_status")
+                            extra["rim_detection_status"] = ball_summary.get("rim_detection_status")
+                            extra["ball_release_angle"] = ball_summary.get("ball_release_angle")
+                            extra["ball_coverage_ratio"] = ball_summary.get("ball_coverage_ratio")
 
                     if hand_info:
                         extra["wrist_flexion_angle"] = hand_info.get("wrist_flexion_angle")
@@ -317,6 +331,7 @@ def run(
                             "player_id": player_id,
                             "camera_view": camera_view,
                             "shot_type": shot_type,
+                            "shot_style": shot_style,
                             "machine_start_frame": max(0, frame_number - summary.get("frames_recorded", 30)),
                             "machine_dip_frame": max(0, frame_number - summary.get("frames_recorded", 30) + 10),
                             "machine_set_frame": max(0, frame_number - summary.get("frames_recorded", 30) + 20),
@@ -324,6 +339,7 @@ def run(
                             "machine_end_frame": frame_number,
                             "outcome": "unknown",
                             "outcome_source": "unlabeled",
+                            "review_status": "quarantined",
                             "tracking_confidence": summary.get("tracking_confidence", "SUFFICIENT"),
                             "knee_angle_dip_3d": summary.get("knee_angle_dip_3d"),
                             "elbow_angle_release_3d": summary.get("elbow_angle_release_3d"),
@@ -439,6 +455,7 @@ if __name__ == "__main__":
     parser.add_argument("--player", default="default_player", help="Player identifier for Shot Lab")
     parser.add_argument("--camera-view", choices=["frontal", "side_90", "oblique_45"], default="frontal", help="Camera viewpoint")
     parser.add_argument("--shot-type", choices=["catch_and_shoot", "off_dribble", "free_throw"], default="catch_and_shoot", help="Shot type context")
+    parser.add_argument("--shot-style", choices=["jump_shot", "set_shot"], default="jump_shot", help="Shot mechanic style (jump_shot: forehead level, set_shot: shoulder level)")
     parser.add_argument("--db", default="shot_lab.db", help="Path to Shot Lab SQLite database")
     parser.add_argument("--ball", action="store_true", help="Enable YOLO ball/rim tracking")
     parser.add_argument("--yolo", help="Optional custom weights (basket_rim.pt)")
@@ -460,6 +477,7 @@ if __name__ == "__main__":
         player_id=args.player,
         camera_view=args.camera_view,
         shot_type=args.shot_type,
+        shot_style=args.shot_style,
         db_path=args.db
     )
 

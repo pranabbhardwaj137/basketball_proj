@@ -2,8 +2,11 @@
 evaluate_public_datasets.py - Public Datasets Evaluation & Qualification Harness.
 
 Evaluates:
- 1. EPFL SportCenter: Landmark mapping (17/14-joint to BlazePose 33), normalized keypoint
-    error, and PCK@0.05 / PCK@0.2 evaluation for shared body joints.
+ 1. EPFL SportCenter: Camera pose & court geometry calibration benchmark
+    (clones/sportcenter_camerapose_dataset). Ingests real sequences from README.txt splits,
+    camera intrinsics (K, distCoeffs), extrinsic poses (R, t), ground homographies (Hr),
+    and 3D court grid geometry.
+    NOTE: Human skeletal joint keypoints are ABSENT; body-joint PCK/MPJPE are explicitly marked unavailable.
  2. SPL Open Data: Downstream trial schema qualification, biomechanical angle calculations,
     and make-vs-miss kinematic distribution bounds (583 trials, 5 participants).
  3. SHOT Dataset: Action context and broadcast video rights restriction audit.
@@ -13,155 +16,176 @@ Emits PUBLIC_DATASETS_REPORT.json with exact thresholds, units, and clear scient
 
 from __future__ import annotations
 import os
+import re
 import json
 import math
+import argparse
+import datetime
 import numpy as np
+import cv2
 from typing import Dict, Any, List, Tuple, Optional
 
-# Shared joints between BlazePose 33 and COCO/EPFL 17-joint representation
-JOINT_MAPPING_BLAZE_TO_EPFL = {
-    11: {"epfl_id": 5, "name": "left_shoulder"},
-    12: {"epfl_id": 6, "name": "right_shoulder"},
-    13: {"epfl_id": 7, "name": "left_elbow"},
-    14: {"epfl_id": 8, "name": "right_elbow"},
-    15: {"epfl_id": 9, "name": "left_wrist"},
-    16: {"epfl_id": 10, "name": "right_wrist"},
-    23: {"epfl_id": 11, "name": "left_hip"},
-    24: {"epfl_id": 12, "name": "right_hip"},
-    25: {"epfl_id": 13, "name": "left_knee"},
-    26: {"epfl_id": 14, "name": "right_knee"},
-    27: {"epfl_id": 15, "name": "left_ankle"},
-    28: {"epfl_id": 16, "name": "right_ankle"},
-}
 
-def compute_pck(
-    predicted_joints: Dict[int, Tuple[float, float]],
-    ground_truth_joints: Dict[int, Tuple[float, float]],
-    torso_size: float,
-    thresholds: List[float] = [0.05, 0.10, 0.20]
+def load_json_permissive(path: str) -> Any:
+    """Load JSON file handling optional trailing commas safely."""
+    with open(path, "r", encoding="utf-8") as f:
+        text = f.read()
+    sanitized = re.sub(r",\s*([\]}])", r"\1", text)
+    return json.loads(sanitized)
+
+
+def evaluate_epfl_camerapose_dataset(
+    dataset_dir: str = "clones/sportcenter_camerapose_dataset",
+    sample_stride: int = 50
 ) -> Dict[str, Any]:
     """
-    Compute Percentage of Correct Keypoints (PCK) normalized by torso diameter:
-    PCK@alpha = Percentage of joints where Euclidean distance <= alpha * torso_size.
+    Evaluates camera pose and court geometry calibration on the EPFL SportCenter dataset.
+    Reads actual sequence records across training and testing splits defined in README.txt.
     """
-    if torso_size <= 1e-5:
-        torso_size = 1.0
+    if not os.path.exists(dataset_dir):
+        return {
+            "dataset_name": "EPFL SportCenter Camera-Pose Dataset",
+            "status": "ARCHIVED_PHASE_6",
+            "role": "Archived to Phase 6 Backlog (Court Geometry, Distance Estimation, & Multi-Camera Calibration)",
+            "note": f"Dataset directory not present at: {dataset_dir}. Dropped from Phase 3 active scope.",
+            "body_pose_pck_available": False,
+            "body_pose_mpjpe_available": False
+        }
 
-    errors_per_joint = {}
-    pck_counts = {th: 0 for th in thresholds}
-    total_joints = 0
+    readme_path = os.path.join(dataset_dir, "README.txt")
+    if not os.path.exists(readme_path):
+        return {
+            "dataset_name": "EPFL SportCenter Camera-Pose Dataset",
+            "status": "UNAVAILABLE",
+            "error": f"README.txt not found in: {dataset_dir}",
+            "body_pose_pck_available": False,
+            "body_pose_mpjpe_available": False
+        }
 
-    for blaze_idx, epfl_meta in JOINT_MAPPING_BLAZE_TO_EPFL.items():
-        if blaze_idx in predicted_joints and blaze_idx in ground_truth_joints:
-            pred = predicted_joints[blaze_idx]
-            gt = ground_truth_joints[blaze_idx]
-            dist = math.hypot(pred[0] - gt[0], pred[1] - gt[1])
-            norm_dist = dist / torso_size
-            errors_per_joint[epfl_meta["name"]] = round(dist, 4)
-            total_joints += 1
+    with open(readme_path, "r", encoding="utf-8") as f:
+        readme_txt = f.read()
 
-            for th in thresholds:
-                if norm_dist <= th:
-                    pck_counts[th] += 1
+    train_match = re.search(r'"training"\s*:\s*(\[[^\]]+\])', readme_txt)
+    test_match = re.search(r'"testing"\s*:\s*(\[[^\]]+\])', readme_txt)
 
-    pck_scores = {
-        f"PCK@{int(th*100)}%": round((pck_counts[th] / max(1, total_joints)) * 100.0, 1)
-        for th in thresholds
-    }
+    if not train_match or not test_match:
+        raise ValueError(f"Could not parse training/testing splits from {readme_path}")
 
-    mean_norm_err = float(np.mean(list(errors_per_joint.values()))) if errors_per_joint else 0.0
+    train_seqs = json.loads(train_match.group(1))
+    test_seqs = json.loads(test_match.group(1))
 
-    return {
-        "total_evaluated_joints": total_joints,
-        "pck_scores": pck_scores,
-        "mean_error_pixels": round(mean_norm_err, 2),
-        "per_joint_error_pixels": errors_per_joint
-    }
+    # Load shared court grid and camera intrinsics
+    grid_path = os.path.join(dataset_dir, "ground_grid.json")
+    grid = np.array(load_json_permissive(grid_path), dtype=np.float64)  # (N, 3), Z=0
 
+    intr_17_path = os.path.join(dataset_dir, "intrinsics_seq_17xxxx.json")
+    intr_98_path = os.path.join(dataset_dir, "intrinsics_seq_98xx.json")
+    intr_17 = load_json_permissive(intr_17_path)
+    intr_98 = load_json_permissive(intr_98_path)
 
-def evaluate_epfl_pose_subset() -> Dict[str, Any]:
-    """
-    Evaluates keypoint localization behavior against EPFL SportCenter basketball ground-truth format.
-    Runs on benchmark reference sample frames with known 2D keypoint locations.
-    """
-    # Reference ground truth annotations for 5 multi-view basketball frames in EPFL format
-    # Normalized coordinates [x, y] in [0, 1], torso scale approx 0.30
-    gt_frames = [
-        {
-            "frame_id": "epfl_bb_cam1_0042",
-            "camera_view": "elevated_fisheye_c1",
-            "torso_diameter": 0.28,
-            "joints": {
-                11: (0.48, 0.35), 12: (0.54, 0.35),
-                13: (0.45, 0.44), 14: (0.58, 0.43),
-                15: (0.43, 0.52), 16: (0.61, 0.51),
-                23: (0.49, 0.55), 24: (0.53, 0.55),
-                25: (0.48, 0.70), 26: (0.54, 0.69),
-                27: (0.47, 0.85), 28: (0.53, 0.86),
-            }
-        },
-        {
-            "frame_id": "epfl_bb_cam2_0042",
-            "camera_view": "elevated_fisheye_c2",
-            "torso_diameter": 0.30,
-            "joints": {
-                11: (0.52, 0.32), 12: (0.58, 0.33),
-                13: (0.49, 0.41), 14: (0.62, 0.40),
-                15: (0.47, 0.49), 16: (0.65, 0.48),
-                23: (0.53, 0.52), 24: (0.57, 0.52),
-                25: (0.51, 0.67), 26: (0.58, 0.66),
-                27: (0.50, 0.82), 28: (0.57, 0.83),
-            }
-        },
-        {
-            "frame_id": "epfl_bb_cam1_0118",
-            "camera_view": "elevated_fisheye_c1",
-            "torso_diameter": 0.27,
-            "joints": {
-                11: (0.42, 0.31), 12: (0.47, 0.32),
-                13: (0.39, 0.39), 14: (0.51, 0.38),
-                15: (0.36, 0.46), 16: (0.54, 0.45),
-                23: (0.43, 0.50), 24: (0.46, 0.50),
-                25: (0.42, 0.63), 26: (0.48, 0.62),
-                27: (0.41, 0.77), 28: (0.47, 0.76),
+    split_reports = {}
+    total_dataset_frames = 0
+    total_dataset_player_positions = 0
+
+    for split_name, seqs in [("training", train_seqs), ("testing", test_seqs)]:
+        total_split_frames = 0
+        split_player_positions = 0
+        fov_coverages = []
+        residuals = []
+        evaluated_sample_frames = 0
+
+        for s in seqs:
+            seq_dir = os.path.join(dataset_dir, s)
+            poses_path = os.path.join(seq_dir, "poses.json")
+            if not os.path.exists(poses_path):
+                continue
+
+            poses = load_json_permissive(poses_path)
+            total_split_frames += len(poses)
+
+            pl_path = os.path.join(seq_dir, "player_positions.json")
+            if os.path.exists(pl_path):
+                pl_data = load_json_permissive(pl_path)
+                split_player_positions += sum(len(v) for v in pl_data.values())
+
+            # Select camera intrinsics by sequence naming convention
+            intr = intr_17 if "17" in s else intr_98
+            K = np.array(intr["K"], dtype=np.float64)
+            dist = np.array(intr["distCoeffs"], dtype=np.float64)
+
+            # Sample frames with specified stride
+            sampled_keys = list(poses.keys())[::max(1, sample_stride)]
+            for f in sampled_keys:
+                frame_data = poses[f]
+                Hr = np.array(frame_data["Hr"], dtype=np.float64)
+                R = np.array(frame_data["R"], dtype=np.float64)
+                t = np.array(frame_data["t"], dtype=np.float64)
+
+                # Ground grid projection via homography Hr: p_img ~ Hr * [X, Y, 1]^T
+                p_homo = np.vstack([grid[:, :2].T, np.ones(len(grid))])
+                denom = Hr @ p_homo
+                denom_z = denom[2]
+                proj_Hr = ((denom[:2]) / denom_z).T
+
+                # Determine points inside image bounds [0, 1920] x [0, 1080]
+                in_fov = (denom_z > 0) & (proj_Hr[:, 0] >= 0) & (proj_Hr[:, 0] <= 1920) & (proj_Hr[:, 1] >= 0) & (proj_Hr[:, 1] <= 1080)
+                fov_coverages.append(float(np.mean(in_fov)))
+
+                # Camera projection using extrinsics R_wc = R^T, t_wc = -R^T * t
+                rvec, _ = cv2.Rodrigues(R.T)
+                tvec = -R.T @ t
+                proj_cam, _ = cv2.projectPoints(grid, rvec, tvec, K, dist)
+                proj_cam = proj_cam.reshape(-1, 2)
+
+                if np.sum(in_fov) > 0:
+                    res = np.linalg.norm(proj_Hr[in_fov] - proj_cam[in_fov], axis=1)
+                    residuals.extend(res.tolist())
+
+                evaluated_sample_frames += 1
+
+        total_dataset_frames += total_split_frames
+        total_dataset_player_positions += split_player_positions
+
+        split_reports[split_name] = {
+            "sequences_count": len(seqs),
+            "total_frames_in_split": total_split_frames,
+            "sampled_frames_evaluated": evaluated_sample_frames,
+            "player_positions_count": split_player_positions,
+            "mean_fov_court_grid_coverage_pct": round(float(np.mean(fov_coverages)) * 100.0, 1) if fov_coverages else 0.0,
+            "planar_vs_distorted_reprojection_residual_px": {
+                "mean": round(float(np.mean(residuals)), 2) if residuals else 0.0,
+                "median": round(float(np.median(residuals)), 2) if residuals else 0.0,
+                "max": round(float(np.max(residuals)), 2) if residuals else 0.0,
+                "unit": "pixels",
+                "interpretation": "Reprojection discrepancy between ideal planar homography and lens-distorted camera model on visible court points."
             }
         }
-    ]
-
-    results = []
-    # Test pipeline's landmark extraction on aligned frames
-    for sample in gt_frames:
-        # Simulate neural detector estimation with standard MediaPipe jitter (noise sigma ~ 0.015)
-        np.random.seed(42 + len(results))
-        pred_joints = {}
-        for idx, pt in sample["joints"].items():
-            jitter = np.random.normal(0, 0.008, 2)
-            pred_joints[idx] = (round(pt[0] + float(jitter[0]), 4), round(pt[1] + float(jitter[1]), 4))
-
-        eval_res = compute_pck(pred_joints, sample["joints"], sample["torso_diameter"])
-        eval_res["frame_id"] = sample["frame_id"]
-        eval_res["camera_view"] = sample["camera_view"]
-        results.append(eval_res)
-
-    avg_pck20 = float(np.mean([float(r["pck_scores"]["PCK@20%"]) for r in results]))
-    avg_pck05 = float(np.mean([float(r["pck_scores"]["PCK@5%"]) for r in results]))
-    avg_err = float(np.mean([r["mean_error_pixels"] for r in results]))
 
     return {
-        "dataset_name": "EPFL SportCenter Basketball Pose Subset",
-        "benchmark_type": "Keypoint Localization & PCK Evaluation",
-        "frames_evaluated": len(results),
-        "total_joints_checked": len(results) * 12,
-        "metrics": {
-            "mean_PCK@20%": round(avg_pck20, 1),
-            "mean_PCK@5%": round(avg_pck05, 1),
-            "mean_normalized_pixel_error": round(avg_err, 4),
+        "dataset_name": "EPFL SportCenter Camera-Pose Dataset",
+        "dataset_path": dataset_dir,
+        "benchmark_type": "Camera Calibration & Court Geometry Reprojection",
+        "total_sequences": len(train_seqs) + len(test_seqs),
+        "total_frames": total_dataset_frames,
+        "total_player_positions": total_dataset_player_positions,
+        "splits": split_reports,
+        "skeletal_pose_evaluation_status": {
+            "body_pose_pck_available": False,
+            "body_pose_mpjpe_available": False,
+            "shot_events_available": False,
+            "coaching_cues_available": False,
+            "reason": (
+                "Dataset provides camera calibration (K, distCoeffs), extrinsic camera poses (R, t), "
+                "ground homographies (Hr), and floor player coordinates (Z=0), but zero human skeletal joint annotations "
+                "(head, shoulders, elbows, wrists, hips, knees, ankles). Evaluating PCK or MPJPE requires annotating 2D/3D "
+                "joint keypoints on player crops in the video frames."
+            )
         },
-        "per_frame_results": results,
         "conclusions_and_limitations": [
-            "Evaluated strictly on the 12 shared major joints (shoulders, elbows, wrists, hips, knees, ankles).",
-            "PCK@20% reaches 100.0% when joints are in clear camera view without heavy occlusion.",
-            "Limitation: EPFL frames feature elevated fisheye views of multiple players in an arena, which differs from our target workflow (single player, eye/waist level smartphone camera, 3.5m distance)."
+            "Evaluated strictly on actual camera pose (Hr, R, t) and 3D court geometry records.",
+            f"Mean planar-to-distorted projection residual across tested frames is {split_reports['training']['planar_vs_distorted_reprojection_residual_px']['mean']} px (training) and {split_reports['testing']['planar_vs_distorted_reprojection_residual_px']['mean']} px (testing).",
+            "Court ground grid FOV coverage averages ~49-51% of the 480 points across sequences.",
+            "Body-joint keypoint PCK/MPJPE cannot be evaluated on this dataset due to absence of skeletal ground truth."
         ]
     }
 
@@ -171,16 +195,6 @@ def evaluate_spl_biomechanics_compatibility() -> Dict[str, Any]:
     Evaluates downstream kinematic compatibility against MLSE Sport Performance Lab (SPL)
     basketball free throw dataset schema and published biomechanical distributions.
     """
-    from analyzer import compute_all_angles
-
-    # SPL trial schema specification:
-    # 583 trials across 5 participants. Coordinate system: 3D markerless points (Meters relative to court origin).
-    # Published kinematic distributions (Free throw shots):
-    # - Knee angle at dip: Mean 88.4 deg +/- 8.2 deg
-    # - Elbow angle at release: Mean 157.2 deg +/- 6.5 deg
-    # - Knee-to-elbow drive lag: Mean 52.3 ms +/- 18.0 ms
-    # - Makes vs Misses: Makes exhibit tighter sequence lag (46.1ms vs 62.4ms) and higher release extension.
-
     spl_published_benchmarks = {
         "participants": 5,
         "total_trials": 583,
@@ -192,8 +206,7 @@ def evaluate_spl_biomechanics_compatibility() -> Dict[str, Any]:
         }
     }
 
-    # Verify our pipeline's 3D cosine formula against simulated SPL 3D point triplets in meters
-    # Triplet 1: Knee dip (Hip at [0, 0.9, 0], Knee at [0.1, 0.45, 0.1], Ankle at [0.05, 0.0, 0.05])
+    # Verify 3D cosine formula against simulated SPL 3D point triplets in meters
     hip_pt = np.array([0.0, 0.9, 0.0])
     knee_pt = np.array([0.1, 0.45, 0.1])
     ankle_pt = np.array([0.05, 0.0, 0.05])
@@ -203,7 +216,6 @@ def evaluate_spl_biomechanics_compatibility() -> Dict[str, Any]:
     cosine = np.dot(u, v) / (np.linalg.norm(u) * np.linalg.norm(v))
     calc_knee_angle = round(float(np.arccos(np.clip(cosine, -1.0, 1.0)) * 180.0 / np.pi), 1)
 
-    # Triplet 2: Full release arm extension
     sh_pt = np.array([0.15, 1.45, 0.0])
     el_pt = np.array([0.22, 1.72, 0.15])
     wr_pt = np.array([0.28, 1.98, 0.30])
@@ -249,15 +261,25 @@ def evaluate_shot_dataset_qualification() -> Dict[str, Any]:
     }
 
 
-def run_all_public_dataset_evaluations(output_path: str = "PUBLIC_DATASETS_REPORT.json") -> Dict[str, Any]:
+def run_all_public_dataset_evaluations(
+    output_path: str = "PUBLIC_DATASETS_REPORT.json",
+    epfl_dir: str = "clones/sportcenter_camerapose_dataset",
+    sample_stride: int = 50
+) -> Dict[str, Any]:
     """Run all public dataset benchmarks and save consolidated report."""
     print("\n" + "=" * 70)
     print("   PUBLIC BASKETBALL DATASETS - EVALUATION & QUALIFICATION SUITE")
     print("=" * 70)
 
-    epfl_report = evaluate_epfl_pose_subset()
-    print(f" [1] EPFL SportCenter: Evaluated {epfl_report['frames_evaluated']} frames ({epfl_report['total_joints_checked']} joints)")
-    print(f"     -> Mean PCK@20%: {epfl_report['metrics']['mean_PCK@20%']}% | Mean PCK@5%: {epfl_report['metrics']['mean_PCK@5%']}%")
+    epfl_report = evaluate_epfl_camerapose_dataset(dataset_dir=epfl_dir, sample_stride=sample_stride)
+    print(f" [1] EPFL SportCenter Camera-Pose Dataset ({epfl_report.get('total_sequences', 0)} sequences, {epfl_report.get('total_frames', 0)} frames)")
+    if "splits" in epfl_report:
+        tr_err = epfl_report["splits"]["training"]["planar_vs_distorted_reprojection_residual_px"]["mean"]
+        te_err = epfl_report["splits"]["testing"]["planar_vs_distorted_reprojection_residual_px"]["mean"]
+        print(f"     -> Planar vs Distorted Reprojection Error: Train {tr_err} px | Test {te_err} px")
+        print(f"     -> Skeletal Pose PCK/MPJPE: UNAVAILABLE (no skeletal body joints in dataset)")
+    else:
+        print(f"     -> Status: {epfl_report.get('status', 'ERROR')}")
 
     spl_report = evaluate_spl_biomechanics_compatibility()
     print(f" [2] SPL Open Data: 583 trials / 5 participants qualified")
@@ -269,15 +291,15 @@ def run_all_public_dataset_evaluations(output_path: str = "PUBLIC_DATASETS_REPOR
     print(f"     -> {shot_report['findings'][1]}")
 
     consolidated = {
-        "report_version": "1.0.0",
-        "generated_at": "2026-10-05T20:13:30Z",
-        "summary": "Public dataset evaluations completed across pose localization (EPFL), downstream kinematics (SPL), and action context (SHOT).",
+        "report_version": "2.0.0",
+        "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "summary": "Public dataset evaluations completed across camera pose & court geometry (EPFL), downstream kinematics (SPL), and action context (SHOT).",
         "epfl_sportcenter_evaluation": epfl_report,
         "spl_open_data_evaluation": spl_report,
         "shot_dataset_qualification": shot_report
     }
 
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(consolidated, f, indent=2)
 
     print("-" * 70)
@@ -286,4 +308,14 @@ def run_all_public_dataset_evaluations(output_path: str = "PUBLIC_DATASETS_REPOR
 
 
 if __name__ == "__main__":
-    run_all_public_dataset_evaluations()
+    parser = argparse.ArgumentParser(description="Public Basketball Datasets Evaluation Harness")
+    parser.add_argument("--epfl-dir", type=str, default="clones/sportcenter_camerapose_dataset", help="Path to EPFL dataset")
+    parser.add_argument("--sample-stride", type=int, default=50, help="Sampling stride for sequence frames")
+    parser.add_argument("--output", type=str, default="PUBLIC_DATASETS_REPORT.json", help="Output JSON report path")
+    args = parser.parse_args()
+
+    run_all_public_dataset_evaluations(
+        output_path=args.output,
+        epfl_dir=args.epfl_dir,
+        sample_stride=args.sample_stride
+    )

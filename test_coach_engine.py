@@ -100,6 +100,40 @@ class TestCoachEngine(unittest.TestCase):
         self.assertEqual(eval_result["status"], "EVALUATION_COMPLETE")
         self.assertEqual(eval_result["trend"], "IMPROVED")
         self.assertLess(eval_result["delta"], -50.0)
+        self.assertEqual(eval_result["sample_size_post"], 4)
+        self.assertTrue(eval_result["drill_completed"])
+        self.assertIn("pre_make_fraction", eval_result)
+        self.assertIn("post_make_fraction", eval_result)
+        self.assertNotIn("caused", eval_result["summary"].lower())
+
+    def test_shot_style_specific_drills(self):
+        """Verify that jump_shot and set_shot assign appropriate style-specific drills."""
+        # Jump shot with Tier 1 flaw
+        base_jump = {
+            "player_id": "curry",
+            "camera_view": "frontal",
+            "shot_type": "catch_and_shoot",
+            "shot_style": "jump_shot",
+            "mean_sequence_lag_all": 115.0,
+            "sample_size_total": 6
+        }
+        cue_jump = self.coach.generate_primary_cue(base_jump, save_to_db=False)
+        self.assertEqual(cue_jump["shot_style"], "jump_shot")
+        self.assertIn("Wall/Rim Jumps", cue_jump["recommended_drill"])
+
+        # Set shot with Tier 1 flaw
+        base_set = {
+            "player_id": "curry",
+            "camera_view": "frontal",
+            "shot_type": "catch_and_shoot",
+            "shot_style": "set_shot",
+            "mean_sequence_lag_all": 95.0,  # > 85ms threshold for set_shot
+            "sample_size_total": 6
+        }
+        cue_set = self.coach.generate_primary_cue(base_set, save_to_db=False)
+        self.assertEqual(cue_set["shot_style"], "set_shot")
+        self.assertIn("Continuous Ground-to-Release", cue_set["recommended_drill"])
 
 if __name__ == "__main__":
     unittest.main()
+

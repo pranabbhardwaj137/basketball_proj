@@ -14,7 +14,7 @@ from typing import Dict, Any, List, Optional, Tuple
 
 import contextlib
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 class ShotLabDB:
     def __init__(self, db_path: str = "shot_lab.db"):
@@ -66,6 +66,7 @@ class ShotLabDB:
                     player_id TEXT NOT NULL,
                     camera_view TEXT NOT NULL, -- 'frontal', 'side_90', 'oblique_45'
                     shot_type TEXT NOT NULL,   -- 'catch_and_shoot', 'off_dribble', 'free_throw'
+                    shot_style TEXT DEFAULT 'jump_shot', -- 'jump_shot', 'set_shot'
                     fps REAL DEFAULT 30.0,
                     model_version TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -82,6 +83,7 @@ class ShotLabDB:
                     player_id TEXT NOT NULL,
                     camera_view TEXT NOT NULL,
                     shot_type TEXT NOT NULL,
+                    shot_style TEXT DEFAULT 'jump_shot',
                     
                     -- Machine detected event boundaries (Immutable from capture)
                     machine_start_frame INTEGER,
@@ -100,6 +102,7 @@ class ShotLabDB:
                     -- Outcome & Provenance
                     outcome TEXT DEFAULT 'unknown',       -- 'make', 'miss', 'unknown'
                     outcome_source TEXT DEFAULT 'unlabeled', -- 'live_hotkey', 'manual_review', 'unlabeled'
+                    review_status TEXT DEFAULT 'quarantined', -- 'quarantined', 'approved', 'discarded'
                     review_notes TEXT,
                     
                     -- Tracking Confidence & Quality Gates
@@ -130,31 +133,46 @@ class ShotLabDB:
                 )
             """)
 
-            # Baselines (Descriptive associations for matched player/view/type)
+            # Baselines (Descriptive associations for matched player/view/type/style)
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS baselines (
                     baseline_id TEXT PRIMARY KEY,
                     player_id TEXT NOT NULL,
                     camera_view TEXT NOT NULL,
                     shot_type TEXT NOT NULL,
+                    shot_style TEXT DEFAULT 'jump_shot',
                     sample_size_makes INTEGER NOT NULL,
                     sample_size_misses INTEGER NOT NULL,
+                    sample_size_total INTEGER DEFAULT 0,
                     
                     -- Descriptive distributions (mean and sample std dev)
                     mean_elbow_release_make REAL,
                     std_elbow_release_make REAL,
                     mean_elbow_release_miss REAL,
                     std_elbow_release_miss REAL,
+                    mean_elbow_release_all REAL,
+                    std_elbow_release_all REAL,
                     
                     mean_sequence_lag_make REAL,
                     std_sequence_lag_make REAL,
                     mean_sequence_lag_miss REAL,
                     std_sequence_lag_miss REAL,
+                    mean_sequence_lag_all REAL,
+                    std_sequence_lag_all REAL,
                     
                     mean_knee_dip_make REAL,
                     std_knee_dip_make REAL,
                     mean_knee_dip_miss REAL,
                     std_knee_dip_miss REAL,
+                    mean_knee_dip_all REAL,
+                    std_knee_dip_all REAL,
+                    
+                    mean_torso_sway_make REAL,
+                    std_torso_sway_make REAL,
+                    mean_torso_sway_miss REAL,
+                    std_torso_sway_miss REAL,
+                    mean_torso_sway_all REAL,
+                    std_torso_sway_all REAL,
                     
                     computed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (player_id) REFERENCES players (player_id)
@@ -167,12 +185,20 @@ class ShotLabDB:
                     remediation_id TEXT PRIMARY KEY,
                     player_id TEXT NOT NULL,
                     baseline_id TEXT,
+                    shot_style TEXT DEFAULT 'jump_shot',
                     targeted_flaw TEXT NOT NULL,
                     priority_tier INTEGER NOT NULL, -- 1=Sequencing, 2=Release, 3=Stability
                     recommended_drill TEXT NOT NULL,
                     drill_reps INTEGER DEFAULT 10,
+                    drill_completed INTEGER DEFAULT 0,
                     pre_drill_metric_mean REAL,
+                    pre_drill_metric_std REAL,
                     post_drill_metric_mean REAL,
+                    post_drill_metric_std REAL,
+                    pre_make_count INTEGER DEFAULT 0,
+                    pre_total_count INTEGER DEFAULT 0,
+                    post_make_count INTEGER DEFAULT 0,
+                    post_total_count INTEGER DEFAULT 0,
                     status TEXT DEFAULT 'active',   -- 'active', 'completed', 'dismissed'
                     feedback_notes TEXT,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -181,7 +207,49 @@ class ShotLabDB:
                     FOREIGN KEY (baseline_id) REFERENCES baselines (baseline_id)
                 )
             """)
+
+            # Run column migration checks for backwards compatibility
+            self._migrate_columns(cursor)
             conn.commit()
+
+    def _migrate_columns(self, cursor: sqlite3.Cursor) -> None:
+        """Add missing columns to existing tables if schema was initialized earlier."""
+        table_columns = {
+            "sessions": [("shot_style", "TEXT DEFAULT 'jump_shot'")],
+            "shots": [
+                ("shot_style", "TEXT DEFAULT 'jump_shot'"),
+                ("review_status", "TEXT DEFAULT 'quarantined'")
+            ],
+            "baselines": [
+                ("shot_style", "TEXT DEFAULT 'jump_shot'"),
+                ("sample_size_total", "INTEGER DEFAULT 0"),
+                ("mean_elbow_release_all", "REAL"),
+                ("std_elbow_release_all", "REAL"),
+                ("mean_sequence_lag_all", "REAL"),
+                ("std_sequence_lag_all", "REAL"),
+                ("mean_knee_dip_all", "REAL"),
+                ("std_knee_dip_all", "REAL"),
+                ("mean_torso_sway_all", "REAL"),
+                ("std_torso_sway_all", "REAL")
+            ],
+            "remediations": [
+                ("shot_style", "TEXT DEFAULT 'jump_shot'"),
+                ("drill_completed", "INTEGER DEFAULT 0"),
+                ("pre_drill_metric_std", "REAL"),
+                ("post_drill_metric_std", "REAL"),
+                ("pre_make_count", "INTEGER DEFAULT 0"),
+                ("pre_total_count", "INTEGER DEFAULT 0"),
+                ("post_make_count", "INTEGER DEFAULT 0"),
+                ("post_total_count", "INTEGER DEFAULT 0")
+            ]
+        }
+        for table, cols in table_columns.items():
+            cursor.execute(f"PRAGMA table_info({table})")
+            existing = {row[1] for row in cursor.fetchall()}
+            for col_name, col_def in cols:
+                if col_name not in existing:
+                    cursor.execute(f"ALTER TABLE {table} ADD COLUMN {col_name} {col_def}")
+
 
     def upsert_player(self, player_id: str, name: str, height_m: Optional[float] = None, wingspan_m: Optional[float] = None) -> str:
         """Register or update player profile."""
@@ -204,6 +272,7 @@ class ShotLabDB:
         player_id: str = "default_player",
         camera_view: str = "frontal",
         shot_type: str = "catch_and_shoot",
+        shot_style: str = "jump_shot",
         fps: float = 30.0,
         model_version: str = "1.0.0",
         notes: Optional[str] = None
@@ -218,9 +287,9 @@ class ShotLabDB:
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO sessions (session_id, player_id, camera_view, shot_type, fps, model_version, notes)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (session_id, player_id, camera_view, shot_type, fps, model_version, notes))
+                INSERT INTO sessions (session_id, player_id, camera_view, shot_type, shot_style, fps, model_version, notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (session_id, player_id, camera_view, shot_type, shot_style, fps, model_version, notes))
             conn.commit()
             return session_id
 
@@ -249,26 +318,36 @@ class ShotLabDB:
             outcome = "unknown"
             
         outcome_source = shot_data.get("outcome_source", "unlabeled")
+        shot_style = shot_data.get("shot_style", "jump_shot")
+
+        # Determine default review_status
+        review_status = shot_data.get("review_status")
+        if not review_status:
+            if outcome_source == "live_hotkey" and outcome in ("make", "miss"):
+                review_status = "approved"
+            else:
+                review_status = "quarantined"
+
         tracking_conf = shot_data.get("tracking_confidence", "SUFFICIENT")
         
         with self._get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO shots (
-                    shot_id, session_id, player_id, camera_view, shot_type,
+                    shot_id, session_id, player_id, camera_view, shot_type, shot_style,
                     machine_start_frame, machine_dip_frame, machine_set_frame, machine_release_frame, machine_end_frame,
                     annotated_start_frame, annotated_dip_frame, annotated_set_frame, annotated_release_frame, annotated_end_frame,
-                    outcome, outcome_source, review_notes,
+                    outcome, outcome_source, review_status, review_notes,
                     tracking_confidence, valid_frame_ratio,
                     knee_angle_dip_3d, elbow_angle_release_3d, release_height_rel_m,
                     elbow_angle_release_2d, foreshortening_discrepancy_deg,
                     sequence_lag_ms, sequence_order_valid, torso_sway_deg,
                     raw_landmarks_ref, created_at, updated_at
                 ) VALUES (
+                    ?, ?, ?, ?, ?, ?,
                     ?, ?, ?, ?, ?,
                     ?, ?, ?, ?, ?,
-                    ?, ?, ?, ?, ?,
-                    ?, ?, ?,
+                    ?, ?, ?, ?,
                     ?, ?,
                     ?, ?, ?,
                     ?, ?,
@@ -281,9 +360,10 @@ class ShotLabDB:
                 shot_data.get("player_id", "default_player"),
                 shot_data.get("camera_view", "frontal"),
                 shot_data.get("shot_type", "catch_and_shoot"),
+                shot_style,
                 m_start, m_dip, m_set, m_release, m_end,
                 a_start, a_dip, a_set, a_release, a_end,
-                outcome, outcome_source, shot_data.get("review_notes"),
+                outcome, outcome_source, review_status, shot_data.get("review_notes"),
                 tracking_conf, shot_data.get("valid_frame_ratio", 1.0),
                 shot_data.get("knee_angle_dip_3d"),
                 shot_data.get("elbow_angle_release_3d"),
@@ -304,9 +384,11 @@ class ShotLabDB:
         shot_id: str,
         annotated_boundaries: Optional[Dict[str, int]] = None,
         outcome: Optional[str] = None,
-        outcome_source: str = "manual_review",
+        outcome_source: Optional[str] = None,
+        review_status: Optional[str] = None,
         review_notes: Optional[str] = None,
-        tracking_confidence: Optional[str] = None
+        tracking_confidence: Optional[str] = None,
+        shot_style: Optional[str] = None
     ) -> bool:
         """
         Update human-corrected boundaries or outcome label while preserving
@@ -345,8 +427,18 @@ class ShotLabDB:
                 if cleaned_outcome in ("make", "miss", "unknown"):
                     updates.append("outcome = ?")
                     params.append(cleaned_outcome)
+                    src = outcome_source if outcome_source is not None else "manual_review"
                     updates.append("outcome_source = ?")
-                    params.append(outcome_source)
+                    params.append(src)
+            elif outcome_source is not None:
+                updates.append("outcome_source = ?")
+                params.append(outcome_source)
+
+            if review_status is not None:
+                cleaned_status = review_status.lower()
+                if cleaned_status in ("quarantined", "approved", "discarded"):
+                    updates.append("review_status = ?")
+                    params.append(cleaned_status)
                     
             if review_notes is not None:
                 updates.append("review_notes = ?")
@@ -355,6 +447,10 @@ class ShotLabDB:
             if tracking_confidence is not None:
                 updates.append("tracking_confidence = ?")
                 params.append(tracking_confidence)
+
+            if shot_style is not None:
+                updates.append("shot_style = ?")
+                params.append(shot_style)
                 
             updates.append("updated_at = ?")
             params.append(now)
@@ -379,6 +475,8 @@ class ShotLabDB:
         session_id: Optional[str] = None,
         camera_view: Optional[str] = None,
         shot_type: Optional[str] = None,
+        shot_style: Optional[str] = None,
+        review_status: Optional[str] = None,
         min_confidence: Optional[str] = "SUFFICIENT"
     ) -> List[Dict[str, Any]]:
         """Query shots with optional filters."""
@@ -397,6 +495,12 @@ class ShotLabDB:
         if shot_type:
             query += " AND shot_type = ?"
             params.append(shot_type)
+        if shot_style:
+            query += " AND shot_style = ?"
+            params.append(shot_style)
+        if review_status:
+            query += " AND review_status = ?"
+            params.append(review_status)
         if min_confidence:
             query += " AND tracking_confidence = ?"
             params.append(min_confidence)
@@ -415,17 +519,29 @@ class ShotLabDB:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO baselines (
-                    baseline_id, player_id, camera_view, shot_type,
-                    sample_size_makes, sample_size_misses,
+                    baseline_id, player_id, camera_view, shot_type, shot_style,
+                    sample_size_makes, sample_size_misses, sample_size_total,
                     mean_elbow_release_make, std_elbow_release_make,
                     mean_elbow_release_miss, std_elbow_release_miss,
+                    mean_elbow_release_all, std_elbow_release_all,
                     mean_sequence_lag_make, std_sequence_lag_make,
                     mean_sequence_lag_miss, std_sequence_lag_miss,
+                    mean_sequence_lag_all, std_sequence_lag_all,
                     mean_knee_dip_make, std_knee_dip_make,
                     mean_knee_dip_miss, std_knee_dip_miss,
+                    mean_knee_dip_all, std_knee_dip_all,
+                    mean_torso_sway_make, std_torso_sway_make,
+                    mean_torso_sway_miss, std_torso_sway_miss,
+                    mean_torso_sway_all, std_torso_sway_all,
                     computed_at
                 ) VALUES (
-                    ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?,
+                    ?, ?, ?,
+                    ?, ?,
+                    ?, ?,
+                    ?, ?,
+                    ?, ?,
+                    ?, ?,
                     ?, ?,
                     ?, ?,
                     ?, ?,
@@ -440,33 +556,56 @@ class ShotLabDB:
                 baseline_data["player_id"],
                 baseline_data.get("camera_view", "frontal"),
                 baseline_data.get("shot_type", "catch_and_shoot"),
+                baseline_data.get("shot_style", "jump_shot"),
                 baseline_data.get("sample_size_makes", 0),
                 baseline_data.get("sample_size_misses", 0),
+                baseline_data.get("sample_size_total", 0),
                 baseline_data.get("mean_elbow_release_make"),
                 baseline_data.get("std_elbow_release_make"),
                 baseline_data.get("mean_elbow_release_miss"),
                 baseline_data.get("std_elbow_release_miss"),
+                baseline_data.get("mean_elbow_release_all"),
+                baseline_data.get("std_elbow_release_all"),
                 baseline_data.get("mean_sequence_lag_make"),
                 baseline_data.get("std_sequence_lag_make"),
                 baseline_data.get("mean_sequence_lag_miss"),
                 baseline_data.get("std_sequence_lag_miss"),
+                baseline_data.get("mean_sequence_lag_all"),
+                baseline_data.get("std_sequence_lag_all"),
                 baseline_data.get("mean_knee_dip_make"),
                 baseline_data.get("std_knee_dip_make"),
                 baseline_data.get("mean_knee_dip_miss"),
-                baseline_data.get("std_knee_dip_miss")
+                baseline_data.get("std_knee_dip_miss"),
+                baseline_data.get("mean_knee_dip_all"),
+                baseline_data.get("std_knee_dip_all"),
+                baseline_data.get("mean_torso_sway_make"),
+                baseline_data.get("std_torso_sway_make"),
+                baseline_data.get("mean_torso_sway_miss"),
+                baseline_data.get("std_torso_sway_miss"),
+                baseline_data.get("mean_torso_sway_all"),
+                baseline_data.get("std_torso_sway_all")
             ))
             conn.commit()
             return baseline_id
 
-    def get_latest_baseline(self, player_id: str, camera_view: str, shot_type: str) -> Optional[Dict[str, Any]]:
+    def get_latest_baseline(
+        self,
+        player_id: str,
+        camera_view: str,
+        shot_type: str,
+        shot_style: Optional[str] = "jump_shot"
+    ) -> Optional[Dict[str, Any]]:
         """Get the most recent baseline for a player in a specific context."""
+        query = "SELECT * FROM baselines WHERE player_id = ? AND camera_view = ? AND shot_type = ?"
+        params = [player_id, camera_view, shot_type]
+        if shot_style:
+            query += " AND shot_style = ?"
+            params.append(shot_style)
+        query += " ORDER BY computed_at DESC LIMIT 1"
+        
         with self._get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("""
-                SELECT * FROM baselines 
-                WHERE player_id = ? AND camera_view = ? AND shot_type = ?
-                ORDER BY computed_at DESC LIMIT 1
-            """, (player_id, camera_view, shot_type))
+            cursor.execute(query, tuple(params))
             row = cursor.fetchone()
             return dict(row) if row else None
 
@@ -478,13 +617,21 @@ class ShotLabDB:
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO remediations (
-                    remediation_id, player_id, baseline_id,
+                    remediation_id, player_id, baseline_id, shot_style,
                     targeted_flaw, priority_tier, recommended_drill, drill_reps,
-                    pre_drill_metric_mean, post_drill_metric_mean,
+                    drill_completed,
+                    pre_drill_metric_mean, pre_drill_metric_std,
+                    post_drill_metric_mean, post_drill_metric_std,
+                    pre_make_count, pre_total_count,
+                    post_make_count, post_total_count,
                     status, feedback_notes, created_at, updated_at
                 ) VALUES (
-                    ?, ?, ?,
                     ?, ?, ?, ?,
+                    ?, ?, ?, ?,
+                    ?,
+                    ?, ?,
+                    ?, ?,
+                    ?, ?,
                     ?, ?,
                     ?, ?, ?, ?
                 )
@@ -492,12 +639,20 @@ class ShotLabDB:
                 rem_id,
                 rem_data["player_id"],
                 rem_data.get("baseline_id"),
+                rem_data.get("shot_style", "jump_shot"),
                 rem_data["targeted_flaw"],
                 rem_data.get("priority_tier", 1),
                 rem_data["recommended_drill"],
                 rem_data.get("drill_reps", 10),
+                1 if rem_data.get("drill_completed", False) else 0,
                 rem_data.get("pre_drill_metric_mean"),
+                rem_data.get("pre_drill_metric_std"),
                 rem_data.get("post_drill_metric_mean"),
+                rem_data.get("post_drill_metric_std"),
+                rem_data.get("pre_make_count", 0),
+                rem_data.get("pre_total_count", 0),
+                rem_data.get("post_make_count", 0),
+                rem_data.get("post_total_count", 0),
                 rem_data.get("status", "active"),
                 rem_data.get("feedback_notes"),
                 now, now
@@ -509,7 +664,11 @@ class ShotLabDB:
         self,
         remediation_id: str,
         status: str,
+        drill_completed: Optional[bool] = None,
         post_drill_metric_mean: Optional[float] = None,
+        post_drill_metric_std: Optional[float] = None,
+        post_make_count: Optional[int] = None,
+        post_total_count: Optional[int] = None,
         feedback_notes: Optional[str] = None
     ) -> bool:
         """Update remediation progress and post-drill outcome."""
@@ -519,9 +678,21 @@ class ShotLabDB:
             updates = ["status = ?", "updated_at = ?"]
             params = [status, now]
             
+            if drill_completed is not None:
+                updates.append("drill_completed = ?")
+                params.append(1 if drill_completed else 0)
             if post_drill_metric_mean is not None:
                 updates.append("post_drill_metric_mean = ?")
                 params.append(post_drill_metric_mean)
+            if post_drill_metric_std is not None:
+                updates.append("post_drill_metric_std = ?")
+                params.append(post_drill_metric_std)
+            if post_make_count is not None:
+                updates.append("post_make_count = ?")
+                params.append(post_make_count)
+            if post_total_count is not None:
+                updates.append("post_total_count = ?")
+                params.append(post_total_count)
             if feedback_notes is not None:
                 updates.append("feedback_notes = ?")
                 params.append(feedback_notes)
@@ -542,3 +713,4 @@ class ShotLabDB:
             """, (player_id,))
             row = cursor.fetchone()
             return dict(row) if row else None
+

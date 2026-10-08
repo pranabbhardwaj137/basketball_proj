@@ -4,6 +4,7 @@ import os
 import time
 from collections import deque
 from datetime import datetime
+from typing import Optional, Dict, Any, List, Tuple
 
 import numpy as np
 
@@ -405,13 +406,30 @@ class KineticChainAnalyzer:
 class ShotPhaseDetector:
     """
     Robust Finite State Machine for basketball shot phase detection.
-    Guarantees strict state transitions without artificial constant imputation:
+    Guarantees strict state transitions with configurable kinematic gates:
     IDLE -> PREPARING (Dip) / SET_POINT -> RELEASING -> FOLLOW_THROUGH -> COOLDOWN -> IDLE.
+
+    Gates:
+      - Configurable wrist-height elevation (nose/forehead for jump_shot, shoulder-level for set_shot)
+      - Upward vertical velocity threshold (v_y < -0.06)
+      - Dip-to-rise kinetic sequencing
+      - Phase duration sanity windows (rejecting sensor jitter and static hold aborts)
+      - Landmark tracking confidence gating
     """
 
-    def __init__(self, debounce_frames=2):
+    def __init__(
+        self,
+        debounce_frames: int = 2,
+        shot_style: str = "jump_shot",
+        wrist_elevation_threshold: Optional[float] = None,
+        min_upward_velocity: float = -0.06,
+    ):
         self.state = 'idle'
         self.debounce_frames = debounce_frames
+        self.shot_style = shot_style.lower() if shot_style in ("jump_shot", "set_shot") else "jump_shot"
+        self.wrist_elevation_threshold = wrist_elevation_threshold
+        self.min_upward_velocity = min_upward_velocity
+
         self.candidate_state = 'idle'
         self.candidate_count = 0
 
@@ -420,13 +438,27 @@ class ShotPhaseDetector:
         self.prev_time = None
 
         self.has_entered_prep_or_set = False
+        self.phase_start_time = None
+        self.shot_start_time = None
         self.release_frames_count = 0
         self.follow_through_frames = 0
         self.cooldown_frames = 0
         self.min_dip_knee = 180.0
+        self.knee_dip_time = None
         self.max_release_elbow = 0.0
 
-    def update(self, landmarks, angles, timestamp_ms=None, hand_info=None):
+    def _is_wrist_elevated(self, wrist_y: float, shoulder_y: float, nose_y: Optional[float]) -> bool:
+        """Evaluate wrist height gate against configured shot style."""
+        if self.wrist_elevation_threshold is not None:
+            return wrist_y <= self.wrist_elevation_threshold
+        if self.shot_style == "jump_shot":
+            if nose_y is not None:
+                return wrist_y <= (nose_y + 0.02)
+            return wrist_y <= (shoulder_y - 0.12)
+        # set_shot allows shoulder-relative threshold
+        return wrist_y <= (shoulder_y - 0.05)
+
+    def update(self, landmarks, angles, timestamp_ms=None, hand_info=None, ball_info=None):
         """
         Update state machine using kinematics, strict transition guards,
         and optional hand snap signals.
@@ -437,9 +469,16 @@ class ShotPhaseDetector:
         side = angles.get('shooting_side', 'right')
         wrist_idx = 15 if side == 'left' else 16
         shoulder_idx = 11 if side == 'left' else 12
+        elbow_idx = 13 if side == 'left' else 14
+        nose_idx = 0
 
-        wrist_y = landmarks[wrist_idx]['norm_y'] if wrist_idx in landmarks else None
-        shoulder_y = landmarks[shoulder_idx]['norm_y'] if shoulder_idx in landmarks else None
+        wrist_lm = landmarks.get(wrist_idx)
+        shoulder_lm = landmarks.get(shoulder_idx)
+        nose_lm = landmarks.get(nose_idx)
+
+        wrist_y = wrist_lm['norm_y'] if wrist_lm else None
+        shoulder_y = shoulder_lm['norm_y'] if shoulder_lm else None
+        nose_y = nose_lm['norm_y'] if nose_lm else None
 
         elbow_angle = angles.get('elbow_shooting')
         knee_angle = angles.get('knee_shooting')
@@ -448,7 +487,7 @@ class ShotPhaseDetector:
         dt = max(0.016, now - self.prev_time) if self.prev_time is not None else 0.033
         self.prev_time = now
 
-        # If core landmarks are occluded, hold previous state to prevent false jumping
+        # Landmark confidence guard: require key joints
         if wrist_y is None or shoulder_y is None:
             return self.state, 0.0, 0.0
 
@@ -468,6 +507,13 @@ class ShotPhaseDetector:
 
         raw_phase = self.state
         is_hand_flick = hand_info.get('is_flick', False) if hand_info else False
+        is_elevated = self._is_wrist_elevated(wrist_y, shoulder_y, nose_y)
+        has_upward_drive = (wrist_v_y <= self.min_upward_velocity)
+
+        # Track phase duration
+        if self.phase_start_time is None:
+            self.phase_start_time = now
+        phase_duration_s = now - self.phase_start_time
 
         # --- STATE TRANSITION MACHINE ---
 
@@ -475,72 +521,92 @@ class ShotPhaseDetector:
             self.has_entered_prep_or_set = False
             self.release_frames_count = 0
             self.follow_through_frames = 0
+            self.shot_start_time = None
             if knee_angle is not None:
                 self.min_dip_knee = knee_angle
             if elbow_angle is not None:
                 self.max_release_elbow = elbow_angle
 
-            # Transition to PREPARING: Knee bent below 145 deg
-            if knee_angle is not None and knee_angle < 145.0:
+            # Transition to PREPARING: Lower-body flexion (knee < 145 deg) with arm below set point
+            if knee_angle is not None and knee_angle < 145.0 and wrist_y > (shoulder_y - 0.05):
                 raw_phase = 'preparing'
                 self.has_entered_prep_or_set = True
-            # Transition to SET_POINT: Wrist brought to shoulder/head level with bent elbow (60-115 deg)
-            elif elbow_angle is not None and wrist_y <= (shoulder_y + 0.05) and 60.0 <= elbow_angle <= 115.0:
+                self.phase_start_time = now
+                self.shot_start_time = now
+                self.knee_dip_time = now
+
+            # Transition directly to SET_POINT: Elevated wrist (near/above shoulder) with loaded elbow
+            elif elbow_angle is not None and is_elevated and 60.0 <= elbow_angle <= 120.0:
                 raw_phase = 'set_point'
                 self.has_entered_prep_or_set = True
+                self.phase_start_time = now
+                self.shot_start_time = now
 
         elif self.state == 'preparing':
             if knee_angle is not None:
-                self.min_dip_knee = min(self.min_dip_knee, knee_angle)
+                if knee_angle < self.min_dip_knee:
+                    self.min_dip_knee = knee_angle
+                    self.knee_dip_time = now
 
-            if elbow_angle is not None and wrist_y <= (shoulder_y + 0.05) and 60.0 <= elbow_angle <= 115.0:
+            # Advance to SET_POINT when ball/wrist is raised to shoulder/head level
+            if is_elevated and (elbow_angle is not None and 60.0 <= elbow_angle <= 125.0):
                 raw_phase = 'set_point'
                 self.has_entered_prep_or_set = True
-            elif elbow_angle is not None and (wrist_v_y < -0.05 or elbow_v_ang > 30.0) and elbow_angle > 120.0 and wrist_y < shoulder_y:
-                # Direct 1-motion fluid jump into releasing
+                self.phase_start_time = now
+
+            # Direct 1-motion upward jump into releasing: requires upward velocity + elevation gate
+            elif has_upward_drive and is_elevated and (elbow_angle is not None and elbow_angle >= 115.0):
                 raw_phase = 'releasing'
                 self.release_frames_count = 1
-            elif knee_angle is not None and knee_angle > 168.0 and wrist_y > (shoulder_y + 0.10):
-                # Aborted preparation / stood back up
+                self.phase_start_time = now
+
+            # Phase duration timeout: if preparation exceeds 1.2s or shooter stands back up
+            elif phase_duration_s > 1.2 or (knee_angle is not None and knee_angle > 170.0 and wrist_y > (shoulder_y + 0.12)):
                 raw_phase = 'idle'
                 self.has_entered_prep_or_set = False
+                self.phase_start_time = None
 
         elif self.state == 'set_point':
-            # Rising upward extension into release
-            if elbow_angle is not None and (wrist_v_y < -0.02 or elbow_v_ang > 20.0 or is_hand_flick) and elbow_angle >= 120.0:
+            # Rising upward extension into release: strict upward velocity + elevated wrist
+            if (has_upward_drive or is_hand_flick) and is_elevated and (elbow_angle is not None and elbow_angle >= 115.0):
                 raw_phase = 'releasing'
                 self.release_frames_count = 1
-            elif wrist_y > shoulder_y + 0.18:
-                # Dropped ball down without shooting
+                self.phase_start_time = now
+
+            # Set point timeout: holding set point > 0.6s without shooting is an aborted shot / ball fake
+            elif phase_duration_s > 0.6 or wrist_y > (shoulder_y + 0.18):
                 raw_phase = 'idle'
                 self.has_entered_prep_or_set = False
+                self.phase_start_time = None
 
         elif self.state == 'releasing':
             self.release_frames_count += 1
             if elbow_angle is not None:
                 self.max_release_elbow = max(self.max_release_elbow, elbow_angle)
 
-            # Move into FOLLOW_THROUGH when elbow is extended high (>= 148 deg) and wrist is near/above head/shoulder level
-            if (elbow_angle is not None and elbow_angle >= 148.0) and (wrist_y <= (shoulder_y + 0.08)):
+            # Move into FOLLOW_THROUGH when elbow is extended high (>= 145 deg) with wrist above shoulder
+            if (elbow_angle is not None and elbow_angle >= 145.0) and is_elevated:
                 raw_phase = 'follow_through'
                 self.follow_through_frames = 1
-            elif self.release_frames_count > 45:
-                # Timeout safety (spent > 1.5s in releasing without follow through)
+                self.phase_start_time = now
+
+            # Release timeout: spent > 0.5s in releasing without follow-through
+            elif self.release_frames_count > 16:
                 raw_phase = 'idle'
                 self.has_entered_prep_or_set = False
-
-
+                self.phase_start_time = None
 
         elif self.state == 'follow_through':
             self.follow_through_frames += 1
             if elbow_angle is not None:
                 self.max_release_elbow = max(self.max_release_elbow, elbow_angle)
 
-            # Hold follow through for at least 4 frames, then complete shot and enter cooldown
-            if self.follow_through_frames >= 4:
+            # Hold follow through for at least 3 frames, then complete shot and enter cooldown
+            if self.follow_through_frames >= 3:
                 raw_phase = 'idle'
-                self.cooldown_frames = 25  # ~0.8 second cooldown before allowing next shot
+                self.cooldown_frames = 20  # ~0.66 second cooldown
                 self.has_entered_prep_or_set = False
+                self.phase_start_time = None
 
         # Debounce candidate phase
         if raw_phase == self.candidate_state:
@@ -550,6 +616,8 @@ class ShotPhaseDetector:
             self.candidate_count = 1
 
         if self.candidate_count >= self.debounce_frames or raw_phase in ('follow_through', 'releasing'):
+            if self.state != self.candidate_state:
+                self.phase_start_time = now
             self.state = self.candidate_state
 
         return self.state, round(wrist_v_y, 4), round(elbow_v_ang, 2)

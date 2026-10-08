@@ -34,109 +34,118 @@ flowchart TD
 ---
 
 ### Task 1: SQLite Persistence & Provenance Schema (`shot_lab_db.py`)
-- **Objective:** Create a robust, versioned SQLite database layer to store players, sessions, raw/calibrated kinematics, machine vs. human annotations, baselines, and drill remediations.
-- **Files to create/modify:** `shot_lab_db.py`
+- **Objective:** Create a robust, versioned SQLite database layer to store players, sessions, raw/calibrated kinematics, machine vs. human annotations, baselines, and drill remediations with explicit `shot_style` support.
+- **Files to modify:** `shot_lab_db.py`
 - **Schema Details (`schema_version = 1`):**
   - `players`: `player_id TEXT PRIMARY KEY`, `name TEXT`, `height_m REAL`, `wingspan_m REAL`, `created_at TIMESTAMP`.
-  - `sessions`: `session_id TEXT PRIMARY KEY`, `player_id TEXT`, `camera_view TEXT` (`"frontal" | "side_90" | "oblique_45"`), `shot_type TEXT` (`"catch_and_shoot" | "off_dribble" | "free_throw"`), `fps REAL`, `model_version TEXT`, `created_at TIMESTAMP`.
+  - `sessions`: `session_id TEXT PRIMARY KEY`, `player_id TEXT`, `camera_view TEXT` (`"frontal" | "side_90" | "oblique_45"`), `shot_type TEXT` (`"catch_and_shoot" | "off_dribble" | "free_throw"`), `shot_style TEXT` (`"jump_shot" | "set_shot"`), `fps REAL`, `model_version TEXT`, `created_at TIMESTAMP`.
   - `shots`:
-    - `shot_id TEXT PRIMARY KEY`, `session_id TEXT`, `player_id TEXT`
+    - `shot_id TEXT PRIMARY KEY`, `session_id TEXT`, `player_id TEXT`, `camera_view TEXT`, `shot_type TEXT`, `shot_style TEXT`
     - Machine boundaries: `machine_start_frame INT`, `machine_dip_frame INT`, `machine_set_frame INT`, `machine_release_frame INT`, `machine_end_frame INT`
     - Human-annotated boundaries: `annotated_start_frame INT`, `annotated_dip_frame INT`, `annotated_set_frame INT`, `annotated_release_frame INT`, `annotated_end_frame INT`
-    - Outcome: `outcome TEXT` (`"make" | "miss" | "unknown"`), `outcome_source TEXT` (`"live_hotkey" | "manual_review" | "unlabeled"`), `review_notes TEXT`
+    - Outcome: `outcome TEXT` (`"make" | "miss" | "unknown"`), `outcome_source TEXT` (`"live_hotkey" | "manual_review" | "unlabeled"`), `review_status TEXT` (`"quarantined" | "approved" | "discarded"`), `review_notes TEXT`
     - Tracking validity: `tracking_confidence TEXT` (`"SUFFICIENT" | "INSUFFICIENT"`), `valid_frame_ratio REAL`
     - 3D World Kinematics: `knee_angle_dip_3d REAL`, `elbow_angle_release_3d REAL`, `release_height_rel_m REAL`
     - 2D Image Kinematics: `elbow_angle_release_2d REAL`, `foreshortening_discrepancy_deg REAL`
     - Sequencing: `sequence_lag_ms REAL`, `sequence_order_valid BOOLEAN`, `torso_sway_deg REAL`
     - Metadata: `created_at TIMESTAMP`, `updated_at TIMESTAMP`
-  - `baselines`: `baseline_id TEXT PRIMARY KEY`, `player_id TEXT`, `camera_view TEXT`, `shot_type TEXT`, `sample_size_makes INT`, `sample_size_misses INT`, `mean_elbow_release_make REAL`, `std_elbow_release_make REAL`, `mean_elbow_release_miss REAL`, `std_elbow_release_miss REAL`, `mean_sequence_lag_make REAL`, `std_sequence_lag_make REAL`, `mean_sequence_lag_miss REAL`, `std_sequence_lag_miss REAL`, `computed_at TIMESTAMP`.
-  - `remediations`: `remediation_id TEXT PRIMARY KEY`, `player_id TEXT`, `baseline_id TEXT`, `targeted_flaw TEXT`, `priority_tier INT`, `recommended_drill TEXT`, `pre_drill_metric_mean REAL`, `post_drill_metric_mean REAL`, `status TEXT` (`"active" | "completed" | "dismissed"`), `feedback_notes TEXT`, `created_at TIMESTAMP`.
+  - `baselines`: `baseline_id TEXT PRIMARY KEY`, `player_id TEXT`, `camera_view TEXT`, `shot_type TEXT`, `shot_style TEXT`, `sample_size_makes INT`, `sample_size_misses INT`, `sample_size_total INT`, `mean_elbow_release_make REAL`, `std_elbow_release_make REAL`, `mean_elbow_release_miss REAL`, `std_elbow_release_miss REAL`, `mean_sequence_lag_make REAL`, `std_sequence_lag_make REAL`, `mean_sequence_lag_miss REAL`, `std_sequence_lag_miss REAL`, `mean_elbow_release_all REAL`, `std_elbow_release_all REAL`, `mean_sequence_lag_all REAL`, `std_sequence_lag_all REAL`, `computed_at TIMESTAMP`.
+  - `remediations`: `remediation_id TEXT PRIMARY KEY`, `player_id TEXT`, `baseline_id TEXT`, `shot_style TEXT`, `targeted_flaw TEXT`, `priority_tier INT`, `recommended_drill TEXT`, `drill_reps INT`, `drill_completed BOOLEAN`, `pre_drill_metric_mean REAL`, `pre_drill_metric_std REAL`, `post_drill_metric_mean REAL`, `post_drill_metric_std REAL`, `pre_make_count INT`, `pre_total_count INT`, `post_make_count INT`, `post_total_count INT`, `status TEXT` (`"active" | "completed" | "dismissed"`), `feedback_notes TEXT`, `created_at TIMESTAMP`.
 - **Verification:** Unit tests verifying table creation, schema version stamping, CRUD operations, and immutable machine boundary persistence.
 
 ---
 
 ### Task 2: Live In-Session Outcome Hotkeys & HUD Overlay (`main.py`)
-- **Objective:** Enable frictionless live outcome tagging during live capture without interrupting video processing.
-- **Files to modify:** `main.py`, `analyzer.py`
+- **Objective:** Enable frictionless live outcome tagging during live capture without interrupting video processing, persisting `shot_style` and quarantine status.
+- **Files to modify:** `main.py`
 - **Specification:**
-  - When `ShotStateMachine` transitions to `FOLLOW_THROUGH` or ends a shot:
-    - Display a 2.5-second non-blocking HUD toast at the top-center:
+  - Passes `shot_style` into `session` and `shot` records.
+  - When a shot ends:
+    - Display non-blocking HUD toast at the top-center:
       `[M] Make  |  [X] Miss  |  [U] Unknown  (Shot #N recorded)`
     - Active hotkeys: `m` / `M` (Make), `x` / `X` (Miss), `u` / `U` (Unknown).
-    - If user presses a key within the window, update the last shot record in `shot_lab.db` with `outcome_source = "live_hotkey"` and display a brief green/red confirmation toast.
-    - If no key is pressed, persist the shot with `outcome = "unknown"` and `outcome_source = "unlabeled"`.
+    - If user presses hotkey, update shot with `outcome_source = "live_hotkey"` and mark as confirmed/reviewed.
+    - If no key is pressed, persist with `outcome = "unknown"`, `outcome_source = "unlabeled"`, and `review_status = "quarantined"`.
   - Ensure all stdout and HUD rendering remains ASCII/safe on Windows `cp1252`.
-- **Verification:** Mock video execution verifying hotkey capture, database recording, and toast expiration.
+- **Verification:** Video execution verifying hotkey capture, database recording with `shot_style`, and toast expiration.
 
 ---
 
-### Task 3: Post-Session Shot Review & Correction Tool (`review_shots.py`)
-- **Objective:** Provide a standalone CLI/interactive review queue to inspect, scrub, and correct shot boundaries and outcome tags.
-- **Files to create:** `review_shots.py`
+### Task 3: Post-Session Shot Review & Explicit Per-Shot Admission Tool (`review_shots.py`)
+- **Objective:** Provide a standalone CLI review queue for explicit per-shot inspection, scrubbing, and approval of quarantined shots before baseline admission. No blind batch-approval.
+- **Files to modify:** `review_shots.py`
 - **Specification:**
-  - CLI command: `python review_shots.py --session <session_id>` or `python review_shots.py --latest`.
-  - Lists all detected shots with: `Shot #`, `Frames (Dip->Release)`, `2D/3D Elbow Angle`, `Seq Lag (ms)`, `Confidence`, `Outcome`.
-  - Interactive menu options:
-    - `[V]iew Shot Details`: Prints kinematic trajectory and frame breakdown.
-    - `[C]orrect Outcome`: Set/change outcome to `Make`, `Miss`, or `Unknown`.
-    - `[A]djust Boundaries`: Override `dip_frame` or `release_frame` (stored in `annotated_*_frame`, preserving `machine_*_frame`).
-    - `[F]lag Data Quality`: Mark tracking confidence as `INSUFFICIENT` if occlusion or crop was missed by auto-gating.
-- **Verification:** Automated test verifying that boundary overrides update `annotated_*` columns while leaving `machine_*` untouched.
+  - Explicit per-shot workflow: review keyframes and boundaries before approving, relabeling, or discarding attempts.
+  - Supports filtering by session, player, and quarantine status (`--quarantined`, `--approved`).
+  - Menu / CLI actions for explicit shot decision:
+    - `[A]pprove Shot`: Validate boundaries/confidence and mark `review_status = "approved"` for baseline admission.
+    - `[R]elabel Outcome`: Set/correct outcome to Make, Miss, or Unknown (`outcome_source = "manual_review"`).
+    - `[E]dit Boundaries`: Override dip or release frame (saved in `annotated_*_frame`, preserving `machine_*_frame`).
+    - `[D]iscard / Quarantine`: Flag poor tracking quality or non-shot artifacts as `review_status = "discarded"`.
+    - No blind batch-approval shortcut is provided.
+- **Verification:** Automated tests verifying explicit per-shot approval, boundary overriding while preserving machine columns, and rejection of batch shortcuts.
 
 ---
 
-### Task 4: Personal Baseline & Make vs. Miss Association Engine (`baseline_engine.py`)
-- **Objective:** Calculate player-specific baseline kinematic profiles and identify statistically meaningful differences between made and missed shots.
-- **Files to create:** `baseline_engine.py`
+### Task 4: Personal Baseline & Descriptive Association Engine (`baseline_engine.py`)
+- **Objective:** Calculate player-specific baseline kinematic profiles strictly grouped by `(player_id, camera_view, shot_type, shot_style)`.
+- **Files to modify:** `baseline_engine.py`
 - **Specification:**
-  - **Context Grouping:** Strictly filters by `(player_id, camera_view, shot_type)`.
+  - **Context Grouping:** Strictly filters by `(player_id, camera_view, shot_type, shot_style)`. Never cross-pollinates baselines across styles.
   - **Quality & Sample Gate:**
-    - Requires at least $N_{\text{valid}} \ge 5$ shots where `tracking_confidence == "SUFFICIENT"`.
-    - If $N < 5$, return status `"INSUFFICIENT_SAMPLE"` with a progress report (`"Collected N/5 valid shots for baseline"`).
+    - Requires at least $N_{\text{valid}} \ge 5$ human-reviewed approved shots (`review_status in ('approved', 'live_hotkey')` or human-confirmed).
+    - If $N < 5$, return status `"INSUFFICIENT_SAMPLE"` with progress (`"Collected N/5 reviewed shots for baseline"`).
   - **Statistical Computations:**
-    - Continuous metrics: computes sample mean $\bar{x} = \frac{1}{N}\sum x_i$ and sample standard deviation $s = \sqrt{\frac{1}{N-1}\sum (x_i - \bar{x})^2}$.
-    - Expresses make vs. miss comparisons with explicit notation:
-      - Angle metric: $\bar{\theta}_{\text{makes}} \pm s_{\text{makes}}^\circ$ vs $\bar{\theta}_{\text{misses}} \pm s_{\text{misses}}^\circ$ ($s$ = sample standard deviation).
-      - Timing metric: $\bar{t}_{\text{makes}} \pm s_{\text{makes}}\text{ ms}$ vs $\bar{t}_{\text{misses}} \pm s_{\text{misses}}\text{ ms}$ (with attached note: *"temporal quantization uncertainty: $\pm 33\text{ms}$ at 30 FPS"*).
-  - **Language Guardrails:** Format output string strictly as descriptive association (*"In your 7 reviewed shots, makes were associated with..."*), never using causal claims (*"caused your miss"*).
-- **Verification:** Unit test with synthetic shot batches testing $N < 5$ abstention, grouping by view/shot type, and accurate $\bar{x} \pm s$ calculation.
+    - Computes sample mean $\bar{x} = \frac{1}{N}\sum x_i$ and sample standard deviation $s = \sqrt{\frac{1}{N-1}\sum (x_i - \bar{x})^2}$ across all reviewed shots.
+    - Make vs. miss contrast is reported ONLY when $N_{\text{makes}} \ge 5$ and $N_{\text{misses}} \ge 5$. If either group has $< 5$ shots, reports overall baseline mechanics with note: *"Make-vs-miss contrast pending: requires >= 5 reviewed makes and >= 5 reviewed misses (found N_makes, N_misses)"*.
+    - Timing metrics report $\bar{t} \pm s$ alongside temporal quantization uncertainty ($\pm 33.3\text{ms}$ at 30 FPS).
+  - **Language Guardrails:** Format output strings strictly as descriptive associations (*"In your N reviewed shots, makes were associated with..."*), zero causal claims (*"caused your miss"*).
+- **Verification:** Unit tests verifying $N < 5$ gate, style isolation, make/miss sub-gate ($\ge 5$ each), and $\bar{x} \pm s$ calculations.
 
 ---
 
-### Task 5: Hierarchical One-Cue Remediation & Follow-Up Engine (`coach_engine.py`)
-- **Objective:** Select the single highest-impact biomechanical flaw from baseline data, pair it with an actionable drill, and track follow-up progress.
-- **Files to create:** `coach_engine.py`
+### Task 5: Mechanics-Based Hierarchical One-Cue Remediation & Follow-Up Engine (`coach_engine.py`)
+- **Objective:** Select the single highest-impact biomechanical flaw from repeated baseline mechanics against configurable thresholds (not a noisy 1-sigma make/miss contrast), recommend a style-specific drill, and generate an observational follow-up report without combined scores.
+- **Files to modify:** `coach_engine.py`
 - **Specification:**
-  - **Hierarchical Priority Rule:**
+  - **Mechanics-Based Gating:** Flaws are triggered by repeating biomechanical metrics against configurable thresholds for the specific `shot_style` (jump shot vs set shot), treating thresholds and drills as empirical starting defaults.
+  - **Hierarchy:**
     1. **Tier 1 (Kinetic Sequencing):**
-       - Trigger: Sequence lag $> 100\text{ms}$, out-of-order sequence (elbow before knee), or makes vs misses difference in lag $> 50\text{ms}$.
-       - Concept: Energy transfer efficiency and fluid rhythm.
-       - Recommended Drill: *One-Motion Dip-to-Rise Wall/Rim Jumps (10 reps)*.
+       - Trigger: Overall sequence lag $> 100\text{ms}$ (jump shot) or $> 85\text{ms}$ (set shot), or sequence inversion.
+       - Jump Shot Drill: *One-Motion Dip-to-Rise Wall/Rim Jumps (10 reps)*.
+       - Set Shot Drill: *Continuous Ground-to-Release Rhythm Shooting (15 reps)*.
     2. **Tier 2 (Release Extension & Height):**
-       - Trigger: Mean release elbow angle $< 150^\circ$, or makes average $\ge 15^\circ$ greater extension than misses.
-       - Concept: Arc trajectory consistency and repeatable release window.
-       - Recommended Drill: *High-Release Form Shooting from 5 Feet (15 reps)*.
-    3. **Tier 3 (Set-Point Dip Stability & Balance):**
-       - Trigger: Torso sway $> 12^\circ$ or dip tuck variability $> 15^\circ$.
-       - Concept: Base stability and vertical alignment.
-       - Recommended Drill: *Balanced Catch-and-Shoot Holds (10 reps)*.
-  - **One-Cue Presentation:** Generates a structured remediation object containing: `cue_title`, `biomechanical_evidence`, `recommended_drill`, `drill_reps`, `target_metric_key`, `baseline_value`.
-  - **Follow-Up Tracker:** Evaluates a subsequent session ($N \ge 3$ shots) against the baseline target metric, reporting delta $\Delta_{\text{metric}}$ and trend status (`"IMPROVED" | "NEUTRAL" | "REGRESSED"`).
-- **Verification:** Test suite verifying tier prioritization logic, drill recommendations, and follow-up delta evaluations.
+       - Trigger: Overall release elbow angle $< 150^\circ$ (jump shot) or $< 145^\circ$ (set shot).
+       - Jump Shot Drill: *High-Release Form Shooting from 5 Feet (15 reps)*.
+       - Set Shot Drill: *One-Handed Form Push from 8 Feet (15 reps)*.
+    3. **Tier 3 (Set-Point Stability & Posture):**
+       - Trigger: Torso sway $> 10^\circ$.
+       - Drill: *Balanced Catch-and-Shoot Holds (10 reps)*.
+  - **One-Cue Rule:** Exactly one primary cue is returned at a time.
+  - **Observational Follow-Up Report (No Combined Improvement Score):**
+    - Input: Pre-drill baseline and post-drill reviewed shots from the same player, view, type, and style ($N \ge 3$).
+    - Output fields:
+      - Sample counts: $N_{\text{pre}}$, $N_{\text{post}}$
+      - Metric statistics: $\bar{x}_{\text{pre}} \pm s_{\text{pre}}$, $\bar{x}_{\text{post}} \pm s_{\text{post}}$, and raw delta $\Delta = \bar{x}_{\text{post}} - \bar{x}_{\text{pre}}$
+      - Make percentage change with explicit fractions: e.g. Pre: $3/6$ (50.0%) $\to$ Post: $5/6$ (83.3%), $\Delta = +33.3\%$
+      - `drill_completed: bool`
+      - Language: purely observational, no causal assertions.
+- **Verification:** Unit tests verifying mechanics-based triggers, style-specific drills, and observational follow-up metrics.
 
 ---
 
 ### Task 6: End-to-End Integration & Verification Suite (`test_shot_lab_flow.py`)
 - **Objective:** Validate the entire Personal Shot Lab lifecycle end-to-end.
-- **Files to create:** `test_shot_lab_flow.py`
+- **Files to modify:** `test_shot_lab_flow.py`
 - **Verification Workflow:**
-  1. Initialize temporary SQLite database with versioned schema.
-  2. Ingest 10 synthetic shots across different views and outcomes (6 makes, 4 misses) with known kinematic properties.
-  3. Verify live hotkey tagging and manual boundary adjustments in review queue.
-  4. Verify baseline calculation ($N=10 \ge 5$) with $\bar{x} \pm s$ reporting and quantization disclaimer.
-  5. Verify that Tier 1 flaw is prioritized when sequencing lag is degraded.
-  6. Ingest 5 follow-up shots simulating post-drill improvement and verify delta computation.
-  7. Confirm zero crashes, clean ASCII output, and adherence to scientific guardrails.
+  1. Initialize temporary SQLite database with versioned schema and `shot_style`.
+  2. Ingest synthetic shots with explicit per-shot review / quarantine handling.
+  3. Verify that blind batch-approval is rejected and explicit per-shot admission admits shots.
+  4. Verify baseline gating requires $N \ge 5$ reviewed shots and isolates `jump_shot` from `set_shot`.
+  5. Verify make-vs-miss contrast is held pending until both makes and misses have $\ge 5$ shots.
+  6. Verify mechanics-based cue triggering and style-specific drill selection.
+  7. Verify follow-up comparison reporting pre/post sample counts, $\bar{x} \pm s$, make percentage with numerator/denominator, and observational language.
+  8. Confirm zero crashes, clean ASCII output, and full adherence to scientific integrity rules.
 
 ---
 

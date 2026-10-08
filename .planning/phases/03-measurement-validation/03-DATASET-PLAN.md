@@ -12,7 +12,7 @@ Extend validation beyond synthetic fixtures by testing against real basketball d
 | Data source | Use in this project | What it cannot establish | Access / rights notes |
 |---|---|---|---|
 | [SPL Open Data — basketball free throws](https://github.com/Sport-Performance-Lab/SPL-Open-Data) | Explore downstream kinematic/outcome analysis using released biomechanics trials; compare computed summaries where the trial schema supports it. | Does not test this app's video pose detector if only trial/keypoint data is available; five participants are not broad validation. | Repository reports 583 trials, five participants, CC BY-NC-SA 4.0. Preserve attribution and license constraints. |
-| [EPFL SportCenter dataset](https://www.epfl.ch/labs/cvlab/data/sportcenter-dataset/) | Use its multi-view basketball pose subset to check pose/keypoint behavior against manually annotated 2D/triangulated 3D pose references, after confirming exact files/labels and mapping joints. | General game poses do not validate shot phase detection, release events, or coaching cues. Sparse annotated frames cannot support every temporal metric. | Free for research according to dataset page; follow its citation and usage terms. |
+| [EPFL SportCenter camera-pose dataset](clones/sportcenter_camerapose_dataset) | **Archived to Phase 6 Backlog:** Candidate benchmark for court-geometry homography, auto-distance detection, and multi-camera extrinsic calibration. | **Dropped from Phase 3 active scope:** Zero skeletal joint annotations. Does not support body pose, angles, shot events, or coaching validation. | Academic research license; see `03-EPFL-CAMERA-POSE-PLAN.md` for calibration audit. |
 | [SHOT basketball dataset](https://huggingface.co/datasets/muyu111/basketball) | Optional exploratory test for player pose and event/context handling across five game camera views, after confirming label alignment and target-player identity. | Group-play keyframes/poses do not establish shooting biomechanics, release-frame accuracy, or shot outcome performance for a solo phone-camera setup. | Dataset annotations list CC BY-NC 4.0; original footage/frames are excluded and have separate rights. Do not use video until rights permit it. |
 | Project-recorded, consented single-player clips | Primary end-to-end pilot for target workflow: pose coverage, shot lifecycle/release timing, make/miss/unknown review, camera views, and failure/abstention behavior. | Small convenience samples do not establish population-wide or laboratory-grade accuracy. | Record consent and access restrictions. Do not publish identifiable videos without permission. |
 
@@ -27,14 +27,13 @@ Extend validation beyond synthetic fixtures by testing against real basketball d
 
 **Acceptance:** manifest and data-use notes identify what can and cannot be scored for each source; no footage is used without a permitted basis.
 
-### Task 2 — Public pose / kinematics checks
+### Task 2 — Public camera-pose & kinematics checks
 
-- For EPFL annotated pose frames, map available labels to this project's landmark convention; report only joints with valid corresponding ground truth.
-- If compatible, calculate keypoint error in pixels/normalized coordinates and PCK at explicitly stated thresholds. For triangulated 3D labels, compare only after aligning coordinate frames and units.
-- For SPL trials, first document file schema and coordinate definitions; evaluate downstream kinematic calculations only if raw point trajectories and comparable definitions are provided.
+- For EPFL SportCenter (`clones/sportcenter_camerapose_dataset`), implement a real loader reading the train/test splits (12 train, 16 test sequences) from `README.txt`. Evaluate ground homography $Hr$, camera extrinsics $[R|t]$, intrinsics $K$, and court grid projection. Report planar-vs-distorted camera reprojection residuals and FOV court grid coverage. Explicitly mark body-joint PCK/MPJPE as UNAVAILABLE due to absence of skeletal annotations.
+- For SPL trials, document file schema and coordinate definitions; evaluate downstream kinematic calculations and compare with published kinematic distributions.
 - Use SHOT only for supported pose or event-context experiments; annotate footage license status and do not treat provided pose estimates as ground truth.
 
-**Acceptance:** scripts emit counts, thresholds/units, split IDs, and per-source results; estimates are never relabeled as ground truth.
+**Acceptance:** scripts emit counts, thresholds/units, split IDs, and per-source results; estimates are never relabeled as ground truth; absent labels are explicitly reported as unavailable.
 
 ### Task 3 — Target-workflow shooting pilot
 

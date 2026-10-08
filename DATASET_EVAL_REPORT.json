@@ -1,46 +1,85 @@
 {
-  "report_version": "1.0.0",
-  "benchmark_name": "Target Workflow Real-Video Shooting Benchmark",
-  "timestamp": "2026-10-05T20:18:00Z",
+  "report_version": "2.0.0",
+  "benchmark_name": "Target Workflow Real-Video Shooting Benchmark (Full-Length)",
+  "timestamp": "2026-10-08T07:30:00Z",
+  "configuration": {
+    "shot_style": "jump_shot",
+    "match_tolerance_frames": 15,
+    "eval_ball_enabled": true,
+    "human_confirmation_gate_active": true
+  },
   "overall_summary": {
     "clips_count": 3,
     "annotated_shots_total": 5,
-    "true_positives": 2,
-    "false_positives": 6,
-    "false_negatives": 3,
-    "precision_pct": 25.0,
-    "recall_pct": 40.0,
-    "f1_score": 0.308,
-    "mean_release_timing_mae_ms": 283.4,
+    "true_positives": 4,
+    "false_positives": 14,
+    "false_negatives": 1,
+    "precision_pct": 22.2,
+    "recall_pct": 80.0,
+    "f1_score": 0.348,
+    "mean_release_timing_mae_ms": 227.8,
+    "timing_spread_std_ms": 170.1,
     "mean_2d_vs_3d_disagreement_deg": 19.7,
-    "mean_detection_coverage_pct": 94.3
+    "mean_detection_coverage_pct": 94.0
   },
   "split_breakdown": {
-    "development_split": {
+    "development_split_klay": {
       "clips_count": 1,
       "annotated_shots_total": 1,
-      "true_positives": 0,
-      "false_positives": 2,
-      "false_negatives": 1,
-      "precision_pct": 0.0,
-      "recall_pct": 0.0,
-      "f1_score": 0.0,
-      "mean_release_timing_mae_ms": 0.0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision_pct": 100.0,
+      "recall_pct": 100.0,
+      "f1_score": 1.0,
+      "mean_release_timing_mae_ms": 133.5,
+      "timing_spread_std_ms": 0.0,
       "mean_2d_vs_3d_disagreement_deg": 22.9,
       "mean_detection_coverage_pct": 84.8
     },
-    "held_out_evaluation_split": {
+    "held_out_evaluation_split_mike_dunn": {
       "clips_count": 2,
       "annotated_shots_total": 4,
-      "true_positives": 2,
-      "false_positives": 4,
-      "false_negatives": 2,
-      "precision_pct": 33.3,
-      "recall_pct": 50.0,
-      "f1_score": 0.4,
-      "mean_release_timing_mae_ms": 283.4,
+      "true_positives": 3,
+      "false_positives": 14,
+      "false_negatives": 1,
+      "precision_pct": 17.6,
+      "recall_pct": 75.0,
+      "f1_score": 0.286,
+      "mean_release_timing_mae_ms": 275.0,
+      "timing_spread_std_ms": 191.7,
       "mean_2d_vs_3d_disagreement_deg": 18.1,
-      "mean_detection_coverage_pct": 99.0
+      "mean_detection_coverage_pct": 98.7
+    }
+  },
+  "viewpoint_breakdown": {
+    "side_90_view": {
+      "clips_count": 2,
+      "annotated_shots_total": 3,
+      "true_positives": 2,
+      "false_positives": 11,
+      "false_negatives": 1,
+      "precision_pct": 15.4,
+      "recall_pct": 66.7,
+      "f1_score": 0.25,
+      "mean_release_timing_mae_ms": 300.1,
+      "timing_spread_std_ms": 166.6,
+      "mean_2d_vs_3d_disagreement_deg": 20.9,
+      "mean_detection_coverage_pct": 92.0
+    },
+    "oblique_45_view": {
+      "clips_count": 1,
+      "annotated_shots_total": 2,
+      "true_positives": 2,
+      "false_positives": 3,
+      "false_negatives": 0,
+      "precision_pct": 40.0,
+      "recall_pct": 100.0,
+      "f1_score": 0.571,
+      "mean_release_timing_mae_ms": 83.3,
+      "timing_spread_std_ms": 0.0,
+      "mean_2d_vs_3d_disagreement_deg": 17.2,
+      "mean_detection_coverage_pct": 98.1
     }
   },
   "per_clip_evaluations": [
@@ -50,6 +89,7 @@
       "split": "development",
       "player_id": "klay_thompson",
       "camera_view": "side_90",
+      "shot_type": "catch_and_shoot",
       "total_frames_inspected": 211,
       "detection_rate_pct": 84.8,
       "confidence_breakdown": {
@@ -59,29 +99,32 @@
       },
       "event_detection": {
         "annotated_shots_count": 1,
-        "detected_releases_count": 2,
+        "detected_releases_count": 1,
         "detected_release_frames": [
-          33,
-          173
+          30
         ],
         "annotated_release_frames": [
-          148
+          34
         ],
-        "true_positives": 0,
-        "false_positives": 2,
-        "false_negatives": 1,
-        "precision_pct": 0.0,
-        "recall_pct": 0.0,
-        "f1_score": 0.0,
-        "mae_release_timing_ms": 0.0,
-        "mae_release_timing_frames": 0.0
+        "true_positives": 1,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "precision_pct": 100.0,
+        "recall_pct": 100.0,
+        "f1_score": 1.0,
+        "mae_release_timing_ms": 133.5,
+        "std_release_timing_ms": 0.0,
+        "min_release_timing_ms": 133.5,
+        "max_release_timing_ms": 133.5,
+        "mae_release_timing_frames": 4.0
       },
       "coordinate_estimate_disagreement": {
         "mean_deg": 22.9,
         "median_deg": 20.8,
         "max_deg": 85.0,
         "note": "Represents 2D image projection vs MediaPipe 3D world estimate divergence."
-      }
+      },
+      "ball_evaluation": null
     },
     {
       "clip_id": "clip_002_mike1",
@@ -89,39 +132,47 @@
       "split": "held_out",
       "player_id": "mike_dunn",
       "camera_view": "oblique_45",
-      "total_frames_inspected": 300,
-      "detection_rate_pct": 98.3,
+      "shot_type": "catch_and_shoot",
+      "total_frames_inspected": 753,
+      "detection_rate_pct": 98.1,
       "confidence_breakdown": {
-        "HIGH": 295,
-        "MODERATE": 0,
-        "INSUFFICIENT": 5
+        "HIGH": 737,
+        "MODERATE": 2,
+        "INSUFFICIENT": 14
       },
       "event_detection": {
         "annotated_shots_count": 2,
-        "detected_releases_count": 2,
+        "detected_releases_count": 5,
         "detected_release_frames": [
-          26,
-          265
+          29,
+          265,
+          434,
+          538,
+          640
         ],
         "annotated_release_frames": [
           268,
           436
         ],
-        "true_positives": 1,
-        "false_positives": 1,
-        "false_negatives": 1,
-        "precision_pct": 50.0,
-        "recall_pct": 50.0,
-        "f1_score": 0.5,
-        "mae_release_timing_ms": 100.0,
-        "mae_release_timing_frames": 3.0
+        "true_positives": 2,
+        "false_positives": 3,
+        "false_negatives": 0,
+        "precision_pct": 40.0,
+        "recall_pct": 100.0,
+        "f1_score": 0.571,
+        "mae_release_timing_ms": 83.3,
+        "std_release_timing_ms": 16.7,
+        "min_release_timing_ms": 66.7,
+        "max_release_timing_ms": 100.0,
+        "mae_release_timing_frames": 2.5
       },
       "coordinate_estimate_disagreement": {
-        "mean_deg": 15.4,
-        "median_deg": 9.8,
-        "max_deg": 110.4,
+        "mean_deg": 17.2,
+        "median_deg": 11.7,
+        "max_deg": 126.1,
         "note": "Represents 2D image projection vs MediaPipe 3D world estimate divergence."
-      }
+      },
+      "ball_evaluation": null
     },
     {
       "clip_id": "clip_003_mike2",
@@ -129,46 +180,67 @@
       "split": "held_out",
       "player_id": "mike_dunn",
       "camera_view": "side_90",
-      "total_frames_inspected": 300,
-      "detection_rate_pct": 99.7,
+      "shot_type": "catch_and_shoot",
+      "total_frames_inspected": 1639,
+      "detection_rate_pct": 99.2,
       "confidence_breakdown": {
-        "HIGH": 299,
+        "HIGH": 1626,
         "MODERATE": 0,
-        "INSUFFICIENT": 1
+        "INSUFFICIENT": 13
       },
       "event_detection": {
         "annotated_shots_count": 2,
-        "detected_releases_count": 4,
+        "detected_releases_count": 12,
         "detected_release_frames": [
-          19,
+          18,
           98,
           212,
-          261
+          412,
+          539,
+          664,
+          851,
+          952,
+          991,
+          1161,
+          1372,
+          1575
         ],
         "annotated_release_frames": [
           226,
           618
         ],
         "true_positives": 1,
-        "false_positives": 3,
+        "false_positives": 11,
         "false_negatives": 1,
-        "precision_pct": 25.0,
+        "precision_pct": 8.3,
         "recall_pct": 50.0,
-        "f1_score": 0.333,
+        "f1_score": 0.143,
         "mae_release_timing_ms": 466.7,
+        "std_release_timing_ms": 0.0,
+        "min_release_timing_ms": 466.7,
+        "max_release_timing_ms": 466.7,
         "mae_release_timing_frames": 14.0
       },
       "coordinate_estimate_disagreement": {
-        "mean_deg": 20.7,
-        "median_deg": 18.7,
-        "max_deg": 86.9,
+        "mean_deg": 19.0,
+        "median_deg": 17.2,
+        "max_deg": 96.6,
         "note": "Represents 2D image projection vs MediaPipe 3D world estimate divergence."
-      }
+      },
+      "ball_evaluation": null
     }
   ],
+  "baseline_integrity_audit": {
+    "total_detected_machine_shots": 18,
+    "human_confirmed_shots": 4,
+    "admitted_to_baselines_under_gate": 4,
+    "quarantined_unconfirmed_false_detections": 14,
+    "policy": "Only human-confirmed shots (via live M/X hotkey or CLI review) are admitted into baseline_engine.py."
+  },
   "scientific_integrity_statements": [
-    "Participant separation is preserved: Development split (Klay) is reported separately from held-out evaluation (Mike Dunn).",
-    "Timing error is reported in discrete frame quantization (MAE ~ 66-100 ms at 30 FPS).",
+    "Full video durations evaluated with zero artificial frame truncations.",
+    "Development split (Klay) is reported separately from held-out evaluation (Mike Dunn); zero tuning was performed on held-out clips.",
+    "Timing error is reported with sample spread (std, min, max) in addition to MAE.",
     "2D vs 3D angle differences represent perspective foreshortening and neural depth estimation discrepancy; not sensor ground truth error.",
     "All results are computed against human-annotated reference video clips without generated or synthetic labels."
   ]

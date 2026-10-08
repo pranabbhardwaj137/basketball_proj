@@ -1,112 +1,113 @@
-# Graph Report - basketball_proj  (2026-10-05)
+# Graph Report - basketball_proj  (2026-10-08)
 
 ## Corpus Check
-- 44 files · ~2,481,749 words
+- 57 files · ~54,398 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 23 file(s) not represented in the graph (top: .csv 9, (none) 6, .pt 3)
+- Unclassified: 8 file(s) not represented in the graph (top: .csv 6, (none) 1, .task 1)
 
 ## Summary
-- 548 nodes · 808 edges · 32 communities (24 shown, 8 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 19 edges (avg confidence: 0.93)
+- 662 nodes · 970 edges · 67 communities (32 shown, 35 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 42 edges (avg confidence: 0.95)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `f05bfaea`
+- Built from commit: `a6b6298c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - ball_tracker.py
-- SessionRecorder
-- SimpleJointAnalyzer
-- JerkProcessor
 - Project Context: Intelligent Basketball Performance Analysis System
 - Real-Video Dataset Collection & Annotation Protocol
-- run.py
-- run_simon.py
-- Basketball Shot Analyzer
+- Phase 3 Work Plan — EPFL SportCenter Camera Pose & Court Geometry Evaluation
 - AI Models in Intelligent Basketball Performance Analysis System
 - Work Division & Project Execution Plan
-- Basketball Shot Analysis
+- shot_lab_db.py
 - rules/graphify.md
 - workflows/graphify.md
 - HandEngine
-- main.py
+- ProComparator
 - Project Roadmap — Basketball Coach
 - Basketball Coach — Project Definition
 - Product requirements
-- Plan
-- SimpleJointAnalyzer
-- image_cropper.py
-- run_model.py
+- Milestone Summary — v1.0: Reliable, Evidence-Backed Personal Shot Analysis
+- TestShotLabFlow
+- TestBaselineEngine
+- TestCoachEngine
+- Key Deliverables & Architecture Implemented
+- run_all_public_dataset_evaluations
 - Basketball Biomechanics Metric Dictionary
-- Phase 4 — Personal Shot Lab
+- 2. Work Breakdown & Task Sequence
 - Project Positioning and Technical Notes
 - Phase 1 — Core Capture and Vision
 - Phase 2 — Shot Analysis Foundations
 - Phase 5 — Session History, Reports, and Coach Experience
 - Phase 6 — Advanced Research and Review Release
+- SessionRecorder
+- ShotLabDB
+- PoseEngine
+- .compute_baseline
+- KineticChainAnalyzer
+- Phase 3 Mid-Phase Plan — Dataset-Based Testing
+- CoachEngine
+- 2. Locked Architecture & Implementation Decisions
+- review_shots.py
+- TestShotLabDB
+- Real-World & Public Dataset Manifest for Basketball Shot Analysis
+- download_models.py
+- 2. Locked Architecture & Implementation Decisions
+- ShotPhaseDetector
+- Phase 3 — Ball Tracking Integration & Validation Plan
+- Agent Rules
+- 03-PLAN.md
+- Work order
+- .end_shot
+- Phase 3 — Measurement Integrity & Real-Video Validation: Context & Locked Decisions
 
 ## God Nodes (most connected - your core abstractions)
-1. `SimpleJointAnalyzer` - 23 edges
-2. `SessionRecorder` - 21 edges
-3. `PoseEngine` - 18 edges
-4. `compute_all_angles()` - 16 edges
-5. `ProComparator` - 16 edges
-6. `ShotPhaseDetector` - 15 edges
-7. `Project Context: Intelligent Basketball Performance Analysis System` - 15 edges
-8. `getVideoStreams()` - 14 edges
-9. `Basketball Shot Analyzer` - 14 edges
-10. `box_center()` - 12 edges
+1. `ShotLabDB` - 43 edges
+2. `ShotPhaseDetector` - 27 edges
+3. `SessionRecorder` - 23 edges
+4. `PoseEngine` - 22 edges
+5. `compute_all_angles()` - 19 edges
+6. `BallTracker` - 18 edges
+7. `BaselineEngine` - 16 edges
+8. `CoachEngine` - 16 edges
+9. `ProComparator` - 16 edges
+10. `Project Context: Intelligent Basketball Performance Analysis System` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `2.1 Configurable Wrist-Height & Vertical Velocity Gates` --references--> `ShotPhaseDetector`  [INFERRED]
+  .planning/phases/03-measurement-validation/03-CONTEXT.md → analyzer.py
+- `3. Scope Fences & Execution Order` --references--> `ShotPhaseDetector`  [INFERRED]
+  .planning/phases/03-measurement-validation/03-CONTEXT.md → analyzer.py
+- `Task 4 — Real-video annotation coverage and configurable shot-event gating` --references--> `ShotPhaseDetector`  [INFERRED]
+  .planning/phases/03-measurement-validation/03-PLAN.md → analyzer.py
+- `Task 6 — Ball trajectory synchronization & honest degradation` --references--> `ShotPhaseDetector`  [INFERRED]
+  .planning/phases/03-measurement-validation/03-PLAN.md → analyzer.py
 - `1. Coordinate and metric audit` --references--> `PoseEngine`  [INFERRED]
   .planning/PLAN.md → pose_engine.py
-- `Completed Audit Fixes in Phase 3` --references--> `interpolate_kinematic_series()`  [INFERRED]
-  .planning/STATE.md → analyzer.py
-- `Task 1 — Trace coordinate systems and define metrics` --references--> `pt_3d()`  [INFERRED]
-  .planning/phases/03-measurement-validation/03-PLAN.md → analyzer.py
-- `Completed Audit Fixes in Phase 3` --references--> `pt_3d()`  [INFERRED]
-  .planning/STATE.md → analyzer.py
-- `4. Missing Data & Temporal Interpolation` --references--> `KineticChainAnalyzer`  [INFERRED]
-  METRIC_DICTIONARY.md → analyzer.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (32 total, 8 thin omitted)
+## Communities (67 total, 35 thin omitted)
 
 ### Community 0 - "ball_tracker.py"
-Cohesion: 0.08
-Nodes (17): arc_peak(), ball_under_rim(), box_center(), box_to_point_distance(), calculate_entry_angle(), fit_parabola(), last_valid_box(), point_distance() (+9 more)
-
-### Community 1 - "SessionRecorder"
 Cohesion: 0.06
-Nodes (7): interpolate_kinematic_series(), KineticChainAnalyzer, SessionRecorder, ShotPhaseDetector, BenchmarkEvaluator, evaluate_video_file(), 2. Project Origin & Architecture Lineage
-
-### Community 2 - "SimpleJointAnalyzer"
-Cohesion: 0.11
-Nodes (3): main(), midpoint(), SimpleJointAnalyzer
+Nodes (24): arc_peak(), ball_under_rim(), box_center(), box_to_point_distance(), calculate_entry_angle(), fit_parabola(), last_valid_box(), point_distance() (+16 more)
 
 ### Community 4 - "Project Context: Intelligent Basketball Performance Analysis System"
-Cohesion: 0.06
-Nodes (31): 10. Development Roadmap & Updated Task Status, 11. Common Errors & Troubleshooting, 12. Guidelines for AI Assistants Working on This Project, 13. Codebase Knowledge Graph & Maintenance (Graphify), 1. Offline Voice Feedback Module (`feedback_voice.py`), 1. What This Project Is, 2. PDF Session Report Generator (`report_generator.py`), 3. Developer & Academic Profile (+23 more)
+Cohesion: 0.07
+Nodes (28): Completed Audit Fixes in Phase 3, Completed Work in Phase 4 (Personal Shot Lab), Current validation priorities, Project State, 10. Common Errors & Troubleshooting, 11. Codebase Knowledge Graph & Maintenance (Graphify), 1. What This Project Is, 2. Project Origin & Architecture Lineage (+20 more)
 
 ### Community 5 - "Real-Video Dataset Collection & Annotation Protocol"
 Cohesion: 0.40
 Nodes (4): 1. Video Recording Setup Guidelines, 2. Ground-Truth Annotation Schema (`annotations.json`), 3. Evaluation Metrics & Error Quantification, Real-Video Dataset Collection & Annotation Protocol
 
-### Community 6 - "run.py"
-Cohesion: 0.11
-Nodes (18): ball_near_body(), ball_under_basket(), calculate_angle(), delete_folder_contents(), detect_API(), distance(), find_suitable_ball(), get_angles_postions() (+10 more)
-
-### Community 7 - "run_simon.py"
-Cohesion: 0.24
-Nodes (12): ball_near_body(), ball_under_basket(), calculate_angle(), delete_folder_contents(), detect_API(), distance(), find_suitable_ball(), get_angles_postions() (+4 more)
-
-### Community 8 - "Basketball Shot Analyzer"
-Cohesion: 0.06
-Nodes (35): 1. Basic Biomechanical Analysis, 2. Pose Detection and Joint Marking, 3. Post-processing Analysis, Analysis Metrics, Analysis Parameters, Analysis Results, Applications, Basketball Shot Analyzer (+27 more)
+### Community 8 - "Phase 3 Work Plan — EPFL SportCenter Camera Pose & Court Geometry Evaluation"
+Cohesion: 0.20
+Nodes (9): 1. Context & Dataset Qualification Audit, 2.1 Court Grid Projection & FOV Coverage, 2.2 Planar Homography vs. Distorted Camera Projection Reprojection Check, 2. Mathematical Definition of Supported Checks, 3. Implementation Tasks, 4. Acceptance Criteria, Phase 3 Work Plan — EPFL SportCenter Camera Pose & Court Geometry Evaluation, Task 1: Real Dataset Loader & Evaluator (`evaluate_public_datasets.py`) (+1 more)
 
 ### Community 9 - "AI Models in Intelligent Basketball Performance Analysis System"
 Cohesion: 0.07
@@ -116,17 +117,13 @@ Nodes (28): 1. YOLOv8-Pose (Best Alternative for Pose), 2. ViTPose (Most Accurat
 Cohesion: 0.11
 Nodes (17): 1. `analyzer.py` (Kinematics & State Machine), 1. `pose_engine.py` & `ball_tracker.py` (Refactoring & Decoupling), 1. `report_generator.py` (Automated PDF Report Exporter), 1. Team Allocation & Stream Overview, 2. `dashboard/app.py` (Streamlit Web Dashboard), 2. `feedback_voice.py` (Offline Voice Feedback Engine), 2. `hand_engine.py` (MediaPipe Hands Integration), 2. Technical Specifications by Stream (+9 more)
 
-### Community 11 - "Basketball Shot Analysis"
-Cohesion: 0.20
-Nodes (9): Basketball Shot Analysis, Contributors, Dataset / training notes, Features, If `pip install -r requirements.txt` fails, Important: missing model weights, Installation, Prerequisites (+1 more)
-
-### Community 15 - "main.py"
-Cohesion: 0.06
-Nodes (16): compute_all_angles(), calc_2d(), calc_3d(), pt_2d(), get_angle_3d(), shooting_side(), draw_pose(), maybe_ball_tracker() (+8 more)
+### Community 15 - "ProComparator"
+Cohesion: 0.14
+Nodes (3): compute_dtw_distance(), ProComparator, analyze_video()
 
 ### Community 16 - "Project Roadmap — Basketball Coach"
-Cohesion: 0.17
-Nodes (11): Milestone, Ordering and scope guardrails, Phase 1 — Capture and core vision, Phase 2 — Shot analysis foundations, Phase 3 — Measurement integrity and validation (active), Phase 4 — Personal Shot Lab and evidence-gated coaching, Phase 5 — Durable sessions, reports, and coach experience, Phase 6 — Advanced research and review release (+3 more)
+Cohesion: 0.18
+Nodes (10): Milestone, Ordering and scope guardrails, Phase 1 — Capture and core vision, Phase 2 — Shot analysis foundations, Phase 4 — Personal Shot Lab and evidence-gated coaching, Phase 5 — Durable sessions, reports, and coach experience (deferred), Phase 6 — Advanced research and review release, Phase sequence (+2 more)
 
 ### Community 17 - "Basketball Coach — Project Definition"
 Cohesion: 0.18
@@ -136,21 +133,25 @@ Nodes (10): Basketball Coach — Project Definition, Current product, Current / 
 Cohesion: 0.15
 Nodes (12): Non-functional requirements, PR-1 — Capture and setup, PR-2 — Pose and measurement integrity, PR-3 — Shot events and biomechanics, PR-4 — Ball and outcome analysis, PR-5 — Coaching and personalization, PR-6 — Session and Shot Lab, PR-7 — Evaluation (+4 more)
 
-### Community 19 - "Plan"
-Cohesion: 0.07
-Nodes (26): pt_3d(), Deliverables, Goal, Out of scope, Phase 3 — Measurement Integrity and Real-Video Validation, Plan, Risks and mitigations, Task 1 — Trace coordinate systems and define metrics (+18 more)
+### Community 19 - "Milestone Summary — v1.0: Reliable, Evidence-Backed Personal Shot Analysis"
+Cohesion: 0.06
+Nodes (36): pt_3d(), Deliverables, Goal, Out of scope, Phase 3 — Measurement Integrity and Real-Video Validation, Plan, Risks and mitigations, Task 1 — Trace coordinate systems and define metrics (+28 more)
 
-### Community 25 - "run_model.py"
-Cohesion: 0.22
-Nodes (5): calculate_angle(), delete_folder_contents(), generate_video(), get_files(), process_frame_media_pipe()
+### Community 24 - "Key Deliverables & Architecture Implemented"
+Cohesion: 0.18
+Nodes (10): 1. SQLite Persistence & Versioned Schema (`shot_lab_db.py`), 2. Live Outcome Tagging & Boundary Ingestion (`main.py`), 3. Post-Session Review Queue & Quarantine Protection (`review_shots.py`), 4. Personal Baseline Engine (`baseline_engine.py`), 5. Hierarchical One-Cue Remediation Engine (`coach_engine.py`), Key Deliverables & Architecture Implemented, Milestone Status: COMPLETE, Operational CLI Commands (+2 more)
+
+### Community 26 - "run_all_public_dataset_evaluations"
+Cohesion: 0.25
+Nodes (5): evaluate_epfl_camerapose_dataset(), evaluate_shot_dataset_qualification(), evaluate_spl_biomechanics_compatibility(), load_json_permissive(), run_all_public_dataset_evaluations()
 
 ### Community 27 - "Basketball Biomechanics Metric Dictionary"
-Cohesion: 0.22
-Nodes (8): 1. Landmark Index Reference (MediaPipe BlazePose 33 Keypoints), 2. Joint Angle Definitions & Formulas, 3. Kinetic Chain Sequencing & Angular Velocities, 4. Missing Data & Temporal Interpolation, Basketball Biomechanics Metric Dictionary, Direction-Aware Velocity Definitions ($d\theta/dt$), Metric Specifications Table, Proximal-to-Distal Sequencing Rule
+Cohesion: 0.15
+Nodes (12): 1. Landmark Index Reference (MediaPipe BlazePose 33 Keypoints), 2. Joint Angle Definitions & Formulas, 3. Kinetic Chain Sequencing & Angular Velocities, 4. Missing Data & Temporal Interpolation, 5. Personal Shot Lab Statistical Semantics & Notation, Basketball Biomechanics Metric Dictionary, Continuous Metric Distribution ($\bar{x} \pm s$), Direction-Aware Velocity Definitions ($d\theta/dt$) (+4 more)
 
-### Community 28 - "Phase 4 — Personal Shot Lab"
-Cohesion: 0.29
-Nodes (6): Acceptance, Creative hypothesis, Goal, Out of scope, Phase 4 — Personal Shot Lab, Tasks
+### Community 28 - "2. Work Breakdown & Task Sequence"
+Cohesion: 0.18
+Nodes (10): 1. Executive Summary & Architecture Principles, 2. Work Breakdown & Task Sequence, 3. Acceptance Criteria, Phase 4 — Personal Shot Lab & Evidence-Gated Coaching, Task 1: SQLite Persistence & Provenance Schema (`shot_lab_db.py`), Task 2: Live In-Session Outcome Hotkeys & HUD Overlay (`main.py`), Task 3: Post-Session Shot Review & Explicit Per-Shot Admission Tool (`review_shots.py`), Task 4: Personal Baseline & Descriptive Association Engine (`baseline_engine.py`) (+2 more)
 
 ### Community 29 - "Project Positioning and Technical Notes"
 Cohesion: 0.29
@@ -172,25 +173,73 @@ Nodes (5): Acceptance, Goal, Out of scope, Phase 5 — Session History, Reports,
 Cohesion: 0.33
 Nodes (5): Acceptance, Candidate experiments (select by available evidence), Goal, Phase 6 — Advanced Research and Review Release, Release tasks
 
+### Community 36 - "PoseEngine"
+Cohesion: 0.12
+Nodes (4): PoseEngine, classify_clip_metadata(), run_raw_clips_suite(), test_single_clip()
+
+### Community 39 - "KineticChainAnalyzer"
+Cohesion: 0.13
+Nodes (3): interpolate_kinematic_series(), KineticChainAnalyzer, BenchmarkEvaluator
+
+### Community 40 - "Phase 3 Mid-Phase Plan — Dataset-Based Testing"
+Cohesion: 0.20
+Nodes (10): Dataset roles, Goal, Phase 3 Mid-Phase Plan — Dataset-Based Testing, Recommended execution order, References checked, Task 1 — Inspect and qualify candidate data, Task 2 — Public camera-pose & kinematics checks, Task 3 — Target-workflow shooting pilot (+2 more)
+
+### Community 42 - "2. Locked Architecture & Implementation Decisions"
+Cohesion: 0.17
+Nodes (11): 1. Phase Objective, 2.1 Shot Outcome Labeling, Quarantine & Review Queue (Explicit Per-Shot Review), 2.2 Cue Prioritization & Remediation Engine (Mechanics-Based Gating), 2.3 Shot-Style Differentiation (`jump_shot` vs `set_shot`), 2.4 Follow-Up Comparison Architecture (Observational, No Combined Score), 2.5 Persistence & Storage Engine (`shot_lab.db`), 2.6 Evidence Framing & Ground Truth Boundaries, 2. Locked Architecture & Implementation Decisions (+3 more)
+
+### Community 43 - "review_shots.py"
+Cohesion: 0.33
+Nodes (4): interactive_review_loop(), main(), print_shot_detail(), print_shot_table()
+
+### Community 46 - "Real-World & Public Dataset Manifest for Basketball Shot Analysis"
+Cohesion: 0.29
+Nodes (6): 1. Candidate Dataset Qualification Matrix, 2.1 EPFL SportCenter Camera-Pose Schema (`clones/sportcenter_camerapose_dataset`), 2. Dataset Schemas & Label Availabilities, 3. Project Single-Player Pilot Clips Manifest, 4. Evaluation Separation Guarantees, Real-World & Public Dataset Manifest for Basketball Shot Analysis
+
+### Community 48 - "2. Locked Architecture & Implementation Decisions"
+Cohesion: 0.33
+Nodes (6): 2.1 Configurable Wrist-Height & Vertical Velocity Gates, 2.2 Kinetic Dip-to-Rise Ordering & Plausible Phase Durations, 2.3 Ball Tracking Coordination, Synchronization & Honest Degradation, 2.4 Strict Human-Gated Baseline Inclusion, 2.5 Full-Length Video Evaluation & Subgroup Metrics, 2. Locked Architecture & Implementation Decisions
+
+### Community 49 - "ShotPhaseDetector"
+Cohesion: 0.16
+Nodes (14): compute_all_angles(), calc_2d(), calc_3d(), pt_2d(), get_angle_3d(), shooting_side(), ShotPhaseDetector, evaluate_video_file() (+6 more)
+
+### Community 50 - "Phase 3 — Ball Tracking Integration & Validation Plan"
+Cohesion: 0.33
+Nodes (6): 1. Executive Summary & Current State Audit, 2.2 Explicit Status & Missing-Data Schema, 2. Core Architecture: "Hand-in-Hand" Timeline Synchronization, 4. Acceptance Criteria, Current Reality Check, Phase 3 — Ball Tracking Integration & Validation Plan
+
+### Community 63 - "03-PLAN.md"
+Cohesion: 0.33
+Nodes (3): Active Execution Plan — Phase 3, Follow-on, Verification policy
+
+### Community 64 - "Work order"
+Cohesion: 0.33
+Nodes (6): 1. Coordinate and metric audit, 2. Confidence and missing-data behavior, 3. Benchmark correctness, 4. Ball and trajectory reliability, 5. Review release, Work order
+
+### Community 66 - "Phase 3 — Measurement Integrity & Real-Video Validation: Context & Locked Decisions"
+Cohesion: 0.40
+Nodes (3): 1. Phase Objective, 3. Scope Fences & Execution Order, Phase 3 — Measurement Integrity & Real-Video Validation: Context & Locked Decisions
+
 ## Knowledge Gaps
-- **169 isolated node(s):** `graphify`, `Workflow: graphify`, `2. Confidence and missing-data behavior`, `3. Benchmark correctness`, `4. Ball and trajectory reliability` (+164 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 302 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **8 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **193 isolated node(s):** `graphify`, `Workflow: graphify`, `2. Confidence and missing-data behavior`, `3. Benchmark correctness`, `4. Ball and trajectory reliability` (+188 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 381 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **35 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `SessionRecorder` connect `SessionRecorder` to `ball_tracker.py`, `Project Context: Intelligent Basketball Performance Analysis System`, `main.py`?**
-  _High betweenness centrality (0.090) - this node is a cross-community bridge._
-- **Why does `Project Context: Intelligent Basketball Performance Analysis System` connect `Project Context: Intelligent Basketball Performance Analysis System` to `SessionRecorder`?**
-  _High betweenness centrality (0.064) - this node is a cross-community bridge._
-- **Why does `SimpleJointAnalyzer` connect `SimpleJointAnalyzer` to `SessionRecorder`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
-- **Are the 4 inferred relationships involving `SessionRecorder` (e.g. with `BenchmarkEvaluator` and `10. Development Roadmap & Updated Task Status`) actually correct?**
-  _`SessionRecorder` has 4 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `ShotLabDB` connect `ShotLabDB` to `ball_tracker.py`, `._get_connection`, `CoachEngine`, `shot_lab_db.py`, `review_shots.py`, `TestShotLabDB`, `ShotPhaseDetector`, `Phase 3 — Ball Tracking Integration & Validation Plan`, `TestShotLabFlow`, `TestBaselineEngine`, `TestCoachEngine`?**
+  _High betweenness centrality (0.177) - this node is a cross-community bridge._
+- **Why does `ShotPhaseDetector` connect `ShotPhaseDetector` to `ball_tracker.py`, `analyzer.py`, `.end_shot`, `Phase 3 — Measurement Integrity & Real-Video Validation: Context & Locked Decisions`, `PoseEngine`, `KineticChainAnalyzer`, `._is_wrist_elevated`, `ProComparator`, `2. Locked Architecture & Implementation Decisions`, `Milestone Summary — v1.0: Reliable, Evidence-Backed Personal Shot Analysis`?**
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `SessionRecorder` connect `SessionRecorder` to `ball_tracker.py`, `.end_shot`, `analyzer.py`, `Project Context: Intelligent Basketball Performance Analysis System`, `PoseEngine`, `KineticChainAnalyzer`, `ProComparator`, `ShotPhaseDetector`?**
+  _High betweenness centrality (0.087) - this node is a cross-community bridge._
+- **Are the 9 inferred relationships involving `ShotLabDB` (e.g. with `BaselineEngine` and `CoachEngine`) actually correct?**
+  _`ShotLabDB` has 9 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 8 inferred relationships involving `ShotPhaseDetector` (e.g. with `BenchmarkEvaluator` and `2.1 Master Authority: Pose Owns the Shot Lifecycle`) actually correct?**
+  _`ShotPhaseDetector` has 8 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 2 inferred relationships involving `SessionRecorder` (e.g. with `BenchmarkEvaluator` and `2. Project Origin & Architecture Lineage`) actually correct?**
+  _`SessionRecorder` has 2 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `graphify`, `Workflow: graphify`, `2. Confidence and missing-data behavior` to the rest of the system?**
-  _169 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `ball_tracker.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.08048103607770583 - nodes in this community are weakly interconnected._
-- **Should `SessionRecorder` be split into smaller, more focused modules?**
-  _Cohesion score 0.05583972719522592 - nodes in this community are weakly interconnected._
+  _193 weakly-connected nodes found - possible documentation gaps or missing edges._

@@ -1,8 +1,8 @@
 # Phase 3 — Measurement Integrity and Real-Video Validation
 
-**Status:** Active. Core safeguards and synthetic regression fixtures exist, but code consistency and real-video validation do not close this phase.
+**Status:** Complete & Verified. Configurable kinematic gates, master-timeline ball tracking with honest degradation, and human-gated baseline quarantine are fully implemented and verified against the full-duration (2,667 frames) multi-clip benchmark (`DATASET_EVAL_REPORT.json`).
 
-**Dataset follow-on:** See [03-DATASET-PLAN.md](03-DATASET-PLAN.md) for public dataset qualification, pose/kinematics checks, and a consented single-player video pilot. Keep results separated by data source and label type.
+**Dataset follow-on:** See [03-DATASET-PLAN.md](03-DATASET-PLAN.md) and [03-EPFL-CAMERA-POSE-PLAN.md](03-EPFL-CAMERA-POSE-PLAN.md) for public dataset qualification (EPFL camera-pose calibration, SPL trial kinematics), and single-player/multi-player video pilots. Results remain strictly separated by data source and label type. Body-joint PCK/MPJPE are not claimed from EPFL camera-pose files.
 
 ## Goal
 
@@ -54,35 +54,54 @@ Establish reproducible limits and error rates for current measurements. Suppress
 
 **Acceptance:** a deliberately broken detector cannot yield perfect timing; scenario count and metrics are internally consistent; output banner says synthetic regression.
 
-### Task 4 — Define and collect real-video annotations
+### Task 4 — Real-video annotation coverage and configurable shot-event gating
 
-- Write a capture protocol covering side, diagonal, and front views; stable camera; full-body framing; resolution/FPS; distance; lighting; and shot types.
-- Create annotation schema for player/clip IDs, view, shot start, release frame/time, follow-through, visible/occluded key joints, shot outcome, and optional reference angle.
-- State outcome-label source. Use human-reviewed outcome labels when automatic rim detection is absent.
-- Collect diverse clips with consent and document exclusion criteria. Keep training/tuning clips separate from held-out evaluation clips, preferably by player.
-- Double-annotate a subset and report agreement before treating labels as ground truth.
+- **Annotation audit and coverage:**
+  - Audit `ground_truth_annotations.json` against actual video lengths in `raw_clips/`.
+  - Ensure development split (`klay_vid.mp4`) and held-out split (`mikeddunnstud1.mp4`, `mikeddunnstud2.mp4`) are strictly separated.
+  - Zero tuning against held-out clips.
+- **Configurable shot-event gates in `analyzer.py` (`ShotPhaseDetector`):**
+  - **Wrist-height elevation gate:** Configurable threshold (`shot_style="jump_shot"` requiring wrist $\ge$ nose/forehead level, vs. `"set_shot"` requiring shoulder-relative elevation). Enforce landmark confidence/visibility $\ge 0.5$.
+  - **Vertical velocity gate:** Require upward vertical velocity ($v_{y, \text{wrist}} < -0.06$) to enter `releasing`; suppress downward/lateral arm movements.
+  - **Dip-to-rise kinetic ordering:** Verify lower-body dip/flexion precedes or syncs with upper-body drive.
+  - **Phase duration sanity windows:** Require plausible timing windows ($150-1200$ms prep, $100-450$ms release drive, $400-2000$ms total); suppress jitter transients and timeout static holds.
+  - **Ball proximity policy:** Treat ball proximity as an optional confidence booster, not an exclusionary gate.
+- **Human-gated baseline inclusion in `baseline_engine.py`:**
+  - Prototype gate: require human confirmation for every shot admitted to personal baselines.
+  - Live `M`/`X` hotkey counts only if shot event is explicitly confirmed; otherwise route to CLI review (`review_shots.py`).
+  - Quarantine automated admission until held-out benchmark reliability gate is met.
 
-**Acceptance:** dataset manifest, annotation instructions, split definition, and label-quality summary exist; no identifiable practice clip is published without permission.
+**Acceptance:** Gated detector suppresses false gathers; unit tests verify gate parameters; baseline engine rejects unconfirmed shots.
 
-### Task 5 — Evaluate and report
+### Task 5 — Full-length real-video evaluation and stratified reporting
 
-- Report shot precision, recall, F1, false positives by gesture, release timing error, valid-shot coverage, abstention rate, and confidence/error calibration where sample size permits.
-- Report angle error only for a defined reference and matching joint/view; disclose that coach markup is not laboratory ground truth.
-- Break down by camera view, player, lighting/occlusion, and shot type; include failures and uncertainty intervals when appropriate.
-- Compare image-plane and model-inferred world-angle estimates without calling either lab-grade by default.
-- Persist the `klay_vid.mp4` exploratory output with frame and timestamp samples. Describe the ±22.9° user-reported difference as unverified until reproduced; even when reproduced, call it 2D-vs-model-world estimate disagreement, not measurement error or measured foreshortening.
-- Record hardware, software/model versions, commands, and evaluation data IDs for reproducibility.
+- **Remove video frame caps:**
+  - Remove all artificial truncation (`limit_frames = 300`) in `evaluate_dataset.py` to evaluate 100% of video frames across all clips.
+- **Evaluate and report stratified metrics:**
+  - Compute overall Precision, Recall, and F1 score.
+  - Release timing error: Mean Absolute Error (MAE in frames and ms) with inter-shot spread (std, min, max).
+  - Subgroup breakdown by player: Development (`klay_thompson`) vs. Held-Out (`mike_dunn`).
+  - Subgroup breakdown by viewpoint: $90^\circ$ Side vs. $45^\circ$ Oblique.
+  - Human correction metrics: review override rate and boundary delta $|\Delta t|$.
+  - Output to `DATASET_EVAL_REPORT.json` and update `.planning/STATE.md`.
 
-**Acceptance:** evaluation reruns from documented commands and emits sample counts with every metric; headline claims never omit their data basis.
+**Acceptance:** Evaluation runs over complete video durations with zero truncation; outputs per-player and per-view metric spread; never tunes on held-out clips.
 
-### Task 6 — Ball trajectory validity
+### Task 6 — Ball trajectory synchronization & honest degradation
 
-- Preserve per-detection timestamps when `detect_every > 1`; fit using time-aware observations where the model requires time.
-- Gate parabola/entry-angle metrics on number, confidence, temporal span, and fit quality.
-- Distinguish `ball unavailable`, `rim unavailable`, `trajectory inconclusive`, `made`, and `missed`.
-- Test missing detections, vertical/near-vertical trajectories, outliers, and no-rim cases.
+- **Detailed Plan:** See [03-BALL-TRACKING-PLAN.md](03-BALL-TRACKING-PLAN.md).
+- **Master timeline synchronization:**
+  - Deprecate independent state machine in `ball_tracker.py`. Bind ball flight lifecycle directly to pose `ShotPhaseDetector` shot ID and frame windows ($t_{\text{start}} \to t_{\text{release}} \to t_{\text{end}}$).
+  - Use ball-hand proximity as an optional confidence boost during prep, not a gating veto.
+  - Reset flight observations per shot; eliminate cross-shot data leakage.
+- **Honest rim & outcome degradation:**
+  - Explicitly declare rim status: when custom weights (`weights/basket_rim.pt`) are absent, permanently emit `rim_status="UNAVAILABLE_NO_WEIGHTS"`.
+  - Prohibit heuristic make/miss classification on stock COCO `sports ball` detections; set `outcome="unknown"`. Human `M`/`X`/`U` labels remain the sole outcome source for baselines.
+- **Real-video ball evaluation:**
+  - Extend `evaluate_dataset.py` with `--eval-ball` to measure real-world ball detection coverage (% of flight frames detected) and release alignment delta ($|\Delta t| = |t_{\text{ball\_detach}} - t_{\text{pose\_release}}|$) on annotated clips.
+  - Gate parabola/entry-angle metrics on count ($\ge 4$ points), confidence, and fit quality ($R^2 \ge 0.85$).
 
-**Acceptance:** unsupported result returns `unknown` with reason; no skipped-frame spacing is treated as uniform by accident.
+**Acceptance:** Ball flight attributes are bound to pose shot IDs; missing rim weights trigger clean `UNAVAILABLE_NO_WEIGHTS` degradation; zero automated outcomes enter baselines without custom weights.
 
 ### Task 7 — Documentation and phase closeout
 

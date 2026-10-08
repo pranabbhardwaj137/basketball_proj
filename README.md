@@ -8,7 +8,7 @@
 
 An intelligent, real-time computer vision and biomechanical coaching tool built in Python. It analyzes a player's basketball shooting form and shot physics from video (live webcam or pre-recorded video files).
 
-The system performs real-time body pose estimation, computes biomechanical joint angles (elbow, knee, hip), tracks shot execution phases, measures shot consistency, and optionally tracks the basketball trajectory and rim using YOLO object detection to compute release angles, arc peak height, and make/miss outcomes.
+The system performs real-time body pose estimation, computes 3D and 2D biomechanical joint angles (elbow, knee, hip), tracks shot execution phases, measures shot consistency, and provides an individualized **Personal Shot Lab** with evidence-gated baselines, quarantine review workflows, and one-cue-at-a-time remediation practice drills. It also optionally tracks basketball trajectory and rim using YOLO object detection to compute release angles, arc peak height, and make/miss outcomes.
 
 ---
 
@@ -22,7 +22,7 @@ This project (`basketball_proj`) is a unified synthesis of two parent codebases:
 2. **`clones/basketball-shot-analysis`**
    - **Contributed:** YOLO-based ball and rim tracking concepts, spatial release detection (ball position relative to hand/elbow), parabolic trajectory fitting (`y = ax^2 + bx + c`), release angle calculation, arc peak detection, and rim proximity heuristics for make/miss classification.
 
-`basketball_proj` refactors, modernizes, and integrates these techniques into a single, clean Python application built on **Python 3.12+** using **MediaPipe's modern Tasks API** and **Ultralytics YOLOv8**.
+`basketball_proj` refactors, modernizes, and integrates these techniques into a single, clean Python application built on **Python 3.12+** using **MediaPipe's modern Tasks API**, **Ultralytics YOLOv8**, and **SQLite3** for immutable provenance.
 
 ---
 
@@ -48,6 +48,8 @@ This project (`basketball_proj`) is a unified synthesis of two parent codebases:
 | --- | --- | --- |
 | **Language** | Python 3.12.6 | Virtual environment located at `.venv` |
 | **Pose Engine** | MediaPipe Tasks API (`>=0.10.13`) | `pose_landmarker.task` model (BlazePose Heavy) |
+| **Hand Tracking** | MediaPipe Tasks API (`>=0.10.13`) | `hand_landmarker.task` model |
+| **Shot Lab DB** | SQLite3 | Versioned schema (v2) with machine vs. human review provenance |
 | **Object Detection** | Ultralytics YOLOv8 (Optional) | COCO `yolov8n.pt` or custom `weights/basket_rim.pt` |
 | **Video Processing** | OpenCV (`opencv-python`) | Frame capture, skeleton drawing, HUD text overlay |
 | **Mathematics & Stats** | NumPy | Vector dot products, arccos angles, curve fitting, std dev |
@@ -79,17 +81,30 @@ detector = vision.PoseLandmarker.create_from_options(options)
 ```
 basketball_proj/
 ├── .venv/                      # Isolated Python 3.12 virtual environment
+├── .planning/                  # GSD Project Roadmap, State, Plans, and Milestone Reports
 ├── graphify-out/               # Graphify Knowledge Graph (graph.json, GRAPH_REPORT.md, graph.html)
-├── pose_landmarker.task        # MediaPipe BlazePose Heavy model (29MB)
-├── requirements.txt            # Dependency definitions (mediapipe, opencv-python, numpy)
+├── requirements.txt            # Dependency definitions (mediapipe, opencv-python, numpy, matplotlib)
+├── download_models.py          # Automated model asset downloader (pose_landmarker.task, hand_landmarker.task)
+├── seed_shot_lab.py            # Local starter database seeder with sample players and baselines
 ├── main.py                     # Main CLI entry point & real-time pipeline orchestrator
 ├── pose_engine.py              # PoseEngine: MediaPipe inference, landmark extraction & smoothing
+├── hand_engine.py              # HandEngine: Wrist flick and finger spread tracking
 ├── analyzer.py                 # Biomechanical angle math, shot phase detection & SessionRecorder
+├── baseline_engine.py          # Personal baseline computation with sample gating (N>=5) & isolation
+├── coach_engine.py             # Hierarchical One-Cue Remediation and observational follow-up evaluation
+├── review_shots.py             # CLI & interactive shot review queue and boundary correction tool
+├── shot_lab_db.py              # Versioned SQLite persistence engine with dual-provenance tracking
 ├── ball_tracker.py             # BallTracker: In-memory YOLO ball/rim detection & state machine
 ├── ball_geometry.py            # Mathematical primitives for trajectory, release angle & parabola
+├── pro_comparator.py           # Illustrative pro kinematic curve comparisons (Curry, Klay, Ray Allen)
+├── evaluate_dataset.py         # Full-length video evaluation benchmark tool
+├── test_shot_lab_flow.py       # Comprehensive end-to-end integration test suite
+├── test_baseline_engine.py     # Unit tests for baseline computation and sample gating
+├── test_coach_engine.py        # Unit tests for hierarchical one-cue coaching engine
+├── test_shot_lab_db.py         # Unit tests for database schema, provenance, and migrations
 ├── group_work_division.md      # Team workload division & academic demo guide
 ├── AI_Models_Deep_Dive.md      # Technical deep-dive reference for academic viva
-└── Project_Context_For_AI.md   # System context, execution guide & technical reference
+└── METRIC_DICTIONARY.md        # Mathematical definitions, coordinate bases, and limitations
 ```
 
 ---
@@ -118,24 +133,26 @@ If dependencies are missing, install them:
 pip install -r requirements.txt
 ```
 
-*(Optional for ball tracking):*
+### Step 2: Download Model Assets
+
+Run the automated asset downloader to fetch the required MediaPipe pose and hand models:
+
 ```bash
-pip install ultralytics
+python download_models.py
 ```
 
-### Step 2: Ensure Model Asset is Present
+### Step 3: (Optional) Seed Starter Database for Development
 
-Ensure `pose_landmarker.task` exists in the project root. If missing, download it:
+If you want to immediately test the Personal Shot Lab and coaching engines without recording footage first:
 
-```powershell
-# Windows PowerShell
-Invoke-WebRequest -Uri "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_heavy/float16/latest/pose_landmarker_heavy.task" -OutFile "pose_landmarker.task"
+```bash
+python seed_shot_lab.py
 ```
 
-### Step 3: Running the Application
+### Step 4: Running the Application
 
 ```
-usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETECT_EVERY] [--hands] [--pro [{curry,klay,ray_allen}]]
+usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETECT_EVERY] [--hands] [--pro [{curry,klay,ray_allen}]] [--shot-style {jump_shot,set_shot}] [--player PLAYER]
 ```
 
 #### Examples
@@ -150,31 +167,58 @@ usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETEC
    python main.py --video sample_shot.mp4
    ```
 
-3. **Run Pose Analysis WITH Ball & Rim Tracking (Stock YOLO COCO model):**
+3. **Run with Set-Shot Mechanics Tuning (e.g. Free Throws):**
+   ```bash
+   python main.py --video sample_shot.mp4 --shot-style set_shot
+   ```
+
+4. **Run Pose Analysis WITH Ball & Rim Tracking (Stock YOLO COCO model):**
    ```bash
    python main.py --video sample_shot.mp4 --ball
    ```
 
-4. **Run with Hand Tracking (Wrist Flick & Finger Spread Analysis):**
+5. **Run with Hand Tracking (Wrist Flick & Finger Spread Analysis):**
    ```bash
    python main.py --video sample_shot.mp4 --hands
    ```
 
-5. **Run with Pro Player Benchmark Comparison (Curry, Klay, Ray Allen):**
+6. **Run with Pro Player Benchmark Comparison (Curry, Klay, Ray Allen):**
    ```bash
    python main.py --video sample_shot.mp4 --pro curry
    ```
 
-6. **Run Full Pipeline (Pose + Ball + Hands + Pro Comparator):**
+7. **Run Full Pipeline (Pose + Ball + Hands + Pro Comparator):**
    ```bash
    python main.py --video sample_shot.mp4 --ball --hands --pro curry
    ```
 
-### Step 4: Interactive Runtime Controls
+### Step 5: Interactive Runtime Controls & Live Tagging
 
-- Press **`Q`** – Quit the program.
+- Press **`M`** – Tag detected shot as **Make** (approves shot for baseline admission).
+- Press **`X`** – Tag detected shot as **Miss** (approves shot for baseline admission).
+- Press **`U`** – Tag detected shot as **Unknown** (leaves shot quarantined for later review).
 - Press **`SPACE`** – Pause / resume video playback.
-- Press **`S`** – Instantly export current session metrics to a timestamped CSV file (e.g. `session_20261004_101500.csv`) and print summary stats in the terminal.
+- Press **`S`** – Instantly export current session metrics to a timestamped CSV file.
+- Press **`Q`** – Quit the program.
+
+### Step 6: Post-Session Shot Review & Baseline Inspection
+
+1. **Review Quarantined Shots Interactively:**
+   ```bash
+   python review_shots.py --quarantined --interactive
+   ```
+2. **Inspect Shot Detail and Provenance:**
+   ```bash
+   python review_shots.py --inspect <SHOT_ID>
+   ```
+3. **Approve a Shot for Baseline Admission:**
+   ```bash
+   python review_shots.py --approve <SHOT_ID> --notes "Confirmed release keyframe"
+   ```
+4. **Discard an Outlier or Occluded Shot:**
+   ```bash
+   python review_shots.py --discard <SHOT_ID> --notes "Occlusion during jump"
+   ```
 
 ---
 
@@ -185,8 +229,10 @@ usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETEC
 | **Elbow Angle (Shooting Arm)** | Landmarks 12 → 14 → 16 (Right) or 11 → 13 → 15 (Left) | **160°–175° at release** (Full arm extension) |
 | **Knee Bend Angle** | Landmarks 24 → 26 → 28 (Right) or 23 → 25 → 27 (Left) | **100°–130° at lowest dip** (Power generation) |
 | **Hip Posture Angle** | Landmarks 12 → 24 → 26 (Right) or 11 → 23 → 25 (Left) | **150°–170°** (Forward lean check) |
+| **Kinetic Sequence Lag** | Temporal offset between knee max extension and wrist max velocity | **< 80 ms** for jump shots, **< 70 ms** for set shots |
+| **Torso Sway** | Angular deviation of mid-hip to mid-shoulder vector from vertical | **< 8°** (Lateral stability) |
 | **Shooting Side** | Auto-detected (Hand/wrist with smaller `norm_y`) | Identifies left vs right handed shooter |
-| **Shot Phase** | Wrist height relative to shoulder & vertical delta | `preparing`, `releasing`, `follow_through`, `idle` |
+| **Shot Phase** | Wrist height relative to shoulder/nose & vertical velocity | `preparing`, `releasing`, `follow_through`, `idle` |
 | **Form Consistency Score** | `max(0, 100 - (elbow_std + knee_std))` | Higher score (0-100) indicates repeatable mechanics |
 | **Release Launch Angle** | Vector angle of ball center between release frames | **45°–55°** optimal trajectory launch angle |
 | **Arc Peak Height** | Minimum pixel `y` of ball during flight trajectory | Peak height of parabolic flight path |
@@ -194,167 +240,71 @@ usage: main.py [-h] [--video VIDEO] [--ball] [--yolo YOLO] [--detect-every DETEC
 
 ---
 
-## 8. Target Architecture Alignment & Progress Gap Analysis
+## 8. Milestone Status & Scientific Integrity (GSD v1.0)
 
-### Reference Architecture: `AI_Models_Deep_Dive.md` (Lines 396–425)
+Milestone: **Reliable, Evidence-Backed Personal Shot Analysis**. Detailed GSD record: [`.planning/STATE.md`](.planning/STATE.md).
 
-The target full-system flow consists of 14 components across 5 layers:
+| Phase | Focus | Current status | Evidence / remaining gate |
+| --- | --- | --- | --- |
+| 1 | Capture and core vision | **Completed** | MediaPipe Tasks pose pipeline and capture code exist. Clean-install and cross-platform setup documented. |
+| 2 | Shot events and kinematics | **Completed** | Shot-state, angle, sequencing, and illustrative DTW comparisons exist. Pro profiles are examples, not measured pro ground truth. |
+| 3 | Measurement integrity and evaluation | **Completed & Verified** | Full-length benchmark (2,667 frames) evaluated in `DATASET_EVAL_REPORT.json` (80.0% recall, MAE 227.8 ms, zero baseline contamination via human-gated quarantine). |
+| 4 | Personal Shot Lab and evidence-gated coaching | **Completed & Verified** | SQLite dual-provenance, M/X/U live hotkeys, post-session review queue, shot-style isolation, $N \ge 5$ baseline gating, mechanics-threshold cues, and observational follow-up evaluation. All 18 unit/integration tests pass. |
+| 5 | Session reports and coach experience | Active (Human-confirmed sessions ready) | Prioritize detector/review reliability. Build reports only from human-confirmed shots until an evidence-backed event threshold is met. |
+| 6 | Research and review release | Planned | Compare optional methods against baselines; complete reproducible packaging and academic review materials. |
 
+### Evaluation Status & Limits
+
+- `EVAL_REPORT.json` is a **synthetic regression report**. Its scores measure generated test cases, not real-world basketball accuracy.
+- `evaluate_public_datasets.py` loads and evaluates actual dataset files (`PUBLIC_DATASETS_REPORT.json`). EPFL SportCenter camera-pose calibration evaluated on 28 real sequences (50,127 frames) with mean planar-vs-distorted reprojection residual of 5.17 px (train) and 4.06 px (test). Because it contains zero skeletal body-joint annotations, EPFL is archived to the Phase 6 backlog as a court-geometry/calibration experiment; SPL kinematic bounds verified.
+- `DATASET_EVAL_REPORT.json` evaluates 100% of video frames across all clips (2,667 total frames) without artificial truncation:
+  - **Overall Recall:** 80.0% (4/5 total annotated shots detected).
+  - **Overall Precision:** 22.2% (4 TP, 14 FP across continuous unedited practice drills).
+  - **Development Split (`klay_vid.mp4`):** 100.0% Precision, 100.0% Recall (F1: 1.000), Timing MAE: 133.5 ms.
+  - **Held-Out Split (`mike_dunn`):** 75.0% Recall (3/4 shots detected, 14 FP across unedited drills), Timing MAE: 275.0 ms.
+    - `mikeddunnstud1.mp4` (Oblique 45°): 2/2 TP (100.0% Recall), Timing MAE: 83.3 ms (spread 66.7–100.0 ms), F1: 0.571.
+    - `mikeddunnstud2.mp4` (Side 90°): 1/2 TP (50.0% Recall, 11 FP during continuous dribbling/gathers), Timing MAE: 466.7 ms, F1: 0.143.
+  - **Baseline Integrity:** All 14 unconfirmed false machine detections quarantined with `status: PENDING_REVIEW`, protecting baselines from contamination.
+- The 2D-versus-MediaPipe-world angle difference (mean 19.7°) is **estimate disagreement**, representing perspective foreshortening and monocular depth inference divergence, not ground-truth sensor error.
+
+---
+
+## 9. Running the Test Suite
+
+Run the full test suite across database provenance, baseline sample gating, hierarchical coaching, and end-to-end integration:
+
+```bash
+python -m unittest discover
 ```
-Input Layer
-├── Webcam / Smartphone Video
-└── Pre-recorded Game Footage
-        ↓
-Detection Layer
-├── BlazePose (pose landmarks)        ← CURRENT
-├── YOLOv8 (basketball detection)     ← CURRENT
-└── MediaPipe Hands (wrist snap)      ← FUTURE / TO ADD
-        ↓
-Analysis Layer
-├── Angle Computation (numpy)         ← CURRENT
-├── Trajectory Tracking (OpenCV)      ← CURRENT
-├── Ball Arc Analysis                 ← CURRENT
-└── Temporal Consistency (LSTM)       ← FUTURE / TO ADD
-        ↓
-Feedback Layer
-├── Rule-Based Feedback               ← CURRENT
-├── AI-Generated Feedback (LSTM)      ← FUTURE / TO ADD
-└── Voice Feedback (TTS)              ← FUTURE / TO ADD
-        ↓
-Output Layer
-├── Annotated Video                   ← CURRENT
-├── Session Report (PDF)              ← FUTURE / TO ADD
-├── Progress Dashboard (web app)      ← FUTURE / TO ADD
-└── Comparison vs Pro Players         ← FUTURE / TO ADD
+
+Expected output:
+```
+----------------------------------------------------------------------
+Ran 18 tests in 0.600s
+
+OK
 ```
 
-### Component Status Matrix & Progress Gap
-
-| Layer | Architecture Component | Implementation Status | Existing File / Code | What Needs to be Added |
-| --- | --- | --- | --- | --- |
-| **Input** | Webcam / Smartphone Video | **DONE (100%)** | `main.py` (`cv2.VideoCapture(0)`) | None |
-| **Input** | Pre-recorded Game Footage | **DONE (100%)** | `main.py` (`--video path`) | None |
-| **Detection** | BlazePose Keypoints | **DONE (100%)** | `pose_engine.py` (MediaPipe Tasks API) | None |
-| **Detection** | YOLOv8 Ball & Rim Detection | **DONE (100%)** | `ball_tracker.py` (Ultralytics YOLO) | None |
-| **Detection** | MediaPipe Hands (Wrist Snap) | **MISSING (0%)** | None | Add `HandLandmarker` Tasks API for 21 hand points & release wrist flick |
-| **Analysis** | Biomechanical Angle Math | **DONE (100%)** | `analyzer.py` (`compute_all_angles`) | Add wrist-elbow alignment deviation |
-| **Analysis** | Trajectory Tracking | **DONE (100%)** | `ball_tracker.py` & `ball_geometry.py` | None |
-| **Analysis** | Ball Arc & Launch Angle | **DONE (100%)** | `ball_geometry.py` (`fit_parabola`, `release_angle_deg`) | None |
-| **Analysis** | Temporal Consistency (LSTM) | **PARTIAL (30%)** | `SessionRecorder` (Statistical `100 - std_dev`) | Train/integrate sequence LSTM model for multi-frame shot form classification |
-| **Feedback** | Rule-Based Feedback Engine | **DONE (100%)** | `main.py` & `group_work_division.md` (`feedback.py`) | Wire `feedback.py` panel overlay into `main.py` pipeline |
-| **Feedback** | AI-Generated Sequence Feedback | **MISSING (0%)** | Static text strings | Feed LSTM sequence prediction into automated feedback string generator |
-| **Feedback** | Voice Feedback (TTS) | **MISSING (0%)** | None | Add `pyttsx3` background thread for real-time verbal cues ("Extend shooting arm!") |
-| **Output** | Live Annotated Video HUD | **DONE (100%)** | `main.py` (Skeleton, joint angles, trajectory line) | None |
-| **Output** | Session PDF Report | **MISSING (0%)** | CSV export only (`SessionRecorder.export_csv`) | Build PDF exporter (`fpdf2`) with embedded matplotlib chart PNGs |
-| **Output** | Progress Dashboard Web App | **MISSING (0%)** | Terminal CLI output | Build Web Dashboard (Streamlit / React) for session history & video player |
-| **Output** | Comparison vs Pro Players | **MISSING (0%)** | None | Build pro benchmark pose overlay & angle curve comparison tool |
-
 ---
 
-### Progress Scorecard
-
-- **Components Completed:** 8 / 14 (**~57% Complete**)
-- **Components Remaining:** 6 / 14 (**~43% to Build**)
-
----
-
-## 9. Concrete Implementation Plan to Complete the Flow
-
-To achieve 100% completion of the proposed flow, the following 6 modules must be created and integrated into `basketball_proj`:
-
-### 1. Offline Voice Feedback Module (`feedback_voice.py`)
-- **Library:** `pyttsx3` (runs offline without internet or API keys).
-- **Functionality:** Launches a non-blocking background thread that speaks live coaching cues when shot release or follow-through is detected:
-  - *"Extend your shooting arm more"* (if release elbow < 155°)
-  - *"Great release!"* (if elbow > 160° and release angle 45-55°)
-  - *"Bend knees more for power"* (if dip knee > 135°)
-
-### 2. PDF Session Report Generator (`report_generator.py`)
-- **Library:** `fpdf2` + `matplotlib`.
-- **Functionality:** Replaces raw CSV export with a professional PDF report containing:
-  - Session header (Player Name, Date, Total Shots).
-  - Summary table (Shot #, Elbow Angle at Release, Knee Dip, Launch Angle, Outcome).
-  - Embedded Matplotlib trend charts (Elbow Angle Trend, Knee Bend Trend, Form Consistency Score).
-
-### 3. MediaPipe Hands Integration (`hand_engine.py`)
-- **Library:** `mediapipe.tasks.python.vision.HandLandmarker`.
-- **Functionality:** Tracks 21 hand landmarks on the shooting hand during release:
-  - Measures wrist snap/flexion angle at release frame.
-  - Measures finger spread (index to pinky distance) at release.
-
-### 4. Pro Player Benchmark Comparison Tool (`pro_comparator.py`)
-- **Functionality:**
-  - Stores reference joint angle curves of elite shooters (e.g. Stephen Curry release curve).
-  - Plots player's shot angle curve vs pro benchmark curve.
-  - Calculates a **Pro Similarity Percentage Score (0–100%)**.
-
-### 5. LSTM Temporal Shot Quality Classifier (`shot_classifier.py`)
-- **Framework:** PyTorch / TensorFlow.
-- **Functionality:** Accepts an $(N, 4)$ sequence tensor of joint angles across 30 frames of shot execution to output shot quality probability ($0.0 - 1.0$).
-
-### 6. Web Progress Dashboard (`dashboard/app.py`)
-- **Framework:** Streamlit or Next.js / FastAPI.
-- **Functionality:**
-  - Drag-and-drop video file upload.
-  - Interactive playback with pose skeleton & ball trajectory overlays.
-  - Historical progress dashboard showing consistency scores over time.
-
----
-
-## 10. Development Roadmap & Updated Task Status
-
-- [x] **Phase 1: Core Vision & Modularization**
-  - MediaPipe Tasks API integration with BlazePose Heavy model (`pose_engine.py`).
-  - Landmark extraction and exponential smoothing.
-  - Skeleton drawing with landmark visibility confidence flags.
-- [x] **Phase 2: Kinematics & Session Analytics**
-  - Real-time angle computation for elbow, knee, hip, shoulder (`analyzer.py`).
-  - Automated shot phase detection based on wrist movement.
-  - Multi-shot `SessionRecorder` with CSV export and session statistics.
-- [x] **Phase 3: Ball & Rim Tracking Integration**
-  - Ultralytics YOLO ball & rim detection module (`ball_tracker.py`).
-  - Flight path trajectory curve fitting (`fit_parabola`).
-  - Release launch angle and make/miss judgment heuristics (`ball_geometry.py`).
-- [ ] **Phase 4: Feedback & Output Enhancement (Next Priority)**
-  - Integrate `feedback.py` panel overlay & matplotlib trend charts into `main.py`.
-  - Add offline Voice Feedback using `pyttsx3`.
-  - Add PDF Session Report generation using `fpdf2`.
-- [ ] **Phase 5: Hands, Pro Benchmarking & Web Dashboard**
-  - Integrate MediaPipe Hands Tasks API for wrist snap & finger spread.
-  - Build Pro Player benchmark comparison overlay.
-  - Launch Streamlit / Web UI Progress Dashboard.
-
----
-
-## 11. Common Errors & Troubleshooting
+## 10. Common Errors & Troubleshooting
 
 | Error | Cause | Solution |
 | --- | --- | --- |
 | `AttributeError: module 'mediapipe' has no attribute 'solutions'` | Legacy API invoked on Python 3.12 | Use `mediapipe.tasks.python.vision.PoseLandmarker` as shown in `pose_engine.py` |
-| `FileNotFoundError: pose_landmarker.task` | Model file missing in project root | Re-download using the PowerShell / curl command in Step 2 |
+| `FileNotFoundError: pose_landmarker.task` | Model file missing in project root | Run `python download_models.py` |
 | `ModuleNotFoundError: No module named 'ultralytics'` | Running `--ball` without YOLO installed | Run `pip install ultralytics` inside `.venv` |
 | Low FPS / Video lag | Heavy model running on slow CPU | Pass `--detect-every 2` or switch model path to `pose_landmarker_full.task` |
 | No landmarks detected | Poor lighting or subject out of frame | Ensure subject is fully visible from side/front profile with clear lighting |
 
 ---
 
-## 12. Guidelines for AI Assistants Working on This Project
-
-1. **Always use MediaPipe Tasks API** (`mediapipe.tasks.python.vision`) – NEVER write `mp.solutions.pose`.
-2. **Do NOT downgrade Python 3.12** – Keep code compatible with Python 3.12.6.
-3. Access landmarks via index in `result.pose_landmarks[0][idx]` – coordinate attributes are `.x`, `.y`, `.z` (normalized 0.0–1.0).
-4. Frame dimensions: multiply `.x` by frame width (`w`) and `.y` by frame height (`h`) for pixel coordinates.
-5. Color formats: OpenCV handles **BGR**, MediaPipe requires **RGB** (`cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)`).
-6. Keep modules decoupled: `pose_engine.py` handles vision/pose, `analyzer.py` handles biomechanical math/session stats, `ball_tracker.py` & `ball_geometry.py` handle YOLO ball physics, and `main.py` handles CLI orchestration.
-
----
-
-## 13. Codebase Knowledge Graph & Maintenance (Graphify)
+## 11. Codebase Knowledge Graph & Maintenance (Graphify)
 
 This project uses **Graphify** (`graphifyy` package) to maintain an AST-indexed Knowledge Graph of code dependencies, function call flow, and architectural hubs in `graphify-out/`.
 
 ### Knowledge Graph Artifacts
-- **`graphify-out/graph.json`**: Graph data model (207 nodes, 378 edges, 10 communities).
+- **`graphify-out/graph.json`**: Graph data model.
 - **`graphify-out/GRAPH_REPORT.md`**: Architectural breakdown detailing God Nodes, Community Hubs, and modularity suggestions.
 - **`graphify-out/graph.html`**: Interactive D3/Vis network graph visualization.
 
@@ -362,36 +312,18 @@ This project uses **Graphify** (`graphifyy` package) to maintain an AST-indexed 
 
 1. **Incremental Update (After code edits - Fast & free):**
    ```powershell
-   .\.venv\Scripts\graphify.exe update .
+   python -m graphify update .
    ```
-   *Run this command whenever python source files are modified to keep `graphify-out/graph.json` in sync.*
-
 2. **Full AST Extraction (Code-only, no API key needed):**
    ```powershell
-   .\.venv\Scripts\graphify.exe extract . --code-only
+   python -m graphify extract . --code-only
    ```
-
-3. **Re-clustering & Report Regeneration:**
+3. **Export Interactive Visualizations:**
    ```powershell
-   .\.venv\Scripts\graphify.exe cluster-only .
+   python -m graphify export html
    ```
-
-4. **Export Interactive Visualizations:**
-   ```powershell
-   .\.venv\Scripts\graphify.exe export html
-   ```
-
-5. **Antigravity AI Agent Rule Setup:**
-   ```powershell
-   .\.venv\Scripts\graphify.exe antigravity install
-   ```
-
-### AI Agent Rules for Graphify
-- Before making structural changes, consult `graphify-out/GRAPH_REPORT.md` or query `graphify-out/graph.json` for component relationships.
-- Always run `.\.venv\Scripts\graphify.exe update .` after code edits.
 
 ---
 
 _Project: Intelligent Basketball Performance Analysis System | BMSIT&M BCS506 | 2025–26_  
 _Developer: Pranab Bhardwaj | GitHub: pranabbhardwaj137_
-

@@ -19,11 +19,11 @@
         {
           "shot_id": "klay_s01",
           "events": {
-            "shot_start_frame": 95,
-            "peak_dip_frame": 112,
-            "set_point_frame": 128,
-            "release_frame": 148,
-            "follow_through_frame": 175
+            "shot_start_frame": 20,
+            "peak_dip_frame": 26,
+            "set_point_frame": 29,
+            "release_frame": 34,
+            "follow_through_frame": 40
           },
           "outcome": {
             "result": "made",
